@@ -65,14 +65,14 @@ class Application
                     try{
                         throw new NotFoundException();
                     }catch(NotFoundException $e){
-                        $connection->send($e->getMessage());
+                        $connection->send($e->handle());
                     }
                     break;
                 case Dispatcher::METHOD_NOT_ALLOWED:
                     try{
                         throw new MethodNotAllowedException($dispatch[1][0]);
                     }catch(MethodNotAllowedException $e){
-                        $connection->send($e->getMessage());
+                        $connection->send($e->handle());
                     }
                     break;
                 case Dispatcher::FOUND:
@@ -101,7 +101,7 @@ class Application
             try{
                 throw new OnMessageException();
             }catch(OnMessageException $e){
-                $connection->send($e->getMessage());
+                $connection->send($e->handle());
             }
         }
     }
