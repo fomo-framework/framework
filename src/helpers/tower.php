@@ -44,7 +44,7 @@ if (! function_exists('json')) {
 }
 
 if (! function_exists('request')) {
-    function request(string $input): Request
+    function request(string $input)
     {
         return Request::getInstance()->input($input);
     }
