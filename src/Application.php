@@ -3,6 +3,9 @@
 namespace Tower;
 
 use FastRoute\Dispatcher;
+use App\Exceptions\MethodNotAllowedException;
+use App\Exceptions\NotFoundException;
+use App\Exceptions\OnMessageException;
 use FastRoute\RouteCollector;
 use Workerman\Connection\TcpConnection;
 use Workerman\Protocols\Http;
@@ -59,14 +62,18 @@ class Application
             $dispatch = $this->dispatcher->dispatch($request->method() , $request->path());
             switch ($dispatch[0]) {
                 case Dispatcher::NOT_FOUND:
-                    $connection->send(json([
-                        'message' => 'not found'
-                    ] , Response::HTTP_NOT_FOUND));
+                    try{
+                        throw new NotFoundException();
+                    }catch(NotFoundException $e){
+                        $connection->send($e->getMessage());
+                    }
                     break;
                 case Dispatcher::METHOD_NOT_ALLOWED:
-                    $connection->send(json([
-                        "message" => "this is route not supported {$dispatch[1][0]} method"
-                    ] , Response::HTTP_METHOD_NOT_ALLOWED));
+                    try{
+                        throw new MethodNotAllowedException($dispatch[1][0]);
+                    }catch(MethodNotAllowedException $e){
+                        $connection->send($e->getMessage());
+                    }
                     break;
                 case Dispatcher::FOUND:
                     if (! empty($dispatch[1]['middleware'])){
@@ -89,11 +96,13 @@ class Application
             }
         } catch (\Throwable $e) {
             $log = fopen(storagePath() . "logs/tower.log", 'a');
-            fwrite($log, (string)$e);
+            fwrite($log, $e->getMessage());
             fclose($log);
-            $connection->send(json([
-                'message' => "The operation failed"
-            ] , Response::HTTP_INTERNAL_SERVER_ERROR));
+            try{
+                throw new OnMessageException();
+            }catch(OnMessageException $e){
+                $connection->send($e->getMessage());
+            }
         }
     }
 }
