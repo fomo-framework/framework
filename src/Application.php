@@ -96,7 +96,7 @@ class Application
             }
         } catch (\Throwable $e) {
             $log = fopen(storagePath() . "logs/tower.log", 'a');
-            fwrite($log, $e->getMessage());
+            fwrite($log, $e->getMessage() . PHP_EOL);
             fclose($log);
             try{
                 throw new OnMessageException();
