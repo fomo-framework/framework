@@ -6,6 +6,7 @@ use Tower\DB;
 use Tower\Middleware\Contract;
 use Tower\Response;
 use Tower\Authentication\Auth as AuthParent;
+use App\Exceptions\AuthenticationException;
 
 class Auth implements Contract
 {
@@ -27,8 +28,10 @@ class Auth implements Contract
 
     protected function unauthorized(): Response
     {
-        return json([
-            'message' => 'Unauthorized'
-        ] , Response::HTTP_UNAUTHORIZED);
+        try{
+            throw new AuthenticationException();
+        }catch(AuthenticationException $e){
+            return $e->handle();
+        }
     }
 }
