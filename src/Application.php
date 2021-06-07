@@ -99,7 +99,7 @@ class Application
             fwrite($log, $e->getMessage() . PHP_EOL);
             fclose($log);
             try{
-                throw new OnMessageException();
+                throw new OnMessageException($e);
             }catch(OnMessageException $e){
                 $connection->send($e->handle());
             }
