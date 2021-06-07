@@ -2,24 +2,25 @@
 
 namespace Tower;
 
-use Illuminate\Database\Query\Builder;
-use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;
 use stdClass;
 
 class JsonResponse
 {
-    protected Collection|LengthAwarePaginator|Builder|stdClass $collection;
+    protected Collection|Paginator|stdClass $collection;
 
     protected array $response = [];
+    protected ?int $perePage = null;
 
     protected bool $isRelation;
 
-    public function __construct(Collection|LengthAwarePaginator|Builder|stdClass $collection , bool $isRelation = false)
+    public function __construct(Collection|Paginator|stdClass $collection , bool $isRelation = false , int $perPage = null)
     {
         $this->collection = $collection;
         $this->isRelation = $isRelation;
-        if ($collection instanceof LengthAwarePaginator || $collection instanceof Collection)
+        $this->perPage = $perPage;
+        if ($collection instanceof Paginator || $collection instanceof Collection)
             $this->process();
     }
 
@@ -30,13 +31,12 @@ class JsonResponse
             return $this->response;
         }
 
-        if (method_exists($this->collection , 'perPage'))
+        if (! is_null($this->perPage))
             return json([
                 'data' => $this->response ,
                 'meta' => [
-                    'count' => $this->collection->total() ,
-                    'lastPage' => ceil($this->collection->total() / $this->collection->perPage()) ,
-                    'prePage' => $this->collection->perPage() ,
+                    'isLastPage' => count($this->collection) < $this->perPage ? true : false  ,
+                    'perPage' => $this->perPage ,
                 ]
             ]);
 
