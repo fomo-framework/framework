@@ -43,7 +43,7 @@ class Router
 
         $previousGroupMiddleware = $this->currentGroupMiddleware;
         if (isset($parameters['middleware']))
-            array_push($this->currentGroupMiddleware , $parameters['middleware']);
+            array_push($this->currentGroupMiddleware , ...$parameters['middleware']);
 
         $callback($this);
 
