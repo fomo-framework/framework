@@ -55,6 +55,9 @@ class Router
     {
         $route = $this->currentGroupPrefix . $route;
 
+        if (! empty($this->currentGroupMiddleware))
+            $callback['middleware'] = $this->currentGroupMiddleware;
+        
         $this->routes[$method][] = [$route , $callback];
     }
 
