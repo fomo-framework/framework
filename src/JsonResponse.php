@@ -8,14 +8,14 @@ use stdClass;
 
 class JsonResponse
 {
-    protected Collection|Paginator|stdClass $collection;
+    protected Collection|Paginator|stdClass|null $collection;
 
     protected array $response = [];
     protected ?int $perePage = null;
 
     protected bool $isRelation;
 
-    public function __construct(Collection|Paginator|stdClass $collection , bool $isRelation = false , int $perPage = null)
+    public function __construct(Collection|Paginator|stdClass|null $collection , bool $isRelation = false , int $perPage = null)
     {
         $this->collection = $collection;
         $this->isRelation = $isRelation;
@@ -47,6 +47,11 @@ class JsonResponse
 
     public function single(): Response
     {
+        if (is_null($this->collection))
+            return json([
+                'data' => []
+            ]);
+
         return json([
             'data' => $this->toArray($this->collection)
         ]);
