@@ -35,7 +35,7 @@ class JsonResponse
             return json([
                 'data' => $this->response ,
                 'meta' => [
-                    'isLastPage' => count($this->collection) < $this->perPage ? true : false  ,
+                    'isLastPage' => count($this->collection) < $this->perPage,
                     'perPage' => $this->perPage ,
                 ]
             ]);
@@ -49,7 +49,7 @@ class JsonResponse
     {
         if (is_null($this->collection))
             return json([
-                'data' => []
+                'data' => null
             ]);
 
         return json([
