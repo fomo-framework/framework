@@ -76,6 +76,7 @@ class Application
                     }
                     break;
                 case Dispatcher::FOUND:
+                    Request::setInstance($request);
                     if (! empty($dispatch[1]['middleware'])){
                         foreach ($dispatch[1]['middleware'] as $middleware){
                             $call = new $middleware();
@@ -86,7 +87,6 @@ class Application
                             }
                         }
                     }
-                    Request::setInstance($request);
                     $controller = new $dispatch[1][0];
                     $method = $dispatch[1][1];
 
