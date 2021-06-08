@@ -28,8 +28,39 @@ class Request extends WorkerRequest
         return $get[$name] ?? $default;
     }
 
+    public function all(): mixed
+    {
+        return $this->post() + $this->get();
+    }
+
+    public function only(array $keys): array
+    {
+        $all = $this->all();
+        $result = [];
+        foreach ($keys as $key) {
+            if (isset($all[$key])) {
+                $result[$key] = $all[$key];
+            }
+        }
+        return $result;
+    }
+
+    public function except(array $keys): mixed
+    {
+        $all = $this->all();
+        foreach ($keys as $key) {
+            unset($all[$key]);
+        }
+        return $all;
+    }
+
     public function url(): string
     {
         return '//' . $this->host() . $this->path();
+    }
+
+    public function fullUrl(): string
+    {
+        return '//' . $this->host() . $this->uri();
     }
 }
