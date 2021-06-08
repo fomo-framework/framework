@@ -11,7 +11,7 @@ class JsonResponse
     protected Collection|Paginator|stdClass|null $collection;
 
     protected array $response = [];
-    protected ?int $perePage = null;
+    protected ?int $perPage = null;
 
     protected bool $isRelation;
 
