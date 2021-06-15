@@ -52,6 +52,7 @@ class Application
 
         Http::requestClass(Request::class);
         Elastic::setInstance();
+        Redis::setInstance();
 
         $this->database();
     }
