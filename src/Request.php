@@ -6,7 +6,7 @@ use \Workerman\Protocols\Http\Request as WorkerRequest;
 
 class Request extends WorkerRequest
 {
-    protected static ?Request $_instance = null;
+    protected static Request $_instance;
 
     public static function getInstance(): Request
     {
