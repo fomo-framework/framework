@@ -22,4 +22,9 @@ class Elastic
     {
         return self::$_instance;
     }
+    
+    public static function __callStatic(string $method, array $arguments)
+    {
+        return self::getInstance()->$method(...$arguments);
+    }
 }
