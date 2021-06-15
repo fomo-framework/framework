@@ -1,9 +1,11 @@
 <?php
+
 use Tower\Elastic;
 use Tower\Request;
 use Tower\Authentication\Auth;
 use Tower\Response;
 use Elasticsearch\Client;
+use Tower\Redis;
 
 if (! function_exists('basePath')) {
     function basePath(): string
@@ -93,5 +95,11 @@ if (! function_exists('cpuCoreCount')) {
             $count = shell_exec('nproc');
 
         return (int)$count > 0 ? (int)$count : 4;
+    }
+}
+if (! function_exists('redis')) {
+    function redis(): \Redis
+    {
+        return Redis::getInstance();
     }
 }
