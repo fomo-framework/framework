@@ -2,11 +2,13 @@
 
 namespace Tower;
 
+use Carbon\Carbon;
 use FastRoute\Dispatcher;
 use App\Exceptions\MethodNotAllowedException;
 use App\Exceptions\NotFoundException;
 use App\Exceptions\OnMessageException;
 use FastRoute\RouteCollector;
+use Throwable;
 use Workerman\Connection\TcpConnection;
 use Workerman\Protocols\Http;
 use Illuminate\Database\Capsule\Manager as Capsule;
@@ -94,9 +96,16 @@ class Application
                     $connection->send($call);
                     break;
             }
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $log = fopen(storagePath() . "logs/tower.log", 'a');
-            fwrite($log, $e->getMessage() . PHP_EOL);
+            fwrite($log,'time : ' . Carbon::now() . ' | ' .
+                'message : ' . $e->getMessage() . ' | ' .
+                'file : ' . $e->getFile() . ' | ' .
+                'line : ' . $e->getLine() .
+                PHP_EOL .
+                '<------------------------------------------------------------------------------>' .
+                PHP_EOL
+            );
             fclose($log);
             try{
                 throw new OnMessageException($e);
