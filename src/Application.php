@@ -82,7 +82,8 @@ class Application
                     Request::setInstance($request);
                     if (! empty($dispatch[1]['middleware'])){
                         foreach ($dispatch[1]['middleware'] as $middleware){
-                            $callMiddleware = call_user_func($middleware , 'handle');
+                            $middleware = new $middleware();
+                            $callMiddleware = call_user_func([$middleware , 'handle']);
                             if ($callMiddleware !== true){
                                 $connection->send($callMiddleware);
                                 return;
