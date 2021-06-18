@@ -1,5 +1,6 @@
 <?php
 
+use Tower\Cache;
 use Tower\Elastic;
 use Tower\Queue;
 use Tower\Request;
@@ -109,5 +110,12 @@ if (! function_exists('queue')) {
     function queue(string $queue , array $data , int $attempts = 5)
     {
         Queue::store($queue , $data , $attempts);
+    }
+}
+
+if (! function_exists('cache')) {
+    function cache(): Cache
+    {
+        return new Cache();
     }
 }
