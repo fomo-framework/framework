@@ -1,6 +1,7 @@
 <?php
 
 use Tower\Elastic;
+use Tower\Queue;
 use Tower\Request;
 use Tower\Authentication\Auth;
 use Tower\Response;
@@ -101,5 +102,12 @@ if (! function_exists('redis')) {
     function redis(): \Redis
     {
         return Redis::getInstance();
+    }
+}
+
+if (! function_exists('queue')) {
+    function queue(string $queue , array $data , int $attempts = 5)
+    {
+        Queue::store($queue , $data , $attempts);
     }
 }
