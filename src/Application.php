@@ -34,7 +34,7 @@ class Application
 
         Http::requestClass(Request::class);
 
-        $this->setElastic();
+        Elastic::setInstance();
         $this->setRedis();
 
         $this->setDatabase();
@@ -115,16 +115,6 @@ class Application
         try {
             Redis::setInstance();
         } catch (\RedisException $e)
-        {
-            $this->logStore($e->getMessage() , $e->getFile() , $e->getLine());
-        }
-    }
-
-    protected function setElastic(): void
-    {
-        try {
-            Elastic::setInstance();
-        } catch (ServerErrorResponseException $e)
         {
             $this->logStore($e->getMessage() , $e->getFile() , $e->getLine());
         }
