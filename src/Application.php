@@ -3,6 +3,7 @@
 namespace Tower;
 
 use Carbon\Carbon;
+use Elasticsearch\Common\Exceptions\ServerErrorResponseException;
 use FastRoute\Dispatcher;
 use App\Exceptions\MethodNotAllowedException;
 use App\Exceptions\NotFoundException;
@@ -18,27 +19,6 @@ class Application
 {
     protected ?Dispatcher $dispatcher = null;
 
-    protected function database(): void
-    {
-        $config = include configPath() . "database.php";
-
-        $capsule = new Capsule();
-
-        $capsule->addConnection($config['mysql']);
-
-        $capsule->setAsGlobal();
-
-        Paginator::currentPageResolver(function ($pageName = 'page')  {
-            $page = \request($pageName);
-
-            if (filter_var($page, FILTER_VALIDATE_INT) !== false && (int) $page >= 1) {
-                return (int) $page;
-            }
-
-            return 1;
-        });
-    }
-
     public function onWorkerStart(): void
     {
         $router = new Router();
@@ -53,10 +33,11 @@ class Application
         });
 
         Http::requestClass(Request::class);
-        Elastic::setInstance();
-        Redis::setInstance();
 
-        $this->database();
+        $this->setElastic();
+        $this->setRedis();
+
+        $this->setDatabase();
     }
 
     public function onMessage(TcpConnection $connection , Request $request): void
@@ -98,21 +79,68 @@ class Application
                     break;
             }
         } catch (Throwable $e) {
-            $log = fopen(storagePath() . "logs/tower.log", 'a');
-            fwrite($log,'time : ' . Carbon::now() . ' | ' .
-                'message : ' . $e->getMessage() . ' | ' .
-                'file : ' . $e->getFile() . ' | ' .
-                'line : ' . $e->getLine() .
-                PHP_EOL .
-                '<------------------------------------------------------------------------------>' .
-                PHP_EOL
-            );
-            fclose($log);
+                $this->logStore($e->getMessage() , $e->getFile() , $e->getLine());
+
             try{
                 throw new OnMessageException($e);
             }catch(OnMessageException $e){
                 $connection->send($e->handle());
             }
         }
+    }
+
+    protected function setDatabase(): void
+    {
+        $config = include configPath() . "database.php";
+
+        $capsule = new Capsule();
+
+        $capsule->addConnection($config['mysql']);
+
+        $capsule->setAsGlobal();
+
+        Paginator::currentPageResolver(function ($pageName = 'page')  {
+            $page = \request($pageName);
+
+            if (filter_var($page, FILTER_VALIDATE_INT) !== false && (int) $page >= 1) {
+                return (int) $page;
+            }
+
+            return 1;
+        });
+    }
+
+    protected function setRedis(): void
+    {
+        try {
+            Redis::setInstance();
+        } catch (\RedisException $e)
+        {
+            $this->logStore($e->getMessage() , $e->getFile() , $e->getLine());
+        }
+    }
+
+    protected function setElastic(): void
+    {
+        try {
+            Elastic::setInstance();
+        } catch (ServerErrorResponseException $e)
+        {
+            $this->logStore($e->getMessage() , $e->getFile() , $e->getLine());
+        }
+    }
+
+    protected function logStore(string $message , string $file , string $line): void
+    {
+        $log = fopen(storagePath() . "logs/tower.log", 'a');
+        fwrite($log,'time : ' . Carbon::now() . ' | ' .
+            'message : ' . $message . ' | ' .
+            'file : ' . $file . ' | ' .
+            'line : ' . $line .
+            PHP_EOL .
+            '<------------------------------------------------------------------------------>' .
+            PHP_EOL
+        );
+        fclose($log);
     }
 }
