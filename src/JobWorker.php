@@ -14,8 +14,6 @@ class JobWorker extends Kernel
         Redis::setInstance();
 
         $this->listen();
-
-        return;
     }
 
     protected function listen(): void
