@@ -42,8 +42,11 @@ class Router
             $this->currentGroupPrefix = $previousGroupPrefix . $parameters['prefix'];
 
         $previousGroupMiddleware = $this->currentGroupMiddleware;
-        if (isset($parameters['middleware']))
+        if (isset($parameters['middleware']) && is_array($parameters['middleware']))
             array_push($this->currentGroupMiddleware , ...$parameters['middleware']);
+
+        if (isset($parameters['middleware']) && is_string($parameters['middleware']))
+            array_push($this->currentGroupMiddleware , $parameters['middleware']);
 
         $callback($this);
 
@@ -55,9 +58,14 @@ class Router
     {
         $route = $this->currentGroupPrefix . $route;
 
-        if (! empty($this->currentGroupMiddleware))
-            $callback['middleware'] = $this->currentGroupMiddleware;
-        
+        if (isset($callback['middleware']) && is_array($callback['middleware']))
+            array_push($this->currentGroupMiddleware , ...$callback['middleware']);
+
+        if (isset($callback['middleware']) && is_string($callback['middleware']))
+            array_push($this->currentGroupMiddleware , $callback['middleware']);
+
+        $callback['middleware'] = $this->currentGroupMiddleware;
+
         $this->routes[$method][] = [$route , $callback];
     }
 
