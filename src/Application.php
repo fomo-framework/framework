@@ -17,7 +17,7 @@ use Illuminate\Pagination\Paginator;
 
 class Application
 {
-    protected ?Dispatcher $dispatcher = null;
+    protected Dispatcher $dispatcher;
 
     public function onWorkerStart(): void
     {
@@ -27,14 +27,14 @@ class Application
         });
 
         $this->dispatcher = \FastRoute\simpleDispatcher(function(RouteCollector $r) use ($router) {
-            foreach ($router->getRoutes() as $method => $callbacks)
-                foreach ($callbacks as $callback)
-                    $r->addRoute($method, $callback[0], $callback[1]);
+            foreach ($router->getRoutes() as $method => $callback)
+                $r->addRoute($method, $callback[0][0], $callback[0][1]);
         });
 
         Http::requestClass(Request::class);
 
         Elastic::setInstance();
+
         $this->setRedis();
 
         $this->setDatabase();
@@ -45,37 +45,36 @@ class Application
         try {
             $dispatch = $this->dispatcher->dispatch($request->method() , $request->path());
             switch ($dispatch[0]) {
-                case Dispatcher::NOT_FOUND:
+                case 0:
                     try{
                         throw new NotFoundException();
                     }catch(NotFoundException $e){
                         $connection->send($e->handle());
                     }
                     break;
-                case Dispatcher::METHOD_NOT_ALLOWED:
+                case 2:
                     try{
                         throw new MethodNotAllowedException($dispatch[1][0]);
                     }catch(MethodNotAllowedException $e){
                         $connection->send($e->handle());
                     }
                     break;
-                case Dispatcher::FOUND:
-                    Request::setInstance($request);
+                case 1:
                     if (! empty($dispatch[1]['middleware'])){
+                        Request::setVariables($dispatch[2]);
                         foreach ($dispatch[1]['middleware'] as $middleware){
-                            $middleware = new $middleware();
-                            $callMiddleware = call_user_func([$middleware , 'handle']);
-                            if ($callMiddleware !== true){
-                                $connection->send($callMiddleware);
+                            $call = call_user_func_array([new $middleware() , 'handle'] , [$request]);
+                            if ($call !== true){
+                                $connection->send($call);
                                 return;
                             }
                         }
                     }
-                    $controller = new $dispatch[1][0];
-                    $method = $dispatch[1][1];
 
-                    $call = call_user_func_array([$controller , $method] , $dispatch[2] ?? []);
-                    $connection->send($call);
+                    $class = new $dispatch[1][0]();
+                    $variables = array_values($dispatch[2]);
+
+                    $connection->send(call_user_func_array([$class , $dispatch[1][1]] , [$request , ...$variables]));
                     break;
             }
         } catch (Throwable $e) {
