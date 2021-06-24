@@ -17,7 +17,7 @@ class Request extends WorkerRequest
     {
         return self::$variables[$variable] ?? null;
     }
-    
+
     public function bearerToken(): string
     {
         $header = $this->header('Authorization', '');

@@ -4,17 +4,18 @@ namespace Tower\Authentication\Middleware;
 
 use Tower\DB;
 use Tower\Middleware\Contract;
+use Tower\Request;
 use Tower\Response;
 use Tower\Authentication\Auth as AuthParent;
 use App\Exceptions\AuthenticationException;
 
 class Auth implements Contract
 {
-    public function handle(): bool|Response
+    public function handle(Request $request): bool|Response
     {
-        if (bearerToken()){
+        if ($request->bearerToken()){
             $user = DB::table('access_tokens')
-                ->where('token' , hash('sha256' , bearerToken()))
+                ->where('token' , hash('sha256' , $request->bearerToken()))
                 ->join('users' , 'access_tokens.user_id' , '=' , 'users.id')->select('users.*')->first();
 
             if ($user){
