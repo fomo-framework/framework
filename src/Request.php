@@ -6,16 +6,23 @@ use \Workerman\Protocols\Http\Request as WorkerRequest;
 
 class Request extends WorkerRequest
 {
-    protected static Request $_instance;
+    protected static array $variables;
 
-    public static function getInstance(): Request
+    public static function setVariables(array $variables): void
     {
-        return self::$_instance;
+        self::$variables = $variables;
     }
 
-    public static function setInstance(Request $request): void
+    public function variable(string $variable): string|null
     {
-        self::$_instance = $request;
+        return self::$variables[$variable] ?? null;
+    }
+    
+    public function bearerToken(): string
+    {
+        $header = $this->header('Authorization', '');
+
+        return mb_substr($header, 7, null, 'UTF-8');
     }
 
     public function input(string $name, $default = null): mixed
