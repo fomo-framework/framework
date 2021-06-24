@@ -12,6 +12,6 @@ class Queue
             'attempts' => $attempts ,
         ];
 
-        Redis::getInstance()->rPush('towerQueue' , json_encode($queueData));
+        Redis::getInstance()->rPush(env('APP_NAME' , 'tower') . 'Queue' , json_encode($queueData));
     }
 }

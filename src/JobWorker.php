@@ -13,13 +13,15 @@ class JobWorker extends Kernel
     {
         Redis::setInstance();
 
-        return $this->listen();
+        $this->listen();
+
+        return;
     }
 
-    protected function listen()
+    protected function listen(): void
     {
         Timer::add(0.00001 ,  function (){
-            $queue = Redis::getInstance()->lPop('towerQueue');
+            $queue = Redis::getInstance()->lPop(env('APP_NAME' , 'tower') . 'Queue');
             if ($queue){
                 $data = json_decode($queue);
                 try {
