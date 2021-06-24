@@ -3,7 +3,6 @@
 use Tower\Cache;
 use Tower\Elastic;
 use Tower\Queue;
-use Tower\Request;
 use Tower\Authentication\Auth;
 use Tower\Response;
 use Elasticsearch\Client;
@@ -44,15 +43,6 @@ if (! function_exists('json')) {
             ['Content-Type' => 'application/json']
             , json_encode($data, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_IGNORE)
         );
-    }
-}
-
-if (! function_exists('bearerToken')) {
-    function bearerToken(): string
-    {
-        $header = Request::getInstance()->header('Authorization', '');
-
-        return mb_substr($header, 7, null, 'UTF-8');
     }
 }
 
