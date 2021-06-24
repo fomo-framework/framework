@@ -18,6 +18,7 @@ use Illuminate\Pagination\Paginator;
 class Application
 {
     protected Dispatcher $dispatcher;
+    protected Request $request;
 
     public function onWorkerStart(): void
     {
@@ -60,6 +61,7 @@ class Application
                     }
                     break;
                 case 1:
+                    $this->request = $request;
                     if (! empty($dispatch[1]['middleware'])){
                         Request::setVariables($dispatch[2]);
                         foreach ($dispatch[1]['middleware'] as $middleware){
@@ -78,8 +80,7 @@ class Application
                     break;
             }
         } catch (Throwable $e) {
-                $this->logStore($e->getMessage() , $e->getFile() , $e->getLine());
-
+            Log::critical('message: ' . $e->getMessage() . ' file: ' . $e->getFile() . ' line: ' . $e->getLine());
             try{
                 throw new OnMessageException($e);
             }catch(OnMessageException $e){
@@ -99,7 +100,7 @@ class Application
         $capsule->setAsGlobal();
 
         Paginator::currentPageResolver(function ($pageName = 'page')  {
-            $page = \request($pageName);
+            $page = $this->request->get($pageName);
 
             if (filter_var($page, FILTER_VALIDATE_INT) !== false && (int) $page >= 1) {
                 return (int) $page;
@@ -115,21 +116,7 @@ class Application
             Redis::setInstance();
         } catch (\RedisException $e)
         {
-            $this->logStore($e->getMessage() , $e->getFile() , $e->getLine());
+            Log::alert($e->getMessage());
         }
-    }
-
-    protected function logStore(string $message , string $file , string $line): void
-    {
-        $log = fopen(storagePath() . "logs/tower.log", 'a');
-        fwrite($log,'time : ' . Carbon::now() . ' | ' .
-            'message : ' . $message . ' | ' .
-            'file : ' . $file . ' | ' .
-            'line : ' . $line .
-            PHP_EOL .
-            '<------------------------------------------------------------------------------>' .
-            PHP_EOL
-        );
-        fclose($log);
     }
 }
