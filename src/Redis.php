@@ -26,6 +26,6 @@ class Redis
 
     public static function __callStatic(string $method, array $arguments)
     {
-        return self::getInstance()->$method(...$arguments);
+        return self::$_instance->$method(...$arguments);
     }
 }
