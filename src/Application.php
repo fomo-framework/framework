@@ -76,7 +76,7 @@ class Application
             }
 
         } catch (Throwable $e) {
-            Log::critical('message: ' . $e->getMessage() . ' file: ' . $e->getFile() . ' line: ' . $e->getLine());
+            (new Log())->critical('message: ' . $e->getMessage() . ' file: ' . $e->getFile() . ' line: ' . $e->getLine());
             try{
                 throw new OnMessageException($e);
             }catch(OnMessageException $e){
@@ -112,7 +112,7 @@ class Application
             Redis::setInstance();
         } catch (\RedisException $e)
         {
-            Log::alert($e->getMessage());
+            (new Log())->alert($e->getMessage());
         }
     }
 }
