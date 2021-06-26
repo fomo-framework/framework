@@ -13,7 +13,7 @@ class Elastic
     {
         $config = include configPath() . "elastic.php";
 
-        self::$_instance = ClientBuilder::create()
+        self::$_instance = (new ClientBuilder())
             ->setHosts($config)
             ->build();
     }
@@ -25,6 +25,6 @@ class Elastic
     
     public static function __callStatic(string $method, array $arguments)
     {
-        return self::getInstance()->$method(...$arguments);
+        return self::$_instance->$method(...$arguments);
     }
 }
