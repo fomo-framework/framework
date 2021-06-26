@@ -2,8 +2,6 @@
 
 namespace Tower;
 
-use Carbon\Carbon;
-use Elasticsearch\Common\Exceptions\ServerErrorResponseException;
 use FastRoute\Dispatcher;
 use App\Exceptions\MethodNotAllowedException;
 use App\Exceptions\NotFoundException;
@@ -45,40 +43,38 @@ class Application
     {
         try {
             $dispatch = $this->dispatcher->dispatch($request->method() , $request->path());
-            switch ($dispatch[0]) {
-                case 0:
-                    try{
-                        throw new NotFoundException();
-                    }catch(NotFoundException $e){
-                        $connection->send($e->handle());
-                    }
-                    break;
-                case 2:
-                    try{
-                        throw new MethodNotAllowedException($dispatch[1][0]);
-                    }catch(MethodNotAllowedException $e){
-                        $connection->send($e->handle());
-                    }
-                    break;
-                case 1:
-                    $this->request = $request;
-                    if (! empty($dispatch[1]['middleware'])){
-                        Request::setVariables($dispatch[2]);
-                        foreach ($dispatch[1]['middleware'] as $middleware){
-                            $call = call_user_func_array([new $middleware() , 'handle'] , [$request]);
-                            if ($call !== true){
-                                $connection->send($call);
-                                return;
-                            }
+
+            if ($dispatch[0] === 1){
+                $this->request = $request;
+                if (! empty($dispatch[1]['middleware'])){
+                    Request::setVariables($dispatch[2]);
+                    foreach ($dispatch[1]['middleware'] as $middleware){
+                        $call = call_user_func_array([new $middleware() , 'handle'] , [$request]);
+                        if ($call !== true){
+                            $connection->send($call);
+                            return;
                         }
                     }
+                }
 
-                    $class = new $dispatch[1][0]();
-                    $variables = array_values($dispatch[2]);
+                $class = new $dispatch[1][0]();
+                $variables = array_values($dispatch[2]);
 
-                    $connection->send(call_user_func_array([$class , $dispatch[1][1]] , [$request , ...$variables]));
-                    break;
+                $connection->send(call_user_func_array([$class , $dispatch[1][1]] , [$request , ...$variables]));
+            } elseif ($dispatch[0] === 0){
+                try{
+                    throw new NotFoundException();
+                }catch(NotFoundException $e){
+                    $connection->send($e->handle());
+                }
+            } elseif ($dispatch[0] === 2){
+                try{
+                    throw new MethodNotAllowedException($dispatch[1][0]);
+                }catch(MethodNotAllowedException $e){
+                    $connection->send($e->handle());
+                }
             }
+
         } catch (Throwable $e) {
             Log::critical('message: ' . $e->getMessage() . ' file: ' . $e->getFile() . ' line: ' . $e->getLine());
             try{
