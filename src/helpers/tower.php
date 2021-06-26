@@ -92,7 +92,7 @@ if (! function_exists('redis')) {
 if (! function_exists('queue')) {
     function queue(string $queue , array $data , int $attempts = 5)
     {
-        Queue::store($queue , $data , $attempts);
+        (new Queue())->store($queue , $data , $attempts);
     }
 }
 
