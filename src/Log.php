@@ -2,28 +2,119 @@
 
 namespace Tower;
 
-use Tower\Log\Logger;
-
-/**
- * Class Log
- * @package Logger
- *
- * @method static Logger channel(string $name)
- * @method static void alert(string $message, array $content = null)
- * @method static void critical(string $message, array $content = null)
- * @method static void debug(string $message, array $content = null)
- * @method static void emergency(string $message, array $content = null)
- * @method static void error(string $message, array $content = null)
- * @method static void info(string $message, array $content = null)
- * @method static void log($level, string $message, array $content = null)
- * @method static void notice(string $message, array $content = null)
- * @method static void warning(string $message, array $content = null)
- */
+use Carbon\Carbon;
 
 class Log
 {
-    public static function __callStatic(string $method, array $arguments)
+    protected string $channel = 'tower';
+    protected string $message;
+    protected ?array $content;
+    protected string $type;
+
+    public function channel(string $name): self
     {
-        return (new Logger())->$method(...$arguments);
+        $this->channel = $name;
+
+        return $this;
+    }
+
+    public function info(string $message , array $content = null): void
+    {
+        $this->message = $message;
+        $this->content = $content;
+        $this->type = 'INFO';
+
+        $this->storeLog();
+    }
+
+    public function alert(string $message , array $content = null): void
+    {
+        $this->message = $message;
+        $this->content = $content;
+        $this->type = 'ALERT';
+
+        $this->storeLog();
+    }
+
+    public function critical(string $message , array $content = null): void
+    {
+        $this->message = $message;
+        $this->content = $content;
+        $this->type = 'CRITICAL';
+
+        $this->storeLog();
+    }
+
+    public function debug(string $message , array $content = null): void
+    {
+        $this->message = $message;
+        $this->content = $content;
+        $this->type = 'DEBUG';
+
+        $this->storeLog();
+    }
+
+    public function emergency(string $message , array $content = null): void
+    {
+        $this->message = $message;
+        $this->content = $content;
+        $this->type = 'EMERGENCY';
+
+        $this->storeLog();
+    }
+
+    public function error(string $message , array $content = null): void
+    {
+        $this->message = $message;
+        $this->content = $content;
+        $this->type = 'ERROR';
+
+        $this->storeLog();
+    }
+
+    public function log(string $message , array $content = null): void
+    {
+        $this->message = $message;
+        $this->content = $content;
+        $this->type = 'LOG';
+
+        $this->storeLog();
+    }
+
+    public function notice(string $message , array $content = null): void
+    {
+        $this->message = $message;
+        $this->content = $content;
+        $this->type = 'NOTICE';
+
+        $this->storeLog();
+    }
+
+    public function warning(string $message , array $content = null): void
+    {
+        $this->message = $message;
+        $this->content = $content;
+        $this->type = 'WARNING';
+
+        $this->storeLog();
+    }
+
+    protected function storeLog(): void
+    {
+        $time = Carbon::now()->format('Y-m-d H:i:s');
+        $env = env('APP_ENV' , 'local');
+        $log = fopen(storagePath() . "logs/$this->channel.log", 'a');
+
+        if (is_null($this->content))
+            $content = null;
+        else
+            $content = implode(" " , $this->content);
+
+        if (is_null($content))
+            fwrite($log , "[$time] $env.$this->type: $this->message" . PHP_EOL);
+        else
+            fwrite($log , "[$time] $env.$this->type: $this->message [$content]" . PHP_EOL);
+
+        fclose($log);
     }
 }
