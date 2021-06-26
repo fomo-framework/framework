@@ -35,7 +35,7 @@ class JobWorker extends Kernel
                         {
                             $e->handle();
                         }
-                        Queue::store($data->queue , (array) $data->data , $data->attempts - 1);
+                        (new Queue())->store($data->queue , (array) $data->data , $data->attempts - 1);
                     }else {
                         try {
                             throw new QueueException('failed' , $data->queue , (array) $data->data , $e->getMessage() , $e->getFile() , $e->getLine());
