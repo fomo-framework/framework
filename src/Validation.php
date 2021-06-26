@@ -13,9 +13,9 @@ class Validation
     protected array $messages = [];
     protected Request $request;
 
-    public function __construct(array $rules)
+    public function __construct(Request $request , array $rules)
     {
-        $this->request = Request::getInstance();
+        $this->request = $request;
         $this->rules = $rules;
         $this->errorDefaultMessage = include configPath() . "errors.php";
         $this->validate();
