@@ -4,7 +4,7 @@ namespace Tower;
 
 class Queue
 {
-    public static function store(string $queue , array $data , int $attempts = 5): void
+    public function store(string $queue , array $data , int $attempts = 5): void
     {
         $queueData = [
             'queue' => $queue ,
