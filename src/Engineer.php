@@ -78,7 +78,7 @@ class Engineer
 
     protected function commands(): void
     {
-        echo Color::LIGHT_WHITE . 'tower framework ' . Color::LIGHT_BLUE . '1.0.0' . Color::RESET . PHP_EOL . PHP_EOL;
+        echo Color::LIGHT_WHITE . 'tower framework ' . Color::LIGHT_BLUE . Application::VERSION . Color::RESET . PHP_EOL . PHP_EOL;
         echo Color::GREEN . 'Hello
 I am the engineer of your tower and I am ready to help you
 What did he do to me?' . Color::RESET . PHP_EOL . PHP_EOL;
