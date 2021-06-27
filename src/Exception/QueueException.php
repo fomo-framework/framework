@@ -2,9 +2,10 @@
 
 namespace Tower\Exception;
 
-use Carbon\Carbon;
+use Exception;
+use Tower\Log;
 
-class QueueException extends \Exception
+class QueueException extends Exception
 {
     protected string $type;
     protected string $queue;
@@ -22,18 +23,11 @@ class QueueException extends \Exception
 
     public function handle()
     {
-        $log = fopen(storagePath() . "logs/queue.log", 'a');
-        fwrite($log, $this->type . ' | ' .
-            'queue : ' . $this->queue .' | ' .
-            'data : ' . json_encode($this->data) . ' | ' .
-            'time : ' . Carbon::now() . ' | ' .
-            'message : ' . $this->getMessage() . ' | ' .
-            'file : ' . $this->getFile() . ' | ' .
-            'line : ' . $this->getLine() .
-            PHP_EOL .
-            '<------------------------------------------------------------------------------>' .
-            PHP_EOL
-        );
-        fclose($log);
+        $data = json_encode($this->data);
+        $message = $this->getMessage();
+        $file = $this->getFile();
+        $line = $this->getLine();
+
+        (new Log())->channel('queue')->critical("type[$this->type] queue[$this->queue] data[$data] message[$message] file[$file] line[$line]" , $this->data);
     }
 }
