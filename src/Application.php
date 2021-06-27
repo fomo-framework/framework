@@ -15,7 +15,6 @@ use Illuminate\Pagination\Paginator;
 
 class Application
 {
-    const VERSION = '2.13.0';
     protected Dispatcher $dispatcher;
     protected Request $request;
 

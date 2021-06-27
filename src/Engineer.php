@@ -6,6 +6,13 @@ use Tower\Console\Color;
 
 class Engineer
 {
+    protected string $version;
+
+    public function __construct(string $version)
+    {
+        $this->version = $version;
+    }
+
     protected array $commands = [
         'build' => [
             'controller' ,
@@ -78,7 +85,7 @@ class Engineer
 
     protected function commands(): void
     {
-        echo Color::LIGHT_WHITE . 'tower framework ' . Color::LIGHT_BLUE . Application::VERSION . Color::RESET . PHP_EOL . PHP_EOL;
+        echo Color::LIGHT_WHITE . 'tower framework ' . Color::LIGHT_BLUE . $this->version . Color::RESET . PHP_EOL . PHP_EOL;
         echo Color::GREEN . 'Hello
 I am the engineer of your tower and I am ready to help you
 What did he do to me?' . Color::RESET . PHP_EOL . PHP_EOL;
