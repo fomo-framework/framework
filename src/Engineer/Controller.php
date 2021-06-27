@@ -24,6 +24,9 @@ class Controller
 
     protected function advanced(array $arguments , array $namespace): void
     {
+        if (! is_dir(appPath() . "Controllers"))
+            mkdir(appPath() . "Controllers");
+
         $checkExist = implode('\\' , $namespace);
 
         if (class_exists('App\Controllers\\' . $checkExist)){
