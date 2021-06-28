@@ -26,8 +26,9 @@ class Application
         });
 
         $this->dispatcher = \FastRoute\simpleDispatcher(function(RouteCollector $r) use ($router) {
-            foreach ($router->getRoutes() as $method => $callback)
-                $r->addRoute($method, $callback[0][0], $callback[0][1]);
+            foreach ($router->getRoutes() as $method => $callbacks)
+                foreach ($callbacks as $callback)
+                    $r->addRoute($method, $callback[0], $callback[1]);
         });
 
         Http::requestClass(Request::class);
