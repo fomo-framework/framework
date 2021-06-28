@@ -13,7 +13,7 @@ class Exception
             return;
         }
 
-        $code = "<?php\n\nnamespace App\Exceptions;\n\nclass $namespace extends \Exception\n{\n\t//\n}";
+        $code = "<?php\n\nnamespace App\Exceptions;\n\nuse Exception;\n\nclass $namespace extends Exception\n{\n\t//\n}";
         $build = fopen(appPath() . "Exceptions/$arguments[2].php", 'a');
 
         fwrite($build , $code);
@@ -39,7 +39,7 @@ class Exception
         if (! is_dir(appPath() . "Exceptions/$directory"))
             mkdir(appPath() . "Exceptions/$directory/" , 0777, true);
 
-        $code = "<?php\n\nnamespace App\Exceptions\\$namespace;\n\nclass $className extends \Exception\n{\n\t//\n}";
+        $code = "<?php\n\nnamespace App\Exceptions\\$namespace;\n\nuse Exception;\n\nclass $className extends Exception\n{\n\t//\n}";
         $build = fopen(appPath() . "Exceptions/$arguments[2].php", 'a');
         fwrite($build , $code);
         fclose($build);
