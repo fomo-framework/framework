@@ -2,6 +2,8 @@
 
 namespace Tower;
 
+use Closure;
+
 class Router
 {
     protected array $routes = [];
@@ -35,11 +37,21 @@ class Router
         $this->addRoute('DELETE' , $route , $callback);
     }
 
-    public function group(array $parameters, \Closure $callback): void
+    public function group(array $parameters, Closure $callback): void
     {
         $previousGroupPrefix = $this->currentGroupPrefix;
-        if (isset($parameters['prefix']))
-            $this->currentGroupPrefix = $previousGroupPrefix . $parameters['prefix'];
+        if (isset($parameters['prefix'])){
+            $groupLastChar = substr($parameters['prefix'] , 0 , 1);
+            if (strcmp($groupLastChar , '/') === 0){
+                $parameters['prefix'] = substr($parameters['prefix'] , 1);
+            }
+
+            $prefixLastChar = substr($this->currentGroupPrefix , -1);
+            if (strcmp($prefixLastChar , '/') === 0)
+                $this->currentGroupPrefix = $previousGroupPrefix . $parameters['prefix'];
+            else
+                $this->currentGroupPrefix = $previousGroupPrefix . '/' . $parameters['prefix'];
+        }
 
         $previousGroupMiddleware = $this->currentGroupMiddleware;
         if (isset($parameters['middleware']) && is_array($parameters['middleware']))
@@ -56,7 +68,15 @@ class Router
 
     protected function addRoute(string $method , string $route , array $callback): void
     {
-        $route = $this->currentGroupPrefix . $route;
+        $firstChar = substr($route , 0 , 1);
+        if (strcmp($firstChar , '/') === 0)
+            $route = substr($route , 1);
+
+        $lastChar = substr($this->currentGroupPrefix , -1);
+        if (strcmp($lastChar , '/') === 0)
+            $route = $this->currentGroupPrefix . $route;
+        else
+            $route = $this->currentGroupPrefix . '/' . $route;
 
         if (isset($callback['middleware']) && is_array($callback['middleware']))
             array_push($this->currentGroupMiddleware , ...$callback['middleware']);
