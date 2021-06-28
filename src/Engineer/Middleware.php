@@ -35,8 +35,9 @@ class Middleware
         array_pop($namespace);
         $namespace = implode('\\' , $namespace);
 
-        if (! is_dir(appPath() . "Middlewares/" . $namespace))
-            mkdir(appPath() . "Middlewares/" . $namespace);
+        $directory = str_replace('\\' , '/' , $namespace);
+        if (! is_dir(appPath() . "Middlewares/$directory"))
+            mkdir(appPath() . "Middlewares/$directory/" , 0777, true);
 
         $code = "<?php\n\nnamespace App\Middlewares\\$namespace;\n\nuse Tower\Request;\nuse Tower\Response;\n\nclass $className\n{\n\tpublic function handle(Request " . '$request' . "): bool|Response\n\t{\n\t\treturn true;\n\t}\n}";
         $build = fopen(appPath() . "Middlewares/$arguments[2].php", 'a');

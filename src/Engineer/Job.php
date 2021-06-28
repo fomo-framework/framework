@@ -51,8 +51,9 @@ class Job
         array_pop($namespace);
         $namespace = implode('\\' , $namespace);
 
-        if (! is_dir(appPath() . "Jobs/Dispatching/" . $namespace))
-            mkdir(appPath() . "Jobs/Dispatching/" . $namespace);
+        $directory = str_replace('\\' , '/' , $namespace);
+        if (! is_dir(appPath() . "Jobs/Dispatching/$directory"))
+            mkdir(appPath() . "Jobs/Dispatching/$directory/" , 0777, true);
 
         $code = "<?php\n\nnamespace App\Jobs\Dispatching\\$namespace;\n\nuse stdClass;\n\nclass $className\n{\n\tpublic function handle(stdClass " . '$data' . "): void\n\t{\n\t\t//\n\t}\n}";
         $build = fopen(appPath() . "Jobs/Dispatching/$arguments[2].php", 'a');

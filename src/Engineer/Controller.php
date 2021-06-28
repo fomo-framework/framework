@@ -24,9 +24,6 @@ class Controller
 
     protected function advanced(array $arguments , array $namespace): void
     {
-        if (! is_dir(appPath() . "Controllers"))
-            mkdir(appPath() . "Controllers");
-
         $checkExist = implode('\\' , $namespace);
 
         if (class_exists('App\Controllers\\' . $checkExist)){
@@ -39,8 +36,9 @@ class Controller
         array_pop($namespace);
         $namespace = implode('\\' , $namespace);
 
-        if (! is_dir(appPath() . "Controllers/" . $namespace))
-            mkdir(appPath() . "Controllers/" . $namespace);
+        $directory = str_replace('\\' , '/' , $namespace);
+        if (! is_dir(appPath() . "Controllers/$directory"))
+            mkdir(appPath() . "Controllers/$directory/" , 0777, true);
 
         $code = "<?php \n\nnamespace App\Controllers\\$namespace;\n\nuse App\Controllers\Controller;\n\nclass $className extends Controller\n{\n\t//\n}";
 
@@ -53,6 +51,9 @@ class Controller
 
     public function build(array $arguments): void
     {
+        if (! is_dir(appPath() . "Controllers"))
+            mkdir(appPath() . "Controllers");
+
         $namespace = explode('/' , $arguments[2]);
 
         if (count($namespace) == 1){

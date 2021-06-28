@@ -35,8 +35,9 @@ class Exception
         array_pop($namespace);
         $namespace = implode('\\' , $namespace);
 
-        if (! is_dir(appPath() . "Exceptions/" . $namespace))
-            mkdir(appPath() . "Exceptions/" . $namespace);
+        $directory = str_replace('\\' , '/' , $namespace);
+        if (! is_dir(appPath() . "Exceptions/$directory"))
+            mkdir(appPath() . "Exceptions/$directory/" , 0777, true);
 
         $code = "<?php\n\nnamespace App\Exceptions\\$namespace;\n\nclass $className extends \Exception\n{\n\t//\n}";
         $build = fopen(appPath() . "Exceptions/$arguments[2].php", 'a');

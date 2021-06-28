@@ -35,8 +35,9 @@ class Resource
         array_pop($namespace);
         $namespace = implode('\\' , $namespace);
 
-        if (! is_dir(appPath() . "Resources/" . $namespace))
-            mkdir(appPath() . "Resources/" . $namespace);
+        $directory = str_replace('\\' , '/' , $namespace);
+        if (! is_dir(appPath() . "Resources/$directory"))
+            mkdir(appPath() . "Resources/$directory/" , 0777, true);
 
         $code = "<?php\n\nnamespace App\Resources\\$namespace;\n\nuse Tower\JsonResource;\n\nclass $className extends JsonResource\n{\n\tprotected function toArray(" . '$request' . ")\n\t{\n\t\treturn " . '$request' . ";\n\t}\n}";
         $build = fopen(appPath() . "Resources/$arguments[2].php", 'a');
