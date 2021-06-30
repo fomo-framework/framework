@@ -4,7 +4,7 @@ namespace Tower;
 
 use Tower\Crontab\Crontab;
 use Tower\Scheduling\Kernel as SchedulingKernel;
-use \App\Tasks\Kernel as TasksKernel;
+use \App\Scheduling\Kernel as TasksKernel;
 
 class SchedulingWorker
 {
