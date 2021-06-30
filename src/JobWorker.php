@@ -28,20 +28,29 @@ class JobWorker extends Kernel
                         call_user_func_array([$class , 'handle'] , [$data->data]);
                 }catch (Throwable $e)
                 {
+                    $class = new $this->jobs[$data->queue]();
                     if ($data->attempts > 1){
-                        try {
-                            throw new QueueException('retry' , $data->queue , (array) $data->data , $e->getMessage() , $e->getFile() , $e->getLine());
-                        }catch (QueueException $e)
-                        {
-                            $e->handle();
+                        if (method_exists($class ,'retry')){
+                            call_user_func_array([$class , 'retry'] , [$data->data , $data->attempts]);
+                        }else{
+                            try {
+                                throw new QueueException('retry' , $data->queue , (array) $data->data , $e->getMessage() , $e->getFile() , $e->getLine());
+                            }catch (QueueException $e)
+                            {
+                                $e->handle();
+                            }
+                            (new Queue())->store($data->queue , (array) $data->data , $data->attempts - 1);
                         }
-                        (new Queue())->store($data->queue , (array) $data->data , $data->attempts - 1);
                     }else {
-                        try {
-                            throw new QueueException('failed' , $data->queue , (array) $data->data , $e->getMessage() , $e->getFile() , $e->getLine());
-                        }catch (QueueException $e)
-                        {
-                            $e->handle();
+                        if (method_exists($class ,'failed')){
+                            call_user_func_array([$class , 'failed'] , [$data->data]);
+                        }else{
+                            try {
+                                throw new QueueException('failed' , $data->queue , (array) $data->data , $e->getMessage() , $e->getFile() , $e->getLine());
+                            }catch (QueueException $e)
+                            {
+                                $e->handle();
+                            }
                         }
                     }
                 }
