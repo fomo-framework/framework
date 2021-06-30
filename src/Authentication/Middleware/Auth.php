@@ -3,13 +3,12 @@
 namespace Tower\Authentication\Middleware;
 
 use Tower\DB;
-use Tower\Middleware\Contract;
 use Tower\Request;
 use Tower\Response;
 use Tower\Authentication\Auth as AuthParent;
 use App\Exceptions\AuthenticationException;
 
-class Auth implements Contract
+class Auth
 {
     public function handle(Request $request): bool|Response
     {
