@@ -104,7 +104,7 @@ if (! function_exists('cache')) {
 }
 
 if (!function_exists('env')) {
-    function env($key, $default = null)
+    function env($key, $default = null): string|bool|null
     {
         $value = getenv($key);
 
