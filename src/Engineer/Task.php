@@ -12,7 +12,7 @@ class Task
             mkdir(appPath() . "Scheduling");
 
         if (! class_exists('App\Scheduling\Kernel')){
-            $code = "<?php\n\nnamespace App\Scheduling;\n\nuse Tower\Scheduler;\n\nclass Kernel\n{\n\tpublic function " . 'tasks()' . "\n\t{\n//        (new Scheduler())->call(Task::class)->everyMinutes();\n\t}\n}";
+            $code = "<?php\n\nnamespace App\Scheduling;\n\nuse Tower\Scheduling\Scheduler;\n\nclass Kernel\n{\n\tpublic function " . 'tasks()' . "\n\t{\n//        (new Scheduler())->call(Task::class)->everyMinutes();\n\t}\n}";
             $build = fopen(appPath() . "Scheduling/Kernel.php", 'a');
             fwrite($build , $code);
             fclose($build);
