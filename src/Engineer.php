@@ -20,6 +20,7 @@ class Engineer
             'middleware' ,
             'job' ,
             'exception' ,
+            'task' ,
         ]
     ];
 
@@ -30,6 +31,7 @@ class Engineer
             'middleware' => 'create a new middleware class' ,
             'job' => 'create a new job class' ,
             'exception' => 'create a new exception class' ,
+            'task' => 'create a new task class' ,
         ]
     ];
 
