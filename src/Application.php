@@ -79,7 +79,7 @@ class Application
         } catch (Throwable $e) {
             (new Log())->critical('message: ' . $e->getMessage() . ' file: ' . $e->getFile() . ' line: ' . $e->getLine());
             try{
-                throw new OnMessageException();
+                throw new OnMessageException($e->getMessage() , $e->getFile() , $e->getLine());
             }catch(OnMessageException $e){
                 $connection->send($e->handle());
             }
