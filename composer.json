@@ -17,7 +17,8 @@
         "illuminate/pagination": "^8.40",
         "symfony/polyfill-ctype": "^1.8",
         "elasticsearch/elasticsearch": "^7.0",
-        "vlucas/phpdotenv": "^5.3"
+        "vlucas/phpdotenv": "^5.3",
+        "ext-redis": "*"
     } ,
     "autoload": {
         "psr-4": {
