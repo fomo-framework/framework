@@ -142,18 +142,22 @@ trait Rules
 
     protected function exists(array $parameters): void
     {
-        $check = $this->checkDB($parameters);
+        if ($this->request->input($parameters['ruleName'])){
+            $check = $this->checkDB($parameters);
 
-        if ($this->request->input($parameters['ruleName'])  && ! $check)
-            array_push($this->messages , $parameters['message']);
+            if (! $check)
+                array_push($this->messages , $parameters['message']);
+        }
     }
 
     protected function unique(array $parameters): void
     {
-        $check = $this->checkDB($parameters);
+        if ($this->request->input($parameters['ruleName'])){
+            $check = $this->checkDB($parameters);
 
-        if ($this->request->input($parameters['ruleName'])  && $check)
-            array_push($this->messages , $parameters['message']);
+            if ($this->request->input($parameters['ruleName'])  && $check)
+                array_push($this->messages , $parameters['message']);
+        }
     }
 
 
