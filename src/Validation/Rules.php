@@ -155,7 +155,7 @@ trait Rules
         if ($this->request->input($parameters['ruleName'])){
             $check = $this->checkDB($parameters);
 
-            if ($this->request->input($parameters['ruleName'])  && $check)
+            if ($check)
                 array_push($this->messages , $parameters['message']);
         }
     }
