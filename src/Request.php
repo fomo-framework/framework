@@ -63,11 +63,23 @@ class Request extends WorkerRequest
 
     public function url(): string
     {
-        return '//' . $this->host() . $this->path();
+        if (env("APP_SSL", false) == true) {
+            $protocol = 'https://';
+        } else {
+            $protocol = 'http://';
+        }
+
+        return $protocol . $this->host() . $this->path();
     }
 
     public function fullUrl(): string
     {
-        return '//' . $this->host() . $this->uri();
+        if (env("APP_SSL", false) == true) {
+            $protocol = 'https://';
+        } else {
+            $protocol = 'http://';
+        }
+
+        return $protocol . $this->host() . $this->uri();
     }
 }
