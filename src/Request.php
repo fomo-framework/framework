@@ -7,6 +7,18 @@ use \Workerman\Protocols\Http\Request as WorkerRequest;
 class Request extends WorkerRequest
 {
     protected static array $variables;
+    protected static string $localAddress;
+    protected static string $remoteAddress;
+
+    public static function setLocalAddress(string $localAddress): void
+    {
+        self::$localAddress = $localAddress;
+    }
+
+    public static function setRemoteAddress(string $remoteAddress): void
+    {
+        self::$remoteAddress = $remoteAddress;
+    }
 
     public static function setVariables(array $variables): void
     {
@@ -81,5 +93,40 @@ class Request extends WorkerRequest
         }
 
         return $protocol . $this->host() . $this->uri();
+    }
+
+    public function remoteIp(): string
+    {
+        $ip = explode(self::$remoteAddress , ':');
+
+        return $ip[0];
+    }
+
+    public function remotePort(): string
+    {
+        $ip = explode(self::$remoteAddress , ':');
+
+        return $ip[1];
+    }
+
+    public function localIp(): string
+    {
+        $ip = explode(self::$localAddress , ':');
+
+        return $ip[0];
+    }
+
+    public function localPort(): string
+    {
+        $ip = explode(self::$localAddress , ':');
+
+        return $ip[1];
+    }
+
+    public function realIp(): ?string
+    {
+        return $this->header('client-ip', $this->header('x-forwarded-for',
+            $this->header('x-real-ip', $this->header('x-client-ip',
+                $this->header('via', $this->remoteIp())))));
     }
 }

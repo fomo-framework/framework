@@ -46,6 +46,8 @@ class Application
             $dispatch = $this->dispatcher->dispatch($request->method() , $request->path());
 
             if ($dispatch[0] === 1){
+                Request::setRemoteAddress($connection->getRemoteAddress());
+                Request::setLocalAddress($connection->getLocalAddress());
                 $this->request = $request;
                 if (! empty($dispatch[1]['middleware'])){
                     Request::setVariables($dispatch[2]);
