@@ -75,7 +75,7 @@ class Request extends WorkerRequest
 
     public function url(): string
     {
-        if (env("APP_SSL", false) == true) {
+        if (env('APP_SSL' , false) == true) {
             $protocol = 'https://';
         } else {
             $protocol = 'http://';
@@ -86,7 +86,7 @@ class Request extends WorkerRequest
 
     public function fullUrl(): string
     {
-        if (env("APP_SSL", false) == true) {
+        if (env('APP_SSL' , false) == true) {
             $protocol = 'https://';
         } else {
             $protocol = 'http://';
@@ -95,35 +95,45 @@ class Request extends WorkerRequest
         return $protocol . $this->host() . $this->uri();
     }
 
+    public function remoteAddress(): string
+    {
+        return self::$remoteAddress;
+    }
+
     public function remoteIp(): string
     {
-        $ip = explode(self::$remoteAddress , ':');
+        $ip = explode(':' , self::$remoteAddress);
 
         return $ip[0];
     }
 
-    public function remotePort(): string
+    public function remotePort(): int
     {
-        $ip = explode(self::$remoteAddress , ':');
+        $ip = explode(':' , self::$remoteAddress);
 
-        return $ip[1];
+        return (int) $ip[1];
+    }
+
+    public function localAddress(): string
+    {
+        return self::$localAddress;
     }
 
     public function localIp(): string
     {
-        $ip = explode(self::$localAddress , ':');
+        $ip = explode(':' , self::$localAddress);
 
         return $ip[0];
     }
 
-    public function localPort(): string
+    public function localPort(): int
     {
-        $ip = explode(self::$localAddress , ':');
+        $ip = explode(':' , self::$localAddress);
 
-        return $ip[1];
+        return (int) $ip[1];
     }
 
-    public function realIp(): ?string
+    public function ip(): ?string
     {
         return $this->header('client-ip', $this->header('x-forwarded-for',
             $this->header('x-real-ip', $this->header('x-client-ip',
