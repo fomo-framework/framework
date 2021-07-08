@@ -25,10 +25,15 @@ class JsonResource
         $this->perPage = $perPage;
     }
 
-    public function reletional(): array
+    public function dontJson(): array|null
     {
-        $this->process();
+        if (is_null($this->data))
+            return null;
 
+        if ($this->data instanceof stdClass)
+            return $this->toArray($this->data);
+
+        $this->process();
         return $this->response;
     }
 
