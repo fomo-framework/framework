@@ -1,21 +1,20 @@
 <?php
 
-namespace Tower\Controller;
+namespace Tower;
 
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
-use Tower\DB;
 
-trait Relationships
+class Relationships
 {
-    private array $columns = ['*'];
-    private array $orderBy = [];
-    private array $withPivot = [];
-    private string $identity = 'id';
-    private ?int $limit = null;
+    public array $columns = ['*'];
+    public array $orderBy = [];
+    public array $withPivot = [];
+    public string $identity = 'id';
+    public ?int $limit = null;
 
-    protected function select(array $columns): self
+    public function select(array $columns): self
     {
         if (in_array('*' , $this->columns))
             unset($this->columns[0]);
@@ -25,35 +24,35 @@ trait Relationships
         return $this;
     }
 
-    protected function identity(string $identity): self
+    public function identity(string $identity): self
     {
         $this->identity = $identity;
 
         return $this;
     }
 
-    protected function limit(int $limit): self
+    public function limit(int $limit): self
     {
         $this->limit = $limit;
 
         return $this;
     }
 
-    protected function withPivot(array $columns): self
+    public function withPivot(array $columns): self
     {
         $this->withPivot = array_merge($this->withPivot , $columns);
 
         return $this;
     }
 
-    protected function withTimestamp(): self
+    public function withTimestamp(): self
     {
         $this->withPivot = array_merge($this->withPivot , ['created_at' , 'updated_at']);
 
         return $this;
     }
 
-    protected function orderBy(string $column , string $direction = 'desc'): self
+    public function orderBy(string $column , string $direction = 'desc'): self
     {
         $this->orderBy[0] = $column;
         $this->orderBy[1] = $direction;
@@ -61,7 +60,7 @@ trait Relationships
         return $this;
     }
 
-    protected function hasOne(Collection|Paginator $data , string $table , string $foreignKey, string $localKey = null): void
+    public function hasOne(Collection|Paginator $data , string $table , string $foreignKey, string $localKey = null): void
     {
         if (! in_array('*' , $this->columns) && ! in_array($foreignKey , $this->columns))
             $this->select([$foreignKey]);
@@ -77,7 +76,7 @@ trait Relationships
         });
     }
 
-    protected function  hasMany(Collection|Paginator $data , string $table , string $foreignKey, string $localKey = null): void
+    public function  hasMany(Collection|Paginator $data , string $table , string $foreignKey, string $localKey = null): void
     {
         if (! in_array('*' , $this->columns) && ! in_array($foreignKey , $this->columns))
             $this->select([$foreignKey]);
@@ -99,7 +98,7 @@ trait Relationships
             });
     }
 
-    protected function throughOne(Collection|Paginator $data , string $interfaceTable , string $table, string $foreignKey, string $localKey): void
+    public function throughOne(Collection|Paginator $data , string $interfaceTable , string $table, string $foreignKey, string $localKey): void
     {
         $relationships = $this->setThrough($data , $interfaceTable , $table , $foreignKey , $localKey);
 
@@ -109,7 +108,7 @@ trait Relationships
         });
     }
 
-    protected function throughManyToMany(Collection|Paginator $data , string $interfaceTable , string $table, string $foreignKey, string $localKey): void
+    public function throughManyToMany(Collection|Paginator $data , string $interfaceTable , string $table, string $foreignKey, string $localKey): void
     {
         $relationships = $this->setThrough($data , $interfaceTable , $table , $foreignKey , $localKey);
 
@@ -125,7 +124,7 @@ trait Relationships
             });
     }
 
-    protected function polymorphicHasOne(Collection|Paginator $data , string $table , string $type , string $typeName = null , string $idName = null , string $localKey = null): void
+    public function polymorphicHasOne(Collection|Paginator $data , string $table , string $type , string $typeName = null , string $idName = null , string $localKey = null): void
     {
         $polymorphic = $this->setPolymorphic($data , $table , $type , $typeName , $idName , $localKey);
 
@@ -139,7 +138,7 @@ trait Relationships
         });
     }
 
-    protected function polymorphicManyToMany(Collection|Paginator $data , string $table , string $type , string $typeName = null , string $idName = null , string $localKey = null): void
+    public function polymorphicManyToMany(Collection|Paginator $data , string $table , string $type , string $typeName = null , string $idName = null , string $localKey = null): void
     {
         $polymorphic = $this->setPolymorphic($data , $table , $type , $typeName , $idName , $localKey);
 
@@ -159,7 +158,7 @@ trait Relationships
             });
     }
 
-    private function setPolymorphic(Collection|Paginator $data , string $table , string $type , string $typeName = null , string $idName = null , string $localKey = null): array
+    public function setPolymorphic(Collection|Paginator $data , string $table , string $type , string $typeName = null , string $idName = null , string $localKey = null): array
     {
         $filedName = Str::singular($table) . 'able_';
         $typeName = $typeName ? $filedName . $typeName : $filedName . 'type';
@@ -183,7 +182,7 @@ trait Relationships
         return [$relationships , $idName , $localKey];
     }
 
-    private function setThrough(Collection|Paginator $data , string $interfaceTable , string $table, string $foreignKey, string $localKey): Collection
+    public function setThrough(Collection|Paginator $data , string $interfaceTable , string $table, string $foreignKey, string $localKey): Collection
     {
         $this->withPivot([$localKey]);
 
@@ -214,7 +213,7 @@ trait Relationships
         return $relationships;
     }
 
-    private function setHasRelationships(Collection|Paginator $data , string $table , string $foreignKey, string $localKey = null): array
+    public function setHasRelationships(Collection|Paginator $data , string $table , string $foreignKey, string $localKey = null): array
     {
         $localKey = $localKey ?: 'id';
 
