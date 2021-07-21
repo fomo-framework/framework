@@ -8,11 +8,11 @@ use Illuminate\Support\Str;
 
 class Relationships
 {
-    public array $columns = ['*'];
-    public array $orderBy = [];
-    public array $withPivot = [];
-    public string $identity = 'id';
-    public ?int $limit = null;
+    protected array $columns = ['*'];
+    protected array $orderBy = [];
+    protected array $withPivot = [];
+    protected string $identity = 'id';
+    protected ?int $limit = null;
 
     public function select(array $columns): self
     {
@@ -76,7 +76,7 @@ class Relationships
         });
     }
 
-    public function  hasMany(Collection|Paginator $data , string $table , string $foreignKey, string $localKey = null): void
+    public function hasMany(Collection|Paginator $data , string $table , string $foreignKey, string $localKey = null): void
     {
         if (! in_array('*' , $this->columns) && ! in_array($foreignKey , $this->columns))
             $this->select([$foreignKey]);
@@ -98,7 +98,7 @@ class Relationships
             });
     }
 
-    public function throughOne(Collection|Paginator $data , string $interfaceTable , string $table, string $foreignKey, string $localKey): void
+    public function throughHasOne(Collection|Paginator $data , string $interfaceTable , string $table, string $foreignKey, string $localKey): void
     {
         $relationships = $this->setThrough($data , $interfaceTable , $table , $foreignKey , $localKey);
 
@@ -108,7 +108,7 @@ class Relationships
         });
     }
 
-    public function throughManyToMany(Collection|Paginator $data , string $interfaceTable , string $table, string $foreignKey, string $localKey): void
+    public function throughHasMany(Collection|Paginator $data , string $interfaceTable , string $table, string $foreignKey, string $localKey): void
     {
         $relationships = $this->setThrough($data , $interfaceTable , $table , $foreignKey , $localKey);
 
@@ -138,7 +138,7 @@ class Relationships
         });
     }
 
-    public function polymorphicManyToMany(Collection|Paginator $data , string $table , string $type , string $typeName = null , string $idName = null , string $localKey = null): void
+    public function polymorphicHasMany(Collection|Paginator $data , string $table , string $type , string $typeName = null , string $idName = null , string $localKey = null): void
     {
         $polymorphic = $this->setPolymorphic($data , $table , $type , $typeName , $idName , $localKey);
 
@@ -158,7 +158,7 @@ class Relationships
             });
     }
 
-    public function setPolymorphic(Collection|Paginator $data , string $table , string $type , string $typeName = null , string $idName = null , string $localKey = null): array
+    protected function setPolymorphic(Collection|Paginator $data , string $table , string $type , string $typeName = null , string $idName = null , string $localKey = null): array
     {
         $filedName = Str::singular($table) . 'able_';
         $typeName = $typeName ? $filedName . $typeName : $filedName . 'type';
@@ -182,7 +182,7 @@ class Relationships
         return [$relationships , $idName , $localKey];
     }
 
-    public function setThrough(Collection|Paginator $data , string $interfaceTable , string $table, string $foreignKey, string $localKey): Collection
+    protected function setThrough(Collection|Paginator $data , string $interfaceTable , string $table, string $foreignKey, string $localKey): Collection
     {
         $this->withPivot([$localKey]);
 
@@ -213,7 +213,7 @@ class Relationships
         return $relationships;
     }
 
-    public function setHasRelationships(Collection|Paginator $data , string $table , string $foreignKey, string $localKey = null): array
+    protected function setHasRelationships(Collection|Paginator $data , string $table , string $foreignKey, string $localKey = null): array
     {
         $localKey = $localKey ?: 'id';
 
