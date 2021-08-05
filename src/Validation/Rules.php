@@ -51,19 +51,28 @@ trait Rules
 
     protected function max(array $parameters): void
     {
-        if ($this->request->input($parameters['ruleName']) && $this->strlen($this->request->input($parameters['ruleName'])) > $parameters['value'])
+        if ($this->request->input($parameters['ruleName']) && is_string($this->request->input($parameters['ruleName'])) && $this->strlen($this->request->input($parameters['ruleName'])) > $parameters['value'])
+            array_push($this->messages , $parameters['message']);
+
+        if ($this->request->input($parameters['ruleName']) && is_int($this->request->input($parameters['ruleName'])) && $this->request->input($parameters['ruleName']) > $parameters['value'])
             array_push($this->messages , $parameters['message']);
     }
 
     protected function min(array $parameters): void
     {
-        if ($this->request->input($parameters['ruleName']) && $this->strlen($this->request->input($parameters['ruleName'])) < $parameters['value'])
+        if ($this->request->input($parameters['ruleName']) && is_string($this->request->input($parameters['ruleName'])) && $this->strlen($this->request->input($parameters['ruleName'])) < $parameters['value'])
+            array_push($this->messages , $parameters['message']);
+
+        if ($this->request->input($parameters['ruleName']) && is_int($this->request->input($parameters['ruleName'])) && $this->request->input($parameters['ruleName']) < $parameters['value'])
             array_push($this->messages , $parameters['message']);
     }
 
     protected function size(array $parameters): void
     {
-        if ($this->request->input($parameters['ruleName']) && $this->strlen($this->request->input($parameters['ruleName'])) != $parameters['value'])
+        if ($this->request->input($parameters['ruleName']) && is_string($this->request->input($parameters['ruleName'])) && $this->strlen($this->request->input($parameters['ruleName'])) != $parameters['value'])
+            array_push($this->messages , $parameters['message']);
+
+        if ($this->request->input($parameters['ruleName']) && is_int($this->request->input($parameters['ruleName'])) && $this->request->input($parameters['ruleName']) != $parameters['value'])
             array_push($this->messages , $parameters['message']);
     }
 
