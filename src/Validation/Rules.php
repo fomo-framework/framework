@@ -84,13 +84,13 @@ trait Rules
 
     protected function after(array $parameters): void
     {
-        if ($this->request->input($parameters['ruleName']) && $this->request->input($parameters['value']) && $this->request->input($parameters['ruleName']) < $this->request->input($parameters['value']))
+        if ($this->request->input($parameters['ruleName']) && $this->request->input($parameters['value']) && $this->request->input($parameters['ruleName']) <= $this->request->input($parameters['value']))
             array_push($this->messages , $parameters['message']);
     }
 
     protected function before(array $parameters): void
     {
-        if ($this->request->input($parameters['ruleName']) && $this->request->input($parameters['value']) && $this->request->input($parameters['ruleName']) > $this->request->input($parameters['value']))
+        if ($this->request->input($parameters['ruleName']) && $this->request->input($parameters['value']) && $this->request->input($parameters['ruleName']) >= $this->request->input($parameters['value']))
             array_push($this->messages , $parameters['message']);
     }
 
