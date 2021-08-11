@@ -82,6 +82,7 @@ if (! function_exists('cpuCoreCount')) {
         return (int)$count > 0 ? (int)$count : 4;
     }
 }
+
 if (! function_exists('redis')) {
     function redis(): \Redis
     {
