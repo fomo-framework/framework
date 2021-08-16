@@ -18,7 +18,8 @@
         "symfony/polyfill-ctype": "^1.8",
         "elasticsearch/elasticsearch": "^7.0",
         "vlucas/phpdotenv": "^5.3",
-        "ext-redis": "*"
+        "ext-redis": "*",
+        "phpmailer/phpmailer": "^6.5"
     } ,
     "autoload": {
         "psr-4": {

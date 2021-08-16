@@ -35,6 +35,8 @@ class Application
 
         Elastic::setInstance();
 
+        Mail::setInstance();
+
         $this->setRedis();
 
         $this->setDatabase();
