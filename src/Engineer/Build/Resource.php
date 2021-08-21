@@ -1,6 +1,6 @@
 <?php
 
-namespace Tower\Engineer;
+namespace Tower\Engineer\Build;
 
 use Tower\Console\Color;
 
