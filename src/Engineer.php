@@ -8,11 +8,6 @@ class Engineer
 {
     protected string $version;
 
-    public function __construct(string $version)
-    {
-        $this->version = $version;
-    }
-
     protected array $commands = [
         'build' => [
             'controller' ,
@@ -21,7 +16,10 @@ class Engineer
             'job' ,
             'exception' ,
             'task' ,
-        ]
+        ] ,
+        'factory' => [
+            'settingUp'
+        ] ,
     ];
 
     protected array $description = [
@@ -32,8 +30,51 @@ class Engineer
             'job' => 'create a new job class' ,
             'exception' => 'create a new exception class' ,
             'task' => 'create a new task class' ,
-        ]
+        ],
+        'factory' => [
+            'settingUp' => 'Please run the {php engineer factory:settingUp start} command to start the factory' ,
+        ],
     ];
+
+    protected array $class = [
+        'build' => [
+            'controller' => [
+                'class' => 'Build\Controller' ,
+                'method' => 'build'
+            ] ,
+            'resource' => [
+                'class' => 'Build\Resource' ,
+                'method' => 'build'
+            ] ,
+            'middleware' => [
+                'class' => 'Build\Middleware' ,
+                'method' => 'build'
+            ] ,
+            'job' => [
+                'class' => 'Build\Job' ,
+                'method' => 'build'
+            ] ,
+            'exception' => [
+                'class' => 'Build\Exception' ,
+                'method' => 'build'
+            ] ,
+            'task' => [
+                'class' => 'Build\Task' ,
+                'method' => 'build'
+            ] ,
+        ],
+        'factory' => [
+            'settingUp' => [
+                'class' => 'Factory\SettingUp' ,
+                'method' => 'run' ,
+            ] ,
+        ],
+    ];
+
+    public function __construct(string $version)
+    {
+        $this->version = $version;
+    }
 
     public function run(array $arguments): void
     {
@@ -62,8 +103,8 @@ class Engineer
             return;
         }
 
-        $class = 'Tower\\Engineer\\' . ucfirst($operation[0]);
-        $method = 'run';
+        $class = 'Tower\\Engineer\\' . $this->class[$operation[0]][$operation[1]]['class'];
+        $method = $this->class[$operation[0]][$operation[1]]['method'];
         $operation = new $class();
         $operation->$method($arguments);
     }
@@ -79,8 +120,8 @@ class Engineer
             return;
         }
 
-        $class = 'Tower\\Engineer\\' . ucfirst($operation[1]);
-        $method = $operation[0];
+        $class = 'Tower\\Engineer\\' . $this->class[$operation[0]][$operation[1]]['class'];
+        $method = $this->class[$operation[0]][$operation[1]]['method'];
         $operation = new $class();
         $operation->$method($arguments);
     }
@@ -93,10 +134,18 @@ I am the engineer of your tower and I am ready to help you
 What did he do to me?' . Color::RESET . PHP_EOL . PHP_EOL;
 
         echo Color::LIGHT_GRAY . 'What can I do to help?' . Color::RESET . PHP_EOL . PHP_EOL;
-        foreach (array_keys($this->commands) as $command)
-            echo Color::YELLOW . "$command" . Color::RESET . PHP_EOL;
+
+        // builds commands
+        echo Color::YELLOW . "build" . Color::RESET . PHP_EOL;
         foreach ($this->commands['build'] as $command){
             $description = Color::LIGHT_WHITE . $this->description['build'][$command];
+            echo Color::GREEN . " $command \t $description" . Color::RESET . PHP_EOL;
+        }
+
+        // factory commands
+        echo Color::YELLOW . "factory" . Color::RESET . PHP_EOL;
+        foreach ($this->commands['factory'] as $command){
+            $description = Color::LIGHT_WHITE . $this->description['factory'][$command];
             echo Color::GREEN . " $command \t $description" . Color::RESET . PHP_EOL;
         }
     }
