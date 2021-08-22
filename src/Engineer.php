@@ -16,6 +16,7 @@ class Engineer
             'job' ,
             'exception' ,
             'task' ,
+            'test' ,
         ] ,
         'factory' => [
             'settingUp'
@@ -33,6 +34,7 @@ class Engineer
             'job' => 'create a new job class' ,
             'exception' => 'create a new exception class' ,
             'task' => 'create a new task class' ,
+            'test' => 'create a new test class' ,
         ],
         'factory' => [
             'settingUp' => 'Please run the {php engineer factory:settingUp start} command to start the factory' ,
@@ -66,6 +68,10 @@ class Engineer
             ] ,
             'task' => [
                 'class' => 'Build\Task' ,
+                'method' => 'build'
+            ] ,
+            'test' => [
+                'class' => 'Build\Test' ,
                 'method' => 'build'
             ] ,
         ],
