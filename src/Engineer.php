@@ -166,5 +166,12 @@ What did he do to me?' . Color::RESET . PHP_EOL . PHP_EOL;
             $description = Color::LIGHT_WHITE . $this->description['factory'][$command];
             echo Color::GREEN . " $command \t $description" . Color::RESET . PHP_EOL;
         }
+
+        // tests commands
+        echo Color::YELLOW . "tests" . Color::RESET . PHP_EOL;
+        foreach ($this->commands['tests'] as $command){
+            $description = Color::LIGHT_WHITE . $this->description['tests'][$command];
+            echo Color::GREEN . " $command \t $description" . Color::RESET . PHP_EOL;
+        }
     }
 }
