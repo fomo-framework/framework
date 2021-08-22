@@ -13,7 +13,7 @@ class Test
             return;
         }
 
-        $code = "<?php \n\nnamespace Tests\Units;\n\nuse Tests\TestCase;\n\nclass $namespace extends TestCase\n{\n\tpublic function testTrueAssertsToTrue()\n\t{\n\t\t"."\$"."this".'->assertTrue(true)'.";\n\t}\n}";
+        $code = "<?php \n\nnamespace Tests\Units;\n\nuse Tests\TestCase;\n\nclass $namespace extends TestCase\n{\n\tpublic function testExample()\n\t{\n\t\t"."\$"."this".'->assertTrue(true)'.";\n\t}\n}";
         $build = fopen(basePath() . "/tests/Units/$arguments[2].php", 'a');
 
         fwrite($build , $code);
@@ -40,7 +40,7 @@ class Test
         if (! is_dir(basePath() . "/tests/Units/$directory"))
             mkdir(basePath() . "/tests/Units/$directory/" , 0777, true);
 
-        $code = "<?php \n\nnamespace Tests\Units\\$namespace;\n\nuse Tests\TestCase;\n\nclass $className extends TestCase\n{\n\tpublic function testTrueAssertsToTrue()\n\t{\n\t\t"."\$"."this".'->assertTrue(true)'.";\n\t}\n}";
+        $code = "<?php \n\nnamespace Tests\Units\\$namespace;\n\nuse Tests\TestCase;\n\nclass $className extends TestCase\n{\n\tpublic function testExample()\n\t{\n\t\t"."\$"."this".'->assertTrue(true)'.";\n\t}\n}";
 
         $build = fopen(basePath() . "/tests/Units/$arguments[2].php", 'a');
         fwrite($build , $code);
