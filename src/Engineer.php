@@ -20,6 +20,9 @@ class Engineer
         'factory' => [
             'settingUp'
         ] ,
+        'tests' => [
+            'run'
+        ] ,
     ];
 
     protected array $description = [
@@ -33,6 +36,9 @@ class Engineer
         ],
         'factory' => [
             'settingUp' => 'Please run the {php engineer factory:settingUp start} command to start the factory' ,
+        ],
+        'tests' => [
+            'run' => 'run all tests' ,
         ],
     ];
 
@@ -66,6 +72,12 @@ class Engineer
         'factory' => [
             'settingUp' => [
                 'class' => 'Factory\SettingUp' ,
+                'method' => 'run' ,
+            ] ,
+        ],
+        'tests' => [
+            'run' => [
+                'class' => 'Tests\Test' ,
                 'method' => 'run' ,
             ] ,
         ],
