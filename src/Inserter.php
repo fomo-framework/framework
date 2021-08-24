@@ -25,16 +25,41 @@ class Inserter
         return $this;
     }
 
-    public function create(int $count): string
+    public function create(int $count): void
+    {
+        if ($count > 10000)
+            $count = 10000;
+
+        for ($i=0;$i<$count;$i++)
+            $this->insertData[] = $this->data;
+
+        $this->insert();
+    }
+
+    public function mCreate(int $count): void
     {
         if ($count > 10000)
             $count = 10000;
 
         for ($i=0;$i<$count;$i++){
-            $this->insertData[] = $this->data;
+            $data = [];
+            foreach ($this->data as $index => $item) {
+                if (is_array($item)){
+                    $class = $item['class'];
+                    if (is_string($class))
+                        $class = new $class();
+
+                    $method = $item['method'];
+                    $args = $item['args'] ?? [];
+                    $data[$index] = call_user_func_array([$class , $method] , $args);
+                } else{
+                    $data[$index] = $item;
+                }
+            }
+            $this->insertData[] = $data;
         }
+
         $this->insert();
-        return "success";
     }
 
     protected function insert(): void
