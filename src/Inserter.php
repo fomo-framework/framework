@@ -51,7 +51,11 @@ class Inserter
 
                     $method = $item['method'];
                     $args = $item['args'] ?? [];
-                    $data[$index] = call_user_func_array([$class , $method] , $args);
+                    $type = $item['type'] ?? null;
+                    if (!is_null($type))
+                        $data[$index] = $this->mCreateType($class , $method , $args , $type);
+                    else
+                        $data[$index] = call_user_func_array([$class , $method] , $args);
                 } else{
                     $data[$index] = $item;
                 }
@@ -60,6 +64,21 @@ class Inserter
         }
 
         $this->insert();
+    }
+
+    protected function mCreateType(string $class , string $method , array $args , string $type): float|object|int|bool|array|string
+    {
+        return match ($type) {
+            'int' => (int) call_user_func_array([$class, $method], $args),
+            'string' => (string) call_user_func_array([$class, $method], $args),
+            'array' => (array) call_user_func_array([$class, $method], $args),
+            'float' => (float) call_user_func_array([$class, $method], $args),
+            'integer' => (integer) call_user_func_array([$class, $method], $args),
+            'double' => (double) call_user_func_array([$class, $method], $args),
+            'boolean' => (boolean) call_user_func_array([$class, $method], $args),
+            'bool' => (bool) call_user_func_array([$class, $method], $args),
+            'object' => (object) call_user_func_array([$class, $method], $args),
+        };
     }
 
     protected function insert(): void
