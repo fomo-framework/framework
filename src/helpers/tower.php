@@ -57,9 +57,9 @@ if (! function_exists('elastic')) {
 }
 
 if (! function_exists('redirect')) {
-    function redirect(string $location, int $status = 302, array $headers = []): Response
+    function redirect(string $location, array $headers = []): Response
     {
-        $response = new Response($status, ['Location' => $location]);
+        $response = new Response(302, ['Location' => $location]);
         if (!empty($headers)) {
             $response->withHeaders($headers);
         }
