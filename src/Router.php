@@ -72,11 +72,15 @@ class Router
         if (strcmp($firstChar , '/') === 0)
             $route = substr($route , 1);
 
-        $lastChar = substr($this->currentGroupPrefix , -1);
-        if (strcmp($lastChar , '/') === 0)
+        $prefixLastChar = substr($this->currentGroupPrefix , -1);
+        if (strcmp($prefixLastChar , '/') === 0)
             $route = $this->currentGroupPrefix . $route;
         else
             $route = $this->currentGroupPrefix . '/' . $route;
+
+        $routeLastChar = substr($route, -1);
+        if (strcmp($routeLastChar , '/') === 0)
+            $route = substr($route, 0 ,-1);
 
         if (isset($callback['middleware']) && is_array($callback['middleware']))
             array_push($this->currentGroupMiddleware , ...$callback['middleware']);
