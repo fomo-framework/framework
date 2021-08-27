@@ -35,14 +35,10 @@ if (! function_exists('storagePath')) {
     }
 }
 
-if (! function_exists('json')) {
-    function json(array $data, int $status = 200): Response
+if (! function_exists('response')) {
+    function response(string $data = '', int $status = 200, array $headers = []): Response
     {
-        return new Response(
-            $status,
-            ['Content-Type' => 'application/json']
-            , json_encode($data, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_IGNORE)
-        );
+        return new Response($status , $headers , $data);
     }
 }
 
