@@ -52,7 +52,7 @@ class JsonResource
         $this->process();
 
         if (is_null($this->perPage))
-            return json([
+            return response()->json([
                 'data' => $this->response ,
             ]);
 
@@ -61,7 +61,7 @@ class JsonResource
             'perPage' => $this->perPage
         ]);
 
-        return json([
+        return response()->json([
             'data' => $this->response ,
             'meta' => $this->meta
         ]);
@@ -70,16 +70,16 @@ class JsonResource
     public function single(): Response
     {
         if (is_null($this->data))
-            return json([
+            return response()->json([
                 'data' => []
             ]);
 
         if ($this->data instanceof Collection)
-            return json([
+            return response()->json([
                 'data' => $this->toArray($this->data->first())
             ]);
 
-        return json([
+        return response()->json([
             'data' => $this->toArray($this->data)
         ]);
     }
