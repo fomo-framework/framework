@@ -28,19 +28,19 @@ class Engineer
 
     protected array $description = [
         'build' => [
-            'controller' => 'create a new controller class' ,
-            'resource' => 'create a new resource class' ,
-            'middleware' => 'create a new middleware class' ,
-            'job' => 'create a new job class' ,
-            'exception' => 'create a new exception class' ,
-            'task' => 'create a new task class' ,
-            'test' => 'create a new test class' ,
+            'controller' => '       create a new controller class' ,
+            'resource' => '         create a new resource class' ,
+            'middleware' => '       create a new middleware class' ,
+            'job' => '              create a new job class' ,
+            'exception' => '        create a new exception class' ,
+            'task' => '             create a new task class' ,
+            'test' => '             create a new test class' ,
         ],
         'factory' => [
-            'settingUp' => 'Please run the {php engineer factory:settingUp start} command to start the factory' ,
+            'settingUp' => '        Please run the {php engineer factory:settingUp start} command to start the factory' ,
         ],
         'tests' => [
-            'run' => 'run all tests' ,
+            'run' => '              run all tests' ,
         ],
     ];
 
@@ -108,10 +108,7 @@ class Engineer
             return;
         }
 
-        if (count($operation) == 2){
-            $this->multiArguments($operation , $arguments);
-            return;
-        }
+        $this->multiArguments($operation , $arguments);
     }
 
     protected function oneArgument(array $operation , array $arguments): void
@@ -121,8 +118,8 @@ class Engineer
             return;
         }
 
-        $class = 'Tower\\Engineer\\' . $this->class[$operation[0]][$operation[1]]['class'];
-        $method = $this->class[$operation[0]][$operation[1]]['method'];
+        $class = 'Tower\\Engineer\\' . $this->class[$operation[0]]['class'];
+        $method = $this->class[$operation[0]]['method'];
         $operation = new $class();
         $operation->$method($arguments);
     }
@@ -153,25 +150,20 @@ What did he do to me?' . Color::RESET . PHP_EOL . PHP_EOL;
 
         echo Color::LIGHT_GRAY . 'What can I do to help?' . Color::RESET . PHP_EOL . PHP_EOL;
 
-        // builds commands
-        echo Color::YELLOW . "build" . Color::RESET . PHP_EOL;
-        foreach ($this->commands['build'] as $command){
-            $description = Color::LIGHT_WHITE . $this->description['build'][$command];
-            echo Color::GREEN . " $command \t $description" . Color::RESET . PHP_EOL;
-        }
-
-        // factory commands
-        echo Color::YELLOW . "factory" . Color::RESET . PHP_EOL;
-        foreach ($this->commands['factory'] as $command){
-            $description = Color::LIGHT_WHITE . $this->description['factory'][$command];
-            echo Color::GREEN . " $command \t $description" . Color::RESET . PHP_EOL;
-        }
-
-        // tests commands
-        echo Color::YELLOW . "tests" . Color::RESET . PHP_EOL;
-        foreach ($this->commands['tests'] as $command){
-            $description = Color::LIGHT_WHITE . $this->description['tests'][$command];
-            echo Color::GREEN . " $command \t $description" . Color::RESET . PHP_EOL;
+        foreach ($this->commands as $index => $command){
+            if (is_int($index))
+                echo Color::YELLOW . " $command" . Color::RESET;
+            else
+                echo Color::YELLOW . " $index" . Color::RESET . PHP_EOL;
+            if (is_array($command)){
+                foreach ($command as $item){
+                    $description = Color::WHITE . $this->description[$index][$item];
+                    echo Color::GREEN . "  $item $description" . Color::RESET . PHP_EOL;
+                }
+            }else{
+                $description = Color::WHITE . $this->description[$command];
+                echo Color::GREEN . "  $description" . Color::RESET . PHP_EOL;
+            }
         }
     }
 }
