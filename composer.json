@@ -20,7 +20,8 @@
         "vlucas/phpdotenv": "^5.3",
         "ext-redis": "*",
         "phpmailer/phpmailer": "^6.5",
-        "ext-simplexml": "*"
+        "ext-simplexml": "*",
+        "ext-posix": "*"
     } ,
     "autoload": {
         "psr-4": {
