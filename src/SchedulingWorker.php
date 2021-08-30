@@ -56,7 +56,7 @@ class SchedulingWorker
             Redis::setInstance();
         } catch (RedisException $e)
         {
-            (new Log())->alert($e->getMessage());
+            (new Log())->channel('scheduling')->alert($e->getMessage());
         }
     }
 }
