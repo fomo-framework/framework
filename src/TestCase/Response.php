@@ -151,7 +151,7 @@ class Response
                 );
             }
 
-            $message = "Expected file [{$filename}] is not present in Content-Disposition header.";
+            $message = "Expected file [$filename] is not present in Content-Disposition header.";
 
             if (! isset($contentDisposition[1])) {
                 PHPUnit::fail($message);
@@ -299,6 +299,11 @@ class Response
     public function isFailed(): bool
     {
         return $this->isServerError() || $this->isClientError();
+    }
+
+    public function toPsrResponse(): GuzzleResponse
+    {
+        return $this->response;
     }
 
     public function offsetExists(int $offset): bool
