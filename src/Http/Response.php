@@ -9,7 +9,7 @@ class Response
 {
     protected GuzzleResponse $response;
 
-    public function __construct(Response $response)
+    public function __construct(GuzzleResponse $response)
     {
         $this->response = $response;
     }
