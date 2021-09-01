@@ -21,7 +21,8 @@
         "ext-redis": "*",
         "phpmailer/phpmailer": "^6.5",
         "ext-simplexml": "*",
-        "ext-posix": "*"
+        "ext-posix": "*",
+        "guzzlehttp/guzzle": "^7.3"
     } ,
     "autoload": {
         "psr-4": {
