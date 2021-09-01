@@ -97,7 +97,7 @@ class Response
         return $this;
     }
 
-    public function toPsrResponse(): Response
+    public function toPsrResponse(): GuzzleResponse
     {
         return $this->response;
     }
