@@ -242,6 +242,7 @@ class TestCase extends BaseTestCase
     public function delete(string $url , array $body = [] , string $contentType = 'application/json'): Response
     {
         $this->parsPostRequest($url , $body , $contentType);
+        
         return $this->send('DELETE');
     }
 
