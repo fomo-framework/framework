@@ -7,24 +7,22 @@ use Elasticsearch\ClientBuilder;
 
 class Elastic
 {
-    protected static Client $_instance;
+    protected static Client $instance;
 
     public static function setInstance()
     {
-        $config = include configPath() . "elastic.php";
-
-        self::$_instance = (new ClientBuilder())
-            ->setHosts($config)
+        self::$instance = (new ClientBuilder())
+            ->setHosts(Loader::get('elastic'))
             ->build();
     }
 
     public static function getInstance(): Client
     {
-        return self::$_instance;
+        return self::$instance;
     }
     
     public static function __callStatic(string $method, array $arguments)
     {
-        return self::$_instance->$method(...$arguments);
+        return self::$instance->$method(...$arguments);
     }
 }
