@@ -17,8 +17,7 @@ class Validation
     {
         $this->data = $data;
         $this->rules = $rules;
-        $appConfig = include configPath() . "app.php";
-        $this->errorDefaultMessage = include basePath() . "/language/validation/{$appConfig['locale']}/errors.php";
+        $this->errorDefaultMessage = Loader::get('errors');
         $this->validate();
     }
 
