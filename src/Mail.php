@@ -11,7 +11,7 @@ class Mail
 
     public static function setInstance()
     {
-        $config = include configPath() . "mail.php";
+        $config = Loader::get('mail');
 
         self::$instance = new PHPMailer(true);
 
