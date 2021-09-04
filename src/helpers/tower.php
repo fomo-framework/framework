@@ -35,6 +35,13 @@ if (! function_exists('storagePath')) {
     }
 }
 
+if (! function_exists('languagePath')) {
+    function languagePath(): string
+    {
+        return basePath() . '/language/';
+    }
+}
+
 if (! function_exists('response')) {
     function response(string $data = '', int $status = 200, array $headers = []): Response
     {
