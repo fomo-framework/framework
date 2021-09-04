@@ -9,8 +9,6 @@ class Forger
 {
     public static function create(): Generator
     {
-        $config = include configPath() . "app.php";
-
-        return Factory::create($config['faker_locale']);
+        return Factory::create(Loader::get('app')['faker_locale']);
     }
 }
