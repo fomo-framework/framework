@@ -30,6 +30,18 @@ class TestCase extends BaseTestCase
     {
         Dotenv::createImmutable(basePath())->load();
 
+        $app = include configPath() . "app.php";
+
+        Loader::save([
+            'app' => configPath() . "app.php" ,
+            'database' => configPath() . "database.php" ,
+            'elastic' => configPath() . "elastic.php" ,
+            'mail' => configPath() . "mail.php" ,
+            'redis' => configPath() . "redis.php" ,
+            'server' => configPath() . "server.php" ,
+            'errors' => languagePath() . 'validation/' . $app['locale'] . '/errors.php' ,
+        ]);
+
         Elastic::setInstance();
 
         Mail::setInstance();
@@ -47,11 +59,9 @@ class TestCase extends BaseTestCase
 
     private function setDatabase(): void
     {
-        $config = include configPath() . "database.php";
-
         $capsule = new Capsule();
 
-        $capsule->addConnection($config['mysql']);
+        $capsule->addConnection(Loader::get('database')['mysql']);
 
         $capsule->setAsGlobal();
     }
