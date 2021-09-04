@@ -92,11 +92,9 @@ class Application
 
     protected function setDatabase(): void
     {
-        $config = include configPath() . "database.php";
-
         $capsule = new Capsule();
 
-        $capsule->addConnection($config['mysql']);
+        $capsule->addConnection(Loader::get('database')['mysql']);
 
         $capsule->setAsGlobal();
 
