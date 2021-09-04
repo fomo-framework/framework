@@ -11,14 +11,61 @@ class Validation
     protected array $rules = [];
     protected array $errorDefaultMessage = [];
     protected array $messages = [];
-    protected Request $request;
+    protected array $data;
 
-    public function __construct(Request $request , array $rules)
+    public function __construct(array $data , array $rules)
     {
-        $this->request = $request;
+        $this->data = $data;
         $this->rules = $rules;
-        $this->errorDefaultMessage = include configPath() . "errors.php";
+        $appConfig = include configPath() . "app.php";
+        $this->errorDefaultMessage = include basePath() . "/language/validation/{$appConfig['locale']}/errors.php";
         $this->validate();
+    }
+
+    protected function collapse(array $array): array
+    {
+        $results = [];
+
+        foreach ($array as $values) {
+            $results[] = $values;
+        }
+
+        return array_merge([], ...$results);
+    }
+
+    protected function get(array $array, array|string|null $key, ?string $default = null): string|int|bool|array|float|null
+    {
+        if (is_null($key)) {
+            return $array;
+        }
+
+        $key = is_array($key) ? $key : explode('.', $key);
+
+        foreach ($key as $i => $segment) {
+            unset($key[$i]);
+
+            if (is_null($segment)) {
+                return $array;
+            }
+
+            if ($segment === '*') {
+                $result = [];
+
+                foreach ($array as $item) {
+                    $result[] = $this->get($item, $key);
+                }
+
+                return in_array('*', $key) ? $this->collapse($result) : $result;
+            }
+
+            if (array_key_exists($segment, $array)) {
+                $array = $array[$segment];
+            } else {
+                return value($default);
+            }
+        }
+
+        return $array;
     }
 
     protected function validate(): void
