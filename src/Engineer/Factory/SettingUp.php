@@ -7,14 +7,26 @@ use Dotenv\Dotenv;
 use Illuminate\Database\Capsule\Manager as Capsule;
 use Tower\Console\Color;
 use Tower\Elastic;
+use Tower\Loader;
 use Workerman\Worker;
 
 class SettingUp
 {
     public function run(array $arguments): void
     {
-        $dotenv = Dotenv::createImmutable(basePath());
-        $dotenv->load();
+        Dotenv::createImmutable(basePath())->load();
+
+        $app = include configPath() . "app.php";
+
+        Loader::save([
+            'app' => configPath() . "app.php" ,
+            'database' => configPath() . "database.php" ,
+            'elastic' => configPath() . "elastic.php" ,
+            'mail' => configPath() . "mail.php" ,
+            'redis' => configPath() . "redis.php" ,
+            'server' => configPath() . "server.php" ,
+            'errors' => languagePath() . 'validation/' . $app['locale'] . '/errors.php' ,
+        ]);
 
         $worker = new Worker();
 
@@ -41,11 +53,9 @@ class SettingUp
 
     protected function setDatabase(): void
     {
-        $config = include configPath() . "database.php";
-
         $capsule = new Capsule();
 
-        $capsule->addConnection($config['mysql']);
+        $capsule->addConnection(Loader::get('database')['mysql']);
 
         $capsule->setAsGlobal();
     }
