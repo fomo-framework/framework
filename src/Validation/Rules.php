@@ -11,8 +11,9 @@ trait Rules
     {
         $data = $this->get($this->data , $parameters['ruleName']);
         if (is_array($data)){
-            foreach ($data as $item){
+            foreach ($data as $index => $item){
                 if (! $item || empty($item)){
+                    $parameters['message'] = str_replace('*' , $index , $parameters['message']);
                     array_push($this->messages , $parameters['message']);
                 }
             }
@@ -27,8 +28,9 @@ trait Rules
     {
         $data = $this->get($this->data , $parameters['ruleName']);
         if (is_array($data)){
-            foreach ($data as $item){
+            foreach ($data as $index => $item){
                 if ($item && !is_string($item)){
+                    $parameters['message'] = str_replace('*' , $index , $parameters['message']);
                     array_push($this->messages , $parameters['message']);
                 }
             }
@@ -43,8 +45,9 @@ trait Rules
     {
         $data = $this->get($this->data , $parameters['ruleName']);
         if (is_array($data)){
-            foreach ($data as $item){
+            foreach ($data as $index => $item){
                 if ($item && !is_int($item)){
+                    $parameters['message'] = str_replace('*' , $index , $parameters['message']);
                     array_push($this->messages , $parameters['message']);
                 }
             }
@@ -59,8 +62,9 @@ trait Rules
     {
         $data = $this->get($this->data , $parameters['ruleName']);
         if (is_array($data)){
-            foreach ($data as $item){
+            foreach ($data as $index => $item){
                 if ($item && !is_bool($item)){
+                    $parameters['message'] = str_replace('*' , $index , $parameters['message']);
                     array_push($this->messages , $parameters['message']);
                 }
             }
@@ -75,8 +79,9 @@ trait Rules
     {
         $data = $this->get($this->data , $parameters['ruleName']);
         if (is_array($data)){
-            foreach ($data as $item){
+            foreach ($data as $index => $item){
                 if ($item && !is_array($item)){
+                    $parameters['message'] = str_replace('*' , $index , $parameters['message']);
                     array_push($this->messages , $parameters['message']);
                 }
             }
@@ -91,8 +96,9 @@ trait Rules
     {
         $data = $this->get($this->data , $parameters['ruleName']);
         if (is_array($data)){
-            foreach ($data as $item){
+            foreach ($data as $index => $item){
                 if ($item && false === filter_var($item, FILTER_VALIDATE_EMAIL)){
+                    $parameters['message'] = str_replace('*' , $index , $parameters['message']);
                     array_push($this->messages , $parameters['message']);
                 }
             }
@@ -107,8 +113,9 @@ trait Rules
     {
         $data = $this->get($this->data , $parameters['ruleName']);
         if (is_array($data)){
-            foreach ($data as $item){
+            foreach ($data as $index => $item){
                 if ($item && !preg_match($parameters['value'], $item)){
+                    $parameters['message'] = str_replace('*' , $index , $parameters['message']);
                     array_push($this->messages , $parameters['message']);
                 }
             }
@@ -123,8 +130,9 @@ trait Rules
     {
         $data = $this->get($this->data , $parameters['ruleName']);
         if (is_array($data)){
-            foreach ($data as $item){
+            foreach ($data as $index => $item){
                 if ($item && preg_match($parameters['value'], $item)){
+                    $parameters['message'] = str_replace('*' , $index , $parameters['message']);
                     array_push($this->messages , $parameters['message']);
                 }
             }
@@ -139,12 +147,14 @@ trait Rules
     {
         $data = $this->get($this->data , $parameters['ruleName']);
         if (is_array($data)){
-            foreach ($data as $item){
+            foreach ($data as $index => $item){
                 if ($item){
                     if (is_string($item) && $this->strlen($item) > $parameters['value']){
+                        $parameters['message'] = str_replace('*' , $index , $parameters['message']);
                         array_push($this->messages , $parameters['message']);
                     }
                     if (is_int($item) && $item > $parameters['value']){
+                        $parameters['message'] = str_replace('*' , $index , $parameters['message']);
                         array_push($this->messages , $parameters['message']);
                     }
                 }
@@ -166,12 +176,14 @@ trait Rules
     {
         $data = $this->get($this->data , $parameters['ruleName']);
         if (is_array($data)){
-            foreach ($data as $item){
+            foreach ($data as $index => $item){
                 if ($item){
                     if (is_string($item) && $this->strlen($item) < $parameters['value']){
+                        $parameters['message'] = str_replace('*' , $index , $parameters['message']);
                         array_push($this->messages , $parameters['message']);
                     }
                     if (is_int($item) && $item < $parameters['value']){
+                        $parameters['message'] = str_replace('*' , $index , $parameters['message']);
                         array_push($this->messages , $parameters['message']);
                     }
                 }
@@ -193,12 +205,14 @@ trait Rules
     {
         $data = $this->get($this->data , $parameters['ruleName']);
         if (is_array($data)){
-            foreach ($data as $item){
+            foreach ($data as $index => $item){
                 if ($item){
                     if (is_string($item) && $this->strlen($item) != $parameters['value']){
+                        $parameters['message'] = str_replace('*' , $index , $parameters['message']);
                         array_push($this->messages , $parameters['message']);
                     }
                     if (is_int($item) && $item != $parameters['value']){
+                        $parameters['message'] = str_replace('*' , $index , $parameters['message']);
                         array_push($this->messages , $parameters['message']);
                     }
                 }
@@ -220,8 +234,9 @@ trait Rules
     {
         $data = $this->get($this->data , $parameters['ruleName']);
         if (is_array($data)){
-            foreach ($data as $item){
+            foreach ($data as $index => $item){
                 if ($item && ! $this->validateDate($item , is_null($parameters['value']) ? 'Y-m-d H:i:s' : $parameters['value'])){
+                    $parameters['message'] = str_replace('*' , $index , $parameters['message']);
                     array_push($this->messages , $parameters['message']);
                 }
             }
@@ -237,8 +252,9 @@ trait Rules
         $data = $this->get($this->data , $parameters['ruleName']);
         $value = $this->get($this->data , $parameters['value']);
         if (is_array($data)){
-            foreach ($data as $item){
+            foreach ($data as $index => $item){
                 if ($item && $value && $item <= $value){
+                    $parameters['message'] = str_replace('*' , $index , $parameters['message']);
                     array_push($this->messages , $parameters['message']);
                 }
             }
@@ -254,8 +270,9 @@ trait Rules
         $data = $this->get($this->data , $parameters['ruleName']);
         $value = $this->get($this->data , $parameters['value']);
         if (is_array($data)){
-            foreach ($data as $item){
+            foreach ($data as $index => $item){
                 if ($item && $value && $item >= $value){
+                    $parameters['message'] = str_replace('*' , $index , $parameters['message']);
                     array_push($this->messages , $parameters['message']);
                 }
             }
@@ -271,8 +288,9 @@ trait Rules
         $data = $this->get($this->data , $parameters['ruleName']);
         $array = explode(',' , $parameters['value']);
         if (is_array($data)){
-            foreach ($data as $item){
+            foreach ($data as $index => $item){
                 if ($item  && !in_array($item , $array)){
+                    $parameters['message'] = str_replace('*' , $index , $parameters['message']);
                     array_push($this->messages , $parameters['message']);
                 }
             }
@@ -287,15 +305,17 @@ trait Rules
     {
         $data = $this->get($this->data , $parameters['ruleName']);
         if (is_array($data)){
-            foreach ($data as $item){
+            foreach ($data as $index => $item){
                 if ($item){
                     if(! preg_match('/^[0-9]{10}$/' , $item)){
+                        $parameters['message'] = str_replace('*' , $index , $parameters['message']);
                         array_push($this->messages , $parameters['message']);
                         return;
                     }
 
                     for($i = 0; $i < 10; $i++)
                         if(preg_match('/^'.$i.'{10}$/' , $item)){
+                            $parameters['message'] = str_replace('*' , $index , $parameters['message']);
                             array_push($this->messages , $parameters['message']);
                             return;
                         }
@@ -310,6 +330,7 @@ trait Rules
                     if(($ret < 2 && $ret == $parity) || ($ret >= 2 && $ret == 11 - $parity))
                         return;
 
+                    $parameters['message'] = str_replace('*' , $index , $parameters['message']);
                     array_push($this->messages , $parameters['message']);
                 }
             }
@@ -345,11 +366,12 @@ trait Rules
     {
         $data = $this->get($this->data , $parameters['ruleName']);
         if (is_array($data)){
-            foreach ($data as $item){
+            foreach ($data as $index => $item){
                 if ($item){
                     $check = $this->checkDB($item , $parameters['value']);
 
                     if (!$check){
+                        $parameters['message'] = str_replace('*' , $index , $parameters['message']);
                         array_push($this->messages , $parameters['message']);
                     }
                 }
@@ -369,11 +391,12 @@ trait Rules
     {
         $data = $this->get($this->data , $parameters['ruleName']);
         if (is_array($data)){
-            foreach ($data as $item){
+            foreach ($data as $index => $item){
                 if ($item){
                     $check = $this->checkDB($item , $parameters['value']);
 
                     if ($check){
+                        $parameters['message'] = str_replace('*' , $index , $parameters['message']);
                         array_push($this->messages , $parameters['message']);
                     }
                 }
