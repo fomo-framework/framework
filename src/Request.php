@@ -39,78 +39,68 @@ class Request extends WorkerRequest
 
     public function get($name = null, $default = null): string|int|bool|array|float|null
     {
-        $get = $this->_data['get'];
-
-        if (!isset($get)) {
+        if (!isset($this->_data['get'])) {
             $this->parseGet();
         }
 
         if (null === $name) {
-            return $get;
+            return $this->_data['get'];
         }
 
-        return $this->getData($get , $name , $default);
+        return $this->getData($this->_data['get'] , $name , $default);
     }
 
     public function post($name = null, $default = null): string|int|bool|array|float|null
     {
-        $post = $this->_data['post'];
-
-        if (!isset($post)) {
+        if (!isset($this->_data['post'])) {
             $this->parsePost();
         }
 
         if (null === $name) {
-            return $post;
+            return $this->_data['post'];
         }
 
-        return $this->getData($post , $name , $default);
+        return $this->getData($this->_data['post'] , $name , $default);
     }
 
     public function header($name = null, $default = null): string|int|bool|array|float|null
     {
-        $headers = $this->_data['headers'];
-
-        if (!isset($headers)) {
+        if (!isset($this->_data['headers'])) {
             $this->parseHeaders();
         }
 
         if (null === $name) {
-            return $headers;
+            return $this->_data['headers'];
         }
 
         $name = strtolower($name);
-        return $this->getData($headers , $name , $default);
+        return $this->getData($this->_data['headers'] , $name , $default);
     }
 
     public function cookie($name = null, $default = null): string|int|bool|array|float|null
     {
-        $cookie = $this->_data['cookie'];
-
-        if (!isset($cookie)) {
-            parse_str(str_replace('; ', '&', $this->header('cookie')), $cookie);
+        if (!isset($this->_data['cookie'])) {
+            parse_str(str_replace('; ', '&', $this->header('cookie')), $this->_data['cookie']);
         }
 
         if ($name === null) {
-            return $cookie;
+            return $this->_data['cookie'];
         }
 
-        return $this->getData($cookie , $name , $default);
+        return $this->getData($this->_data['cookie'] , $name , $default);
     }
 
     public function file($name = null): string|int|bool|array|float|null
     {
-        $file = $this->_data['files'];
-
-        if (!isset($file)) {
+        if (!isset($this->_data['files'])) {
             $this->parsePost();
         }
 
         if (null === $name) {
-            return $file;
+            return $this->_data['files'];
         }
 
-        return $this->getData($file , $name);
+        return $this->getData($this->_data['files'] , $name);
     }
 
     public function input(string $name, $default = null): string|int|bool|array|float|null
