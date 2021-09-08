@@ -9,153 +9,144 @@ trait Rules
 {
     protected function required(array $parameters): void
     {
-        $data = $this->get($this->data , $parameters['ruleName']);
+        $data = $this->get($this->data , $parameters['rule']);
         if (is_array($data)){
             foreach ($data as $index => $item){
                 if (! $item || empty($item)){
-                    $parameters['message'] = str_replace('*' , $index , $parameters['message']);
-                    array_push($this->messages , $parameters['message']);
+                    $this->saveError($parameters , $index);
                 }
             }
             return;
         }
         if (! $data || empty($data)){
-            array_push($this->messages , $parameters['message']);
+            $this->saveError($parameters);
         }
     }
 
     protected function string(array $parameters): void
     {
-        $data = $this->get($this->data , $parameters['ruleName']);
+        $data = $this->get($this->data , $parameters['rule']);
         if (is_array($data)){
             foreach ($data as $index => $item){
                 if ($item && !is_string($item)){
-                    $parameters['message'] = str_replace('*' , $index , $parameters['message']);
-                    array_push($this->messages , $parameters['message']);
+                    $this->saveError($parameters , $index);
                 }
             }
             return;
         }
         if ($data && !is_string($data)){
-            array_push($this->messages , $parameters['message']);
+            $this->saveError($parameters);
         }
     }
 
     protected function integer(array $parameters): void
     {
-        $data = $this->get($this->data , $parameters['ruleName']);
+        $data = $this->get($this->data , $parameters['rule']);
         if (is_array($data)){
             foreach ($data as $index => $item){
                 if ($item && !is_int($item)){
-                    $parameters['message'] = str_replace('*' , $index , $parameters['message']);
-                    array_push($this->messages , $parameters['message']);
+                    $this->saveError($parameters , $index);
                 }
             }
             return;
         }
         if ($data && !is_int($data)){
-            array_push($this->messages , $parameters['message']);
+            $this->saveError($parameters);
         }
     }
 
     protected function boolean(array $parameters): void
     {
-        $data = $this->get($this->data , $parameters['ruleName']);
+        $data = $this->get($this->data , $parameters['rule']);
         if (is_array($data)){
             foreach ($data as $index => $item){
                 if ($item && !is_bool($item)){
-                    $parameters['message'] = str_replace('*' , $index , $parameters['message']);
-                    array_push($this->messages , $parameters['message']);
+                    $this->saveError($parameters , $index);
                 }
             }
             return;
         }
         if ($data && !is_bool($data)){
-            array_push($this->messages , $parameters['message']);
+            $this->saveError($parameters);
         }
     }
 
     protected function array(array $parameters): void
     {
-        $data = $this->get($this->data , $parameters['ruleName']);
+        $data = $this->get($this->data , $parameters['rule']);
         if (is_array($data)){
             foreach ($data as $index => $item){
                 if ($item && !is_array($item)){
-                    $parameters['message'] = str_replace('*' , $index , $parameters['message']);
-                    array_push($this->messages , $parameters['message']);
+                    $this->saveError($parameters , $index);
                 }
             }
             return;
         }
         if ($data && !is_array($data)){
-            array_push($this->messages , $parameters['message']);
+            $this->saveError($parameters);
         }
     }
 
     protected function email(array $parameters): void
     {
-        $data = $this->get($this->data , $parameters['ruleName']);
+        $data = $this->get($this->data , $parameters['rule']);
         if (is_array($data)){
             foreach ($data as $index => $item){
                 if ($item && false === filter_var($item, FILTER_VALIDATE_EMAIL)){
-                    $parameters['message'] = str_replace('*' , $index , $parameters['message']);
-                    array_push($this->messages , $parameters['message']);
+                    $this->saveError($parameters , $index);
                 }
             }
             return;
         }
         if ($data && false === filter_var($data , FILTER_VALIDATE_EMAIL)){
-            array_push($this->messages , $parameters['message']);
+            $this->saveError($parameters);
         }
     }
 
     protected function regex(array $parameters): void
     {
-        $data = $this->get($this->data , $parameters['ruleName']);
+        $data = $this->get($this->data , $parameters['rule']);
         if (is_array($data)){
             foreach ($data as $index => $item){
                 if ($item && !preg_match($parameters['value'], $item)){
-                    $parameters['message'] = str_replace('*' , $index , $parameters['message']);
-                    array_push($this->messages , $parameters['message']);
+                    $this->saveError($parameters , $index);
                 }
             }
             return;
         }
         if ($data && !preg_match($parameters['value'], $data)){
-            array_push($this->messages , $parameters['message']);
+            $this->saveError($parameters);
         }
     }
 
     protected function notRegex(array $parameters): void
     {
-        $data = $this->get($this->data , $parameters['ruleName']);
+        $data = $this->get($this->data , $parameters['rule']);
         if (is_array($data)){
             foreach ($data as $index => $item){
                 if ($item && preg_match($parameters['value'], $item)){
-                    $parameters['message'] = str_replace('*' , $index , $parameters['message']);
-                    array_push($this->messages , $parameters['message']);
+                    $this->saveError($parameters , $index);
                 }
             }
             return;
         }
         if ($data && preg_match($parameters['value'], $data)){
-            array_push($this->messages , $parameters['message']);
+            $this->saveError($parameters);
         }
     }
 
     protected function max(array $parameters): void
     {
-        $data = $this->get($this->data , $parameters['ruleName']);
+        $data = $this->get($this->data , $parameters['rule']);
         if (is_array($data)){
             foreach ($data as $index => $item){
                 if ($item){
-                    if (is_string($item) && $this->strlen($item) > $parameters['value']){
-                        $parameters['message'] = str_replace('*' , $index , $parameters['message']);
-                        array_push($this->messages , $parameters['message']);
-                    }
-                    if (is_int($item) && $item > $parameters['value']){
-                        $parameters['message'] = str_replace('*' , $index , $parameters['message']);
-                        array_push($this->messages , $parameters['message']);
+                    if (is_string($item) && $this->strlen($item) >= $parameters['value']){
+                        $this->saveError($parameters , $index);
+                    } elseif (is_int($item) && $item >= $parameters['value']){
+                        $this->saveError($parameters , $index);
+                    } elseif (is_array($item) && count($item) >= $parameters['value']){
+                        $this->saveError($parameters , $index);
                     }
                 }
             }
@@ -163,28 +154,28 @@ trait Rules
         }
 
         if ($data){
-            if (is_string($data) && $this->strlen($data) > $parameters['value']){
-                array_push($this->messages , $parameters['message']);
-            }
-            if (is_int($data) && $data > $parameters['value']){
-                array_push($this->messages , $parameters['message']);
+            if (is_string($data) && $this->strlen($data) >= $parameters['value']){
+                $this->saveError($parameters);
+            } elseif (is_int($data) && $data >= $parameters['value']){
+                $this->saveError($parameters);
+            } elseif (is_array($data) && count($data) >= $parameters['value']){
+                $this->saveError($parameters);
             }
         }
     }
 
     protected function min(array $parameters): void
     {
-        $data = $this->get($this->data , $parameters['ruleName']);
+        $data = $this->get($this->data , $parameters['rule']);
         if (is_array($data)){
             foreach ($data as $index => $item){
                 if ($item){
-                    if (is_string($item) && $this->strlen($item) < $parameters['value']){
-                        $parameters['message'] = str_replace('*' , $index , $parameters['message']);
-                        array_push($this->messages , $parameters['message']);
-                    }
-                    if (is_int($item) && $item < $parameters['value']){
-                        $parameters['message'] = str_replace('*' , $index , $parameters['message']);
-                        array_push($this->messages , $parameters['message']);
+                    if (is_string($item) && $this->strlen($item) <= $parameters['value']){
+                        $this->saveError($parameters , $index);
+                    } elseif (is_int($item) && $item <= $parameters['value']){
+                        $this->saveError($parameters , $index);
+                    } elseif (is_array($item) && count($item) <= $parameters['value']){
+                        $this->saveError($parameters , $index);
                     }
                 }
             }
@@ -192,28 +183,28 @@ trait Rules
         }
 
         if ($data){
-            if (is_string($data) && $this->strlen($data) < $parameters['value']){
-                array_push($this->messages , $parameters['message']);
-            }
-            if (is_int($data) && $data < $parameters['value']){
-                array_push($this->messages , $parameters['message']);
+            if (is_string($data) && $this->strlen($data) <= $parameters['value']){
+                $this->saveError($parameters);
+            } elseif (is_int($data) && $data <= $parameters['value']){
+                $this->saveError($parameters);
+            } elseif (is_array($data) && count($data) <= $parameters['value']){
+                $this->saveError($parameters);
             }
         }
     }
 
     protected function size(array $parameters): void
     {
-        $data = $this->get($this->data , $parameters['ruleName']);
+        $data = $this->get($this->data , $parameters['rule']);
         if (is_array($data)){
             foreach ($data as $index => $item){
                 if ($item){
                     if (is_string($item) && $this->strlen($item) != $parameters['value']){
-                        $parameters['message'] = str_replace('*' , $index , $parameters['message']);
-                        array_push($this->messages , $parameters['message']);
-                    }
-                    if (is_int($item) && $item != $parameters['value']){
-                        $parameters['message'] = str_replace('*' , $index , $parameters['message']);
-                        array_push($this->messages , $parameters['message']);
+                        $this->saveError($parameters , $index);
+                    } elseif (is_int($item) && $item != $parameters['value']){
+                        $this->saveError($parameters , $index);
+                    } elseif (is_array($item) && count($item) != $parameters['value']){
+                        $this->saveError($parameters , $index);
                     }
                 }
             }
@@ -222,101 +213,96 @@ trait Rules
 
         if ($data){
             if (is_string($data) && $this->strlen($data) != $parameters['value']){
-                array_push($this->messages , $parameters['message']);
-            }
-            if (is_int($data) && $data != $parameters['value']){
-                array_push($this->messages , $parameters['message']);
+                $this->saveError($parameters);
+            } elseif (is_int($data) && $data != $parameters['value']){
+                $this->saveError($parameters);
+            } elseif (is_array($data) && count($data) != $parameters['value']){
+                $this->saveError($parameters);
             }
         }
     }
 
     protected function date(array $parameters): void
     {
-        $data = $this->get($this->data , $parameters['ruleName']);
+        $data = $this->get($this->data , $parameters['rule']);
         if (is_array($data)){
             foreach ($data as $index => $item){
                 if ($item && ! $this->validateDate($item , is_null($parameters['value']) ? 'Y-m-d H:i:s' : $parameters['value'])){
-                    $parameters['message'] = str_replace('*' , $index , $parameters['message']);
-                    array_push($this->messages , $parameters['message']);
+                    $this->saveError($parameters , $index);
                 }
             }
             return;
         }
         if ($data && ! $this->validateDate($data , is_null($parameters['value']) ? 'Y-m-d H:i:s' : $parameters['value'])){
-            array_push($this->messages , $parameters['message']);
+            $this->saveError($parameters);
         }
     }
 
     protected function after(array $parameters): void
     {
-        $data = $this->get($this->data , $parameters['ruleName']);
+        $data = $this->get($this->data , $parameters['rule']);
         $value = $this->get($this->data , $parameters['value']);
         if (is_array($data)){
             foreach ($data as $index => $item){
                 if ($item && $value && $item <= $value){
-                    $parameters['message'] = str_replace('*' , $index , $parameters['message']);
-                    array_push($this->messages , $parameters['message']);
+                    $this->saveError($parameters , $index);
                 }
             }
             return;
         }
         if ($data && $value && $data <= $value){
-            array_push($this->messages , $parameters['message']);
+            $this->saveError($parameters);
         }
     }
 
     protected function before(array $parameters): void
     {
-        $data = $this->get($this->data , $parameters['ruleName']);
+        $data = $this->get($this->data , $parameters['rule']);
         $value = $this->get($this->data , $parameters['value']);
         if (is_array($data)){
             foreach ($data as $index => $item){
                 if ($item && $value && $item >= $value){
-                    $parameters['message'] = str_replace('*' , $index , $parameters['message']);
-                    array_push($this->messages , $parameters['message']);
+                    $this->saveError($parameters , $index);
                 }
             }
             return;
         }
         if ($data && $value && $data >= $value){
-            array_push($this->messages , $parameters['message']);
+            $this->saveError($parameters);
         }
     }
 
     protected function in(array $parameters): void
     {
-        $data = $this->get($this->data , $parameters['ruleName']);
+        $data = $this->get($this->data , $parameters['rule']);
         $array = explode(',' , $parameters['value']);
         if (is_array($data)){
             foreach ($data as $index => $item){
                 if ($item  && !in_array($item , $array)){
-                    $parameters['message'] = str_replace('*' , $index , $parameters['message']);
-                    array_push($this->messages , $parameters['message']);
+                    $this->saveError($parameters , $index);
                 }
             }
             return;
         }
         if ($data  && !in_array($data , $array)){
-            array_push($this->messages , $parameters['message']);
+            $this->saveError($parameters);
         }
     }
 
     protected function nationalCode(array $parameters): void
     {
-        $data = $this->get($this->data , $parameters['ruleName']);
+        $data = $this->get($this->data , $parameters['rule']);
         if (is_array($data)){
             foreach ($data as $index => $item){
                 if ($item){
                     if(! preg_match('/^[0-9]{10}$/' , $item)){
-                        $parameters['message'] = str_replace('*' , $index , $parameters['message']);
-                        array_push($this->messages , $parameters['message']);
+                        $this->saveError($parameters , $index);
                         return;
                     }
 
                     for($i = 0; $i < 10; $i++)
                         if(preg_match('/^'.$i.'{10}$/' , $item)){
-                            $parameters['message'] = str_replace('*' , $index , $parameters['message']);
-                            array_push($this->messages , $parameters['message']);
+                            $this->saveError($parameters , $index);
                             return;
                         }
 
@@ -330,21 +316,20 @@ trait Rules
                     if(($ret < 2 && $ret == $parity) || ($ret >= 2 && $ret == 11 - $parity))
                         return;
 
-                    $parameters['message'] = str_replace('*' , $index , $parameters['message']);
-                    array_push($this->messages , $parameters['message']);
+                    $this->saveError($parameters , $index);
                 }
             }
             return;
         }
         if ($data){
             if(! preg_match('/^[0-9]{10}$/' , $data)){
-                array_push($this->messages , $parameters['message']);
+                $this->saveError($parameters);
                 return;
             }
 
             for($i = 0; $i < 10; $i++)
                 if(preg_match('/^'.$i.'{10}$/' , $data)){
-                    array_push($this->messages , $parameters['message']);
+                    $this->saveError($parameters);
                     return;
                 }
 
@@ -358,21 +343,20 @@ trait Rules
             if(($ret < 2 && $ret == $parity) || ($ret >= 2 && $ret == 11 - $parity))
                 return;
 
-            array_push($this->messages , $parameters['message']);
+            $this->saveError($parameters);
         }
     }
 
     protected function exists(array $parameters): void
     {
-        $data = $this->get($this->data , $parameters['ruleName']);
+        $data = $this->get($this->data , $parameters['rule']);
         if (is_array($data)){
             foreach ($data as $index => $item){
                 if ($item){
                     $check = $this->checkDB($item , $parameters['value']);
 
                     if (!$check){
-                        $parameters['message'] = str_replace('*' , $index , $parameters['message']);
-                        array_push($this->messages , $parameters['message']);
+                        $this->saveError($parameters , $index);
                     }
                 }
             }
@@ -382,22 +366,21 @@ trait Rules
             $check = $this->checkDB($data , $parameters['value']);
 
             if (!$check){
-                array_push($this->messages , $parameters['message']);
+                $this->saveError($parameters);
             }
         }
     }
 
     protected function unique(array $parameters): void
     {
-        $data = $this->get($this->data , $parameters['ruleName']);
+        $data = $this->get($this->data , $parameters['rule']);
         if (is_array($data)){
             foreach ($data as $index => $item){
                 if ($item){
                     $check = $this->checkDB($item , $parameters['value']);
 
                     if ($check){
-                        $parameters['message'] = str_replace('*' , $index , $parameters['message']);
-                        array_push($this->messages , $parameters['message']);
+                        $this->saveError($parameters , $index);
                     }
                 }
             }
@@ -407,7 +390,7 @@ trait Rules
             $check = $this->checkDB($data , $parameters['value']);
 
             if ($check){
-                array_push($this->messages , $parameters['message']);
+                $this->saveError($parameters);
             }
         }
     }
@@ -440,5 +423,29 @@ trait Rules
             return strlen($value);
 
         return mb_strlen($value, $encoding);
+    }
+
+    protected function saveError(array $parameters , ?int $index = null): void
+    {
+        if (!is_null($index)){
+            $parameters['message'] = str_replace('*' , $index , $parameters['message']);
+            $parameters['rule'] = str_replace('*' , $index , $parameters['rule']);
+            $this->errors[] = [
+                'message' => $parameters['message'] ,
+                'field' => [
+                    'local' => $parameters['localeField'] ,
+                    'nonLocal' => $parameters['rule'] ,
+                ]
+            ];
+            return;
+        }
+
+        $this->errors[] = [
+            'message' => $parameters['message'] ,
+            'field' => [
+                'local' => $parameters['localeField'] ,
+                'nonLocal' => $parameters['rule'] ,
+            ]
+        ];
     }
 }
