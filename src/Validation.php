@@ -10,7 +10,7 @@ class Validation
 
     protected array $rules = [];
     protected array $errorDefaultMessage = [];
-    protected array $messages = [];
+    protected array $errors = [];
     protected array $data;
 
     public function __construct(array $data , array $rules)
@@ -69,44 +69,55 @@ class Validation
 
     protected function validate(): void
     {
-        foreach ($this->rules as $ruleName => $rule){
+        foreach ($this->rules as $index => $rule){
             $rule = explode('|' , $rule);
+            $indexExplode = explode('.' , $index);
+            count($indexExplode) > 1 ? $indexLocal = last($indexExplode) : $indexLocal = $index;
 
-            foreach ($rule as $item)
-            {
+            foreach ($rule as $item) {
                 $itemExplode = explode(':' , $item);
                 $item = $itemExplode[0];
-                $itemValue = $itemExplode[1] ?? null;
+                $value = $itemExplode[1] ?? null;
 
-                $message = $this->errorDefaultMessage['message'][$item] ? str_replace(":attribute" , $this->errorDefaultMessage['attribute'][$ruleName] ?? $ruleName , $this->errorDefaultMessage['message'][$item]) : null;
+                $message = str_replace([":attribute" , ":value"] , [$this->errorDefaultMessage['attribute'][$indexLocal] ?? $indexLocal , $value] , $this->errorDefaultMessage['message'][$item]);
 
-                $message = str_replace(":value" , $itemValue , $message);
+                $localeField = $this->errorDefaultMessage['attribute'][$indexLocal] ?? $indexLocal;
 
-                $parameters = [
-                    'ruleName' => $ruleName ,
-                    'value' => $itemValue ,
-                    'message' => $message
-                ];
-                $this->$item($parameters);
+                $this->$item([
+                    'rule' => $index ,
+                    'value' => $value ,
+                    'message' => $message ,
+                    'localeField' => $localeField
+                ]);
             }
         }
     }
 
-    public function getMessages(): array
+    public function hasError(): bool
     {
-        return $this->messages;
-    }
-
-    public function hasMessage(): bool
-    {
-        if (empty($this->messages))
+        if (empty($this->errors))
             return false;
 
         return true;
     }
 
+    public function getMessages(): array
+    {
+        return array_column($this->errors , 'message');
+    }
+
     public function firstMessage(): string
     {
-        return $this->messages[0];
+        return $this->errors[0]['message'];
+    }
+
+    public function getErrors(): array
+    {
+        return $this->errors;
+    }
+
+    public function firstError(): array
+    {
+        return $this->errors[0];
     }
 }
