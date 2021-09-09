@@ -23,7 +23,7 @@ class Validation
         $this->validate();
     }
 
-    protected function exists(Enumerable|ArrayAccess|array $array, string $key): bool
+    protected function existsData(Enumerable|ArrayAccess|array $array, string|int $key): bool
     {
         if ($array instanceof Enumerable) {
             return $array->has($key);
@@ -36,7 +36,12 @@ class Validation
         return array_key_exists($key, $array);
     }
 
-    protected function collapse(array $array): array
+    protected function accessibleData(mixed $value): bool
+    {
+        return is_array($value) || $value instanceof ArrayAccess;
+    }
+
+    protected function collapseData(array $array): array
     {
         $results = [];
 
@@ -47,7 +52,7 @@ class Validation
         return array_merge([], ...$results);
     }
 
-    protected function get(string|int|bool|array|float $target, array|string|null $key, string|int|bool|array|float|null $default = null): string|int|bool|array|float|null
+    protected function getData(mixed $target, string|array|int|null $key, mixed $default = null): mixed
     {
         if (is_null($key)) {
             return $target;
@@ -63,16 +68,20 @@ class Validation
             }
 
             if ($segment === '*') {
+                if (! is_array($target)) {
+                    return value($default);
+                }
+
                 $result = [];
 
                 foreach ($target as $item) {
-                    $result[] = $this->get($item, $key);
+                    $result[] = $this->getData($item, $key);
                 }
 
-                return in_array('*', $key) ? $this->collapse($result) : $result;
+                return in_array('*', $key) ? $this->collapseData($result) : $result;
             }
 
-            if (array_key_exists($segment, $target)) {
+            if ($this->accessibleData($target) && $this->existsData($target, $segment)) {
                 $target = $target[$segment];
             } else {
                 return value($default);
