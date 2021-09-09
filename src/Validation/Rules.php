@@ -10,15 +10,15 @@ trait Rules
     protected function required(array $parameters): void
     {
         $data = $this->get($this->data , $parameters['rule']);
-        if (is_array($data)){
+        if (str_contains($parameters['rule'] , '*') && $data) {
             foreach ($data as $index => $item){
-                if (! $item || empty($item)){
+                if (!$item || !isset($index) || empty($item)){
                     $this->saveError($parameters , $index);
                 }
             }
             return;
         }
-        if (! $data || empty($data)){
+        if (!$data || !isset($data) || empty($data)){
             $this->saveError($parameters);
         }
     }
@@ -26,7 +26,7 @@ trait Rules
     protected function string(array $parameters): void
     {
         $data = $this->get($this->data , $parameters['rule']);
-        if (is_array($data)){
+        if (str_contains($parameters['rule'] , '*') && $data) {
             foreach ($data as $index => $item){
                 if ($item && !is_string($item)){
                     $this->saveError($parameters , $index);
@@ -42,7 +42,7 @@ trait Rules
     protected function integer(array $parameters): void
     {
         $data = $this->get($this->data , $parameters['rule']);
-        if (is_array($data)){
+        if (str_contains($parameters['rule'] , '*') && $data) {
             foreach ($data as $index => $item){
                 if ($item && !is_int($item)){
                     $this->saveError($parameters , $index);
@@ -58,7 +58,7 @@ trait Rules
     protected function boolean(array $parameters): void
     {
         $data = $this->get($this->data , $parameters['rule']);
-        if (is_array($data)){
+        if (str_contains($parameters['rule'] , '*') && $data) {
             foreach ($data as $index => $item){
                 if ($item && !is_bool($item)){
                     $this->saveError($parameters , $index);
@@ -74,7 +74,7 @@ trait Rules
     protected function array(array $parameters): void
     {
         $data = $this->get($this->data , $parameters['rule']);
-        if (is_array($data)){
+        if (str_contains($parameters['rule'] , '*') && $data) {
             foreach ($data as $index => $item){
                 if ($item && !is_array($item)){
                     $this->saveError($parameters , $index);
@@ -90,7 +90,7 @@ trait Rules
     protected function email(array $parameters): void
     {
         $data = $this->get($this->data , $parameters['rule']);
-        if (is_array($data)){
+        if (str_contains($parameters['rule'] , '*') && $data) {
             foreach ($data as $index => $item){
                 if ($item && false === filter_var($item, FILTER_VALIDATE_EMAIL)){
                     $this->saveError($parameters , $index);
@@ -106,7 +106,7 @@ trait Rules
     protected function regex(array $parameters): void
     {
         $data = $this->get($this->data , $parameters['rule']);
-        if (is_array($data)){
+        if (str_contains($parameters['rule'] , '*') && $data) {
             foreach ($data as $index => $item){
                 if ($item && !preg_match($parameters['value'], $item)){
                     $this->saveError($parameters , $index);
@@ -122,7 +122,7 @@ trait Rules
     protected function notRegex(array $parameters): void
     {
         $data = $this->get($this->data , $parameters['rule']);
-        if (is_array($data)){
+        if (str_contains($parameters['rule'] , '*') && $data) {
             foreach ($data as $index => $item){
                 if ($item && preg_match($parameters['value'], $item)){
                     $this->saveError($parameters , $index);
@@ -138,7 +138,7 @@ trait Rules
     protected function max(array $parameters): void
     {
         $data = $this->get($this->data , $parameters['rule']);
-        if (is_array($data)){
+        if (str_contains($parameters['rule'] , '*') && $data) {
             foreach ($data as $index => $item){
                 if ($item){
                     if (is_string($item) && $this->strlen($item) >= $parameters['value']){
@@ -167,7 +167,7 @@ trait Rules
     protected function min(array $parameters): void
     {
         $data = $this->get($this->data , $parameters['rule']);
-        if (is_array($data)){
+        if (str_contains($parameters['rule'] , '*') && $data) {
             foreach ($data as $index => $item){
                 if ($item){
                     if (is_string($item) && $this->strlen($item) <= $parameters['value']){
@@ -196,7 +196,7 @@ trait Rules
     protected function size(array $parameters): void
     {
         $data = $this->get($this->data , $parameters['rule']);
-        if (is_array($data)){
+        if (str_contains($parameters['rule'] , '*') && $data) {
             foreach ($data as $index => $item){
                 if ($item){
                     if (is_string($item) && $this->strlen($item) != $parameters['value']){
@@ -225,15 +225,15 @@ trait Rules
     protected function date(array $parameters): void
     {
         $data = $this->get($this->data , $parameters['rule']);
-        if (is_array($data)){
+        if (str_contains($parameters['rule'] , '*') && $data) {
             foreach ($data as $index => $item){
-                if ($item && ! $this->validateDate($item , is_null($parameters['value']) ? 'Y-m-d H:i:s' : $parameters['value'])){
+                if ($item && !$this->validateDate($item , is_null($parameters['value']) ? 'Y-m-d H:i:s' : $parameters['value'])){
                     $this->saveError($parameters , $index);
                 }
             }
             return;
         }
-        if ($data && ! $this->validateDate($data , is_null($parameters['value']) ? 'Y-m-d H:i:s' : $parameters['value'])){
+        if ($data && !$this->validateDate($data , is_null($parameters['value']) ? 'Y-m-d H:i:s' : $parameters['value'])){
             $this->saveError($parameters);
         }
     }
@@ -242,7 +242,7 @@ trait Rules
     {
         $data = $this->get($this->data , $parameters['rule']);
         $value = $this->get($this->data , $parameters['value']);
-        if (is_array($data)){
+        if (str_contains($parameters['rule'] , '*') && $data) {
             foreach ($data as $index => $item){
                 if ($item && $value && $item <= $value){
                     $this->saveError($parameters , $index);
@@ -259,7 +259,7 @@ trait Rules
     {
         $data = $this->get($this->data , $parameters['rule']);
         $value = $this->get($this->data , $parameters['value']);
-        if (is_array($data)){
+        if (str_contains($parameters['rule'] , '*') && $data) {
             foreach ($data as $index => $item){
                 if ($item && $value && $item >= $value){
                     $this->saveError($parameters , $index);
@@ -276,7 +276,7 @@ trait Rules
     {
         $data = $this->get($this->data , $parameters['rule']);
         $array = explode(',' , $parameters['value']);
-        if (is_array($data)){
+        if (str_contains($parameters['rule'] , '*') && $data) {
             foreach ($data as $index => $item){
                 if ($item  && !in_array($item , $array)){
                     $this->saveError($parameters , $index);
@@ -292,10 +292,10 @@ trait Rules
     protected function nationalCode(array $parameters): void
     {
         $data = $this->get($this->data , $parameters['rule']);
-        if (is_array($data)){
+        if (str_contains($parameters['rule'] , '*') && $data) {
             foreach ($data as $index => $item){
                 if ($item){
-                    if(! preg_match('/^[0-9]{10}$/' , $item)){
+                    if(!preg_match('/^[0-9]{10}$/' , $item)){
                         $this->saveError($parameters , $index);
                         return;
                     }
@@ -322,7 +322,7 @@ trait Rules
             return;
         }
         if ($data){
-            if(! preg_match('/^[0-9]{10}$/' , $data)){
+            if(!preg_match('/^[0-9]{10}$/' , $data)){
                 $this->saveError($parameters);
                 return;
             }
@@ -350,7 +350,7 @@ trait Rules
     protected function exists(array $parameters): void
     {
         $data = $this->get($this->data , $parameters['rule']);
-        if (is_array($data)){
+        if (str_contains($parameters['rule'] , '*') && $data) {
             foreach ($data as $index => $item){
                 if ($item){
                     $check = $this->checkDB($item , $parameters['value']);
@@ -374,7 +374,7 @@ trait Rules
     protected function unique(array $parameters): void
     {
         $data = $this->get($this->data , $parameters['rule']);
-        if (is_array($data)){
+        if (str_contains($parameters['rule'] , '*') && $data) {
             foreach ($data as $index => $item){
                 if ($item){
                     $check = $this->checkDB($item , $parameters['value']);
@@ -433,8 +433,8 @@ trait Rules
             $this->errors[] = [
                 'message' => $parameters['message'] ,
                 'field' => [
-                    'local' => $parameters['localeField'] ,
-                    'nonLocal' => $parameters['rule'] ,
+                    'locale' => $parameters['localeField'] ,
+                    'nonLocale' => $parameters['rule'] ,
                 ]
             ];
             return;
@@ -443,8 +443,8 @@ trait Rules
         $this->errors[] = [
             'message' => $parameters['message'] ,
             'field' => [
-                'local' => $parameters['localeField'] ,
-                'nonLocal' => $parameters['rule'] ,
+                'locale' => $parameters['localeField'] ,
+                'nonLocale' => $parameters['rule'] ,
             ]
         ];
     }
