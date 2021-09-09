@@ -2,8 +2,6 @@
 
 namespace Tower;
 
-use ArrayAccess;
-use Illuminate\Support\Enumerable;
 use Tower\Validation\Rules;
 
 class Validation
@@ -23,22 +21,9 @@ class Validation
         $this->validate();
     }
 
-    protected function existsData(Enumerable|ArrayAccess|array $array, string|int $key): bool
+    protected function existsData(array $array, string|int $key): bool
     {
-        if ($array instanceof Enumerable) {
-            return $array->has($key);
-        }
-
-        if ($array instanceof ArrayAccess) {
-            return $array->offsetExists($key);
-        }
-
         return array_key_exists($key, $array);
-    }
-
-    protected function accessibleData(mixed $value): bool
-    {
-        return is_array($value) || $value instanceof ArrayAccess;
     }
 
     protected function collapseData(array $array): array
@@ -81,7 +66,7 @@ class Validation
                 return in_array('*', $key) ? $this->collapseData($result) : $result;
             }
 
-            if ($this->accessibleData($target) && $this->existsData($target, $segment)) {
+            if (is_array($target) && $this->existsData($target, $segment)) {
                 $target = $target[$segment];
             } else {
                 return value($default);
