@@ -2,6 +2,8 @@
 
 namespace Tower;
 
+use ArrayAccess;
+use Illuminate\Support\Enumerable;
 use Tower\Validation\Rules;
 
 class Validation
@@ -21,6 +23,19 @@ class Validation
         $this->validate();
     }
 
+    protected function exists(Enumerable|ArrayAccess|array $array, string $key): bool
+    {
+        if ($array instanceof Enumerable) {
+            return $array->has($key);
+        }
+
+        if ($array instanceof ArrayAccess) {
+            return $array->offsetExists($key);
+        }
+
+        return array_key_exists($key, $array);
+    }
+
     protected function collapse(array $array): array
     {
         $results = [];
@@ -32,10 +47,10 @@ class Validation
         return array_merge([], ...$results);
     }
 
-    protected function get(array $array, array|string|null $key, ?string $default = null): string|int|bool|array|float|null
+    protected function get(string|int|bool|array|float $target, array|string|null $key, string|int|bool|array|float|null $default = null): string|int|bool|array|float|null
     {
         if (is_null($key)) {
-            return $array;
+            return $target;
         }
 
         $key = is_array($key) ? $key : explode('.', $key);
@@ -44,27 +59,27 @@ class Validation
             unset($key[$i]);
 
             if (is_null($segment)) {
-                return $array;
+                return $target;
             }
 
             if ($segment === '*') {
                 $result = [];
 
-                foreach ($array as $item) {
+                foreach ($target as $item) {
                     $result[] = $this->get($item, $key);
                 }
 
                 return in_array('*', $key) ? $this->collapse($result) : $result;
             }
 
-            if (array_key_exists($segment, $array)) {
-                $array = $array[$segment];
+            if (array_key_exists($segment, $target)) {
+                $target = $target[$segment];
             } else {
                 return value($default);
             }
         }
 
-        return $array;
+        return $target;
     }
 
     protected function validate(): void
@@ -73,6 +88,11 @@ class Validation
             $rule = explode('|' , $rule);
             $indexExplode = explode('.' , $index);
             count($indexExplode) > 1 ? $indexLocal = last($indexExplode) : $indexLocal = $index;
+
+            if ($indexLocal == '*'){
+                $lastKey = array_key_last($indexExplode);
+                $indexLocal = $indexExplode[$lastKey - 1];
+            }
 
             foreach ($rule as $item) {
                 $itemExplode = explode(':' , $item);
@@ -94,6 +114,14 @@ class Validation
     }
 
     public function hasError(): bool
+    {
+        if (empty($this->errors))
+            return false;
+
+        return true;
+    }
+
+    public function hasMessage(): bool
     {
         if (empty($this->errors))
             return false;
