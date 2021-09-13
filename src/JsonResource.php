@@ -71,7 +71,7 @@ class JsonResource
     {
         if (is_null($this->data))
             return response()->json([
-                'data' => []
+                'data' => null
             ]);
 
         if ($this->data instanceof Collection)
