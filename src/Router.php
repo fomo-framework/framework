@@ -81,12 +81,10 @@ class Router
 
         if (isset($parameters['withoutMiddleware'])){
             if (is_array($parameters['withoutMiddleware'])){
-                $this->currentGroupMiddleware = array_diff($this->currentGroupMiddleware , $parameters['withoutMiddleware']);
+                $this->currentGroupMiddleware = array_values(array_diff($this->currentGroupMiddleware , $parameters['withoutMiddleware']));
                 unset($parameters['withoutMiddleware']);
-            }
-
-            if (is_string($parameters['withoutMiddleware'])){
-                $this->currentGroupMiddleware = array_diff($this->currentGroupMiddleware , [$parameters['withoutMiddleware']]);
+            } elseif (is_string($parameters['withoutMiddleware'])){
+                $this->currentGroupMiddleware = array_values(array_diff($this->currentGroupMiddleware , [$parameters['withoutMiddleware']]));
                 unset($parameters['withoutMiddleware']);
             }
         }
@@ -128,12 +126,10 @@ class Router
 
         if (isset($callback['withoutMiddleware'])){
             if (is_array($callback['withoutMiddleware'])){
-                $this->currentGroupMiddleware = array_diff($this->currentGroupMiddleware , $callback['withoutMiddleware']);
+                $this->currentGroupMiddleware = array_values(array_diff($this->currentGroupMiddleware , $callback['withoutMiddleware']));
                 unset($callback['withoutMiddleware']);
-            }
-
-            if (is_string($callback['withoutMiddleware'])){
-                $this->currentGroupMiddleware = array_diff($this->currentGroupMiddleware , [$callback['withoutMiddleware']]);
+            } elseif (is_string($callback['withoutMiddleware'])){
+                $this->currentGroupMiddleware = array_values(array_diff($this->currentGroupMiddleware , [$callback['withoutMiddleware']]));
                 unset($callback['withoutMiddleware']);
             }
         }
