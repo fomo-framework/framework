@@ -69,25 +69,25 @@ class Router
         }
 
         $previousGroupMiddleware = $this->currentGroupMiddleware;
-        if (isset($parameters['middleware']) && is_array($parameters['middleware'])){
-            array_push($this->currentGroupMiddleware , ...$parameters['middleware']);
-        }
+        if (isset($parameters['middleware'])){
+            if (is_array($parameters['middleware'])){
+                array_push($this->currentGroupMiddleware , ...$parameters['middleware']);
+            }
 
-        if (isset($parameters['middleware']) && is_string($parameters['middleware'])){
-            array_push($this->currentGroupMiddleware , $parameters['middleware']);
-        }
-
-        if (isset($parameters['withoutMiddleware']) && is_array($parameters['withoutMiddleware'])){
-            foreach ($parameters['withoutMiddleware'] as $middleware){
-                if (($key = array_search($middleware, $this->currentGroupMiddleware)) !== false) {
-                    unset($this->currentGroupMiddleware[$key]);
-                }
+            if (is_string($parameters['middleware'])){
+                array_push($this->currentGroupMiddleware , $parameters['middleware']);
             }
         }
 
-        if (isset($parameters['withoutMiddleware']) && is_string($parameters['withoutMiddleware'])){
-            if (($key = array_search($parameters['withoutMiddleware'], $this->currentGroupMiddleware)) !== false) {
-                unset($this->currentGroupMiddleware[$key]);
+        if (isset($parameters['withoutMiddleware'])){
+            if (is_array($parameters['withoutMiddleware'])){
+                $this->currentGroupMiddleware = array_diff($this->currentGroupMiddleware , $parameters['withoutMiddleware']);
+                unset($parameters['withoutMiddleware']);
+            }
+
+            if (is_string($parameters['withoutMiddleware'])){
+                $this->currentGroupMiddleware = array_diff($this->currentGroupMiddleware , [$parameters['withoutMiddleware']]);
+                unset($parameters['withoutMiddleware']);
             }
         }
 
@@ -115,31 +115,31 @@ class Router
                 $route = substr($route, 0 ,-1);
         }
 
-        if (isset($callback['middleware']) && is_array($callback['middleware'])){
-            array_push($this->currentGroupMiddleware , ...$callback['middleware']);
-        }
-
-        if (isset($callback['middleware']) && is_string($callback['middleware'])){
-            array_push($this->currentGroupMiddleware , $callback['middleware']);
-        }
-
-        if (isset($callback['withoutMiddleware']) && is_array($callback['withoutMiddleware'])){
-            foreach ($callback['withoutMiddleware'] as $middleware){
-                if (($key = array_search($middleware, $this->currentGroupMiddleware)) !== false) {
-                    unset($this->currentGroupMiddleware[$key]);
-                }
+        $previousGroupMiddleware = $this->currentGroupMiddleware;
+        if (isset($callback['middleware'])) {
+            if (is_array($callback['middleware'])){
+                array_push($this->currentGroupMiddleware , ...$callback['middleware']);
             }
-            unset($callback['withoutMiddleware']);
+
+            if (is_string($callback['middleware'])){
+                array_push($this->currentGroupMiddleware , $callback['middleware']);
+            }
         }
 
-        if (isset($callback['withoutMiddleware']) && is_string($callback['withoutMiddleware'])){
-            if (($key = array_search($callback['withoutMiddleware'], $this->currentGroupMiddleware)) !== false) {
-                unset($this->currentGroupMiddleware[$key]);
+        if (isset($callback['withoutMiddleware'])){
+            if (is_array($callback['withoutMiddleware'])){
+                $this->currentGroupMiddleware = array_diff($this->currentGroupMiddleware , $callback['withoutMiddleware']);
+                unset($callback['withoutMiddleware']);
             }
-            unset($callback['withoutMiddleware']);
+
+            if (is_string($callback['withoutMiddleware'])){
+                $this->currentGroupMiddleware = array_diff($this->currentGroupMiddleware , [$callback['withoutMiddleware']]);
+                unset($callback['withoutMiddleware']);
+            }
         }
 
         $callback['middleware'] = $this->currentGroupMiddleware;
+        $this->currentGroupMiddleware = $previousGroupMiddleware;
 
         $this->routes[$method][] = [$route , $callback];
     }
