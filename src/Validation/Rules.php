@@ -278,13 +278,13 @@ trait Rules
         $array = explode(',' , $parameters['value']);
         if (str_contains($parameters['rule'] , '*') && $data) {
             foreach ($data as $index => $item){
-                if ($item  && !in_array($item , $array)){
+                if ($item  && !in_array($item , $array , true)){
                     $this->saveError($parameters , $index);
                 }
             }
             return;
         }
-        if ($data  && !in_array($data , $array)){
+        if ($data  && !in_array($data , $array , true)){
             $this->saveError($parameters);
         }
     }
