@@ -9,8 +9,8 @@ class Response extends WorkerResponse
 {
     public const HTTP_CONTINUE = 100;
     public const HTTP_SWITCHING_PROTOCOLS = 101;
-    public const HTTP_PROCESSING = 102;            // RFC2518
-    public const HTTP_EARLY_HINTS = 103;           // RFC8297
+    public const HTTP_PROCESSING = 102;
+    public const HTTP_EARLY_HINTS = 103;
     public const HTTP_OK = 200;
     public const HTTP_CREATED = 201;
     public const HTTP_ACCEPTED = 202;
@@ -18,9 +18,9 @@ class Response extends WorkerResponse
     public const HTTP_NO_CONTENT = 204;
     public const HTTP_RESET_CONTENT = 205;
     public const HTTP_PARTIAL_CONTENT = 206;
-    public const HTTP_MULTI_STATUS = 207;          // RFC4918
-    public const HTTP_ALREADY_REPORTED = 208;      // RFC5842
-    public const HTTP_IM_USED = 226;               // RFC3229
+    public const HTTP_MULTI_STATUS = 207;
+    public const HTTP_ALREADY_REPORTED = 208;
+    public const HTTP_IM_USED = 226;
     public const HTTP_MULTIPLE_CHOICES = 300;
     public const HTTP_MOVED_PERMANENTLY = 301;
     public const HTTP_FOUND = 302;
@@ -48,16 +48,16 @@ class Response extends WorkerResponse
     public const HTTP_UNSUPPORTED_MEDIA_TYPE = 415;
     public const HTTP_REQUESTED_RANGE_NOT_SATISFIABLE = 416;
     public const HTTP_EXPECTATION_FAILED = 417;
-    public const HTTP_I_AM_A_TEAPOT = 418;                                               // RFC2324
-    public const HTTP_MISDIRECTED_REQUEST = 421;                                         // RFC7540
-    public const HTTP_UNPROCESSABLE_ENTITY = 422;                                        // RFC4918
-    public const HTTP_LOCKED = 423;                                                      // RFC4918
-    public const HTTP_FAILED_DEPENDENCY = 424;                                           // RFC4918
-    public const HTTP_TOO_EARLY = 425;                                                   // RFC-ietf-httpbis-replay-04
-    public const HTTP_UPGRADE_REQUIRED = 426;                                            // RFC2817
-    public const HTTP_PRECONDITION_REQUIRED = 428;                                       // RFC6585
-    public const HTTP_TOO_MANY_REQUESTS = 429;                                           // RFC6585
-    public const HTTP_REQUEST_HEADER_FIELDS_TOO_LARGE = 431;                             // RFC6585
+    public const HTTP_I_AM_A_TEAPOT = 418;
+    public const HTTP_MISDIRECTED_REQUEST = 421;
+    public const HTTP_UNPROCESSABLE_ENTITY = 422;
+    public const HTTP_LOCKED = 423;
+    public const HTTP_FAILED_DEPENDENCY = 424;
+    public const HTTP_TOO_EARLY = 425;
+    public const HTTP_UPGRADE_REQUIRED = 426;
+    public const HTTP_PRECONDITION_REQUIRED = 428;
+    public const HTTP_TOO_MANY_REQUESTS = 429;
+    public const HTTP_REQUEST_HEADER_FIELDS_TOO_LARGE = 431;
     public const HTTP_UNAVAILABLE_FOR_LEGAL_REASONS = 451;
     public const HTTP_INTERNAL_SERVER_ERROR = 500;
     public const HTTP_NOT_IMPLEMENTED = 501;
@@ -65,10 +65,10 @@ class Response extends WorkerResponse
     public const HTTP_SERVICE_UNAVAILABLE = 503;
     public const HTTP_GATEWAY_TIMEOUT = 504;
     public const HTTP_VERSION_NOT_SUPPORTED = 505;
-    public const HTTP_VARIANT_ALSO_NEGOTIATES_EXPERIMENTAL = 506;                        // RFC2295
-    public const HTTP_INSUFFICIENT_STORAGE = 507;                                        // RFC4918
-    public const HTTP_LOOP_DETECTED = 508;                                               // RFC5842
-    public const HTTP_NOT_EXTENDED = 510;                                                // RFC2774
+    public const HTTP_VARIANT_ALSO_NEGOTIATES_EXPERIMENTAL = 506;
+    public const HTTP_INSUFFICIENT_STORAGE = 507;
+    public const HTTP_LOOP_DETECTED = 508;
+    public const HTTP_NOT_EXTENDED = 510;
     public const HTTP_NETWORK_AUTHENTICATION_REQUIRED = 511;
 
     public const PHRASES = [
@@ -136,7 +136,7 @@ class Response extends WorkerResponse
     {
         $this->_status = $status;
         $this->_body = json_encode($data , JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_IGNORE);
-        $this->_header = ['Content-Type' => 'application/json'];
+        $this->_header['Content-Type'] = 'application/json';
 
         return $this;
     }
@@ -155,7 +155,7 @@ class Response extends WorkerResponse
 
         $this->_status = $status;
         $this->_body = $xml;
-        $this->_header = ['Content-Type' => 'text/xml'];
+        $this->_header['Content-Type'] = 'text/xml';
 
         return $this;
     }
@@ -167,7 +167,7 @@ class Response extends WorkerResponse
 
         $this->_body = "$callbackName($data)";
         $this->_status = $status;
-        $this->_header = ['Content-Type' => 'application/json'];
+        $this->_header['Content-Type'] = 'application/json';
 
         return $this;
     }
