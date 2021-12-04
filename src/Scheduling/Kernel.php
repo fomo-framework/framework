@@ -6,7 +6,7 @@ class Kernel
 {
     public array $tasks = [];
 
-    protected static self $instance;
+    protected static ?self $instance;
 
     public static function getInstance(): self
     {
