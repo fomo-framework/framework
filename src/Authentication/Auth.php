@@ -6,9 +6,9 @@ use stdClass;
 
 class Auth
 {
-    protected static ?Auth $_instance = null;
+    protected static Auth $instance;
 
-    protected ?stdClass $user = null;
+    protected stdClass $user;
 
     public function __construct(stdClass $user)
     {
@@ -17,16 +17,26 @@ class Auth
 
     public static function setInstance(stdClass $user): void
     {
-        self::$_instance = new self($user);
+        self::$instance = new self($user);
     }
 
     public static function getInstance(): Auth
     {
-        return self::$_instance;
+        return self::$instance;
     }
 
     public function user(): stdClass
     {
         return $this->user;
+    }
+
+    public function id(): int
+    {
+        return (int) $this->user->id;
+    }
+
+    public function check(): bool
+    {
+        return !empty($this->user);
     }
 }
