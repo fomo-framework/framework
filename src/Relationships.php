@@ -24,69 +24,69 @@ class Relationships
 
     public function where(string|callable $column ,mixed $operator = null ,mixed $value = null): self
     {
-        array_push($this->where , [
-            'column' => $column ,
-            'operator' => is_null($operator) ? '=' : $operator ,
-            'value' => is_null($value) ? null : $value ,
-        ]);
+        $this->where[] = [
+            'column' => $column,
+            'operator' => is_null($operator) ? '=' : $operator,
+            'value' => is_null($value) ? null : $value,
+        ];
 
         return $this;
     }
 
     public function orWhere(string|callable $column ,mixed $operator = null ,mixed $value = null): self
     {
-        array_push($this->orWhere , [
-            'column' => $column ,
-            'operator' => is_null($operator) ? '=' : $operator ,
-            'value' => is_null($value) ? null : $value ,
-        ]);
+        $this->orWhere[] = [
+            'column' => $column,
+            'operator' => is_null($operator) ? '=' : $operator,
+            'value' => is_null($value) ? null : $value,
+        ];
 
         return $this;
     }
 
     public function whereNull(string $column): self
     {
-        array_push($this->whereNull , [
+        $this->whereNull[] = [
             'column' => $column
-        ]);
+        ];
 
         return $this;
     }
 
     public function whereNotNull(string $column): self
     {
-        array_push($this->whereNotNull , [
+        $this->whereNotNull[] = [
             'column' => $column
-        ]);
+        ];
 
         return $this;
     }
 
     public function whereIn(string $column , array $values): self
     {
-        array_push($this->whereIn , [
-            'column' => $column ,
+        $this->whereIn[] = [
+            'column' => $column,
             'values' => $values
-        ]);
+        ];
 
         return $this;
     }
 
     public function whereNotIn(string $column , array $values): self
     {
-        array_push($this->whereNotIn , [
-            'column' => $column ,
+        $this->whereNotIn[] = [
+            'column' => $column,
             'values' => $values
-        ]);
+        ];
 
         return $this;
     }
 
     public function whereRaw(string $raw): self
     {
-        array_push($this->whereRaw , [
+        $this->whereRaw[] = [
             'raw' => $raw
-        ]);
+        ];
 
         return $this;
     }
