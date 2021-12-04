@@ -6,14 +6,14 @@ class Kernel
 {
     public array $tasks = [];
 
-    protected static ?self $_instance = null;
+    protected static self $instance;
 
     public static function getInstance(): self
     {
-        if (is_null(self::$_instance))
-            self::$_instance = new self();
+        if (is_null(self::$instance))
+            self::$instance = new self();
 
-        return self::$_instance;
+        return self::$instance;
     }
 
     public function getTasks(): array
