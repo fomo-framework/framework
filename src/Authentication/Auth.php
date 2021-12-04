@@ -6,11 +6,11 @@ use stdClass;
 
 class Auth
 {
-    protected static Auth $instance;
+    protected static self $instance;
 
-    protected stdClass $user;
+    protected ?stdClass $user;
 
-    public function __construct(stdClass $user)
+    public function __construct(?stdClass $user = null)
     {
         $this->user = $user;
     }
@@ -22,6 +22,10 @@ class Auth
 
     public static function getInstance(): Auth
     {
+        if (!isset(self::$instance)){
+            self::$instance = new self();
+            return self::$instance;
+        }
         return self::$instance;
     }
 
@@ -30,13 +34,13 @@ class Auth
         return $this->user;
     }
 
-    public function id(): int
+    public function id(): int|string
     {
-        return (int) $this->user->id;
+        return $this->user->id;
     }
 
     public function check(): bool
     {
-        return !empty($this->user);
+        return !is_null($this->user);
     }
 }
