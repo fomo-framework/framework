@@ -1,6 +1,6 @@
 <?php
 
-namespace Tower\Attribute\Http;
+namespace Tower\Attribute;
 
 use Attribute;
 
