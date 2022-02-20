@@ -131,8 +131,8 @@ class Relationships
 
     public function orderBy(string $column , string $direction = 'desc'): self
     {
-        $this->orderBy[0] = $column;
-        $this->orderBy[1] = $direction;
+        $this->orderBy['column'] = $column;
+        $this->orderBy['direction'] = $direction;
 
         return $this;
     }
