@@ -2,8 +2,8 @@
 
 namespace Tower;
 
-use Elasticsearch\Client;
-use Elasticsearch\ClientBuilder;
+use Elastic\Elasticsearch\Client;
+use Elastic\Elasticsearch\ClientBuilder;
 
 class Elastic
 {
@@ -12,7 +12,8 @@ class Elastic
     public static function setInstance()
     {
         self::$instance = (new ClientBuilder())
-            ->setHosts(Loader::get('elastic'))
+            ->setHosts([Loader::get('elastic')['host'] . ':' . Loader::get('elastic')['port']])
+            ->setBasicAuthentication(Loader::get('elastic')['username'] , Loader::get('elastic')['password'])
             ->build();
     }
 
@@ -20,7 +21,7 @@ class Elastic
     {
         return self::$instance;
     }
-    
+
     public static function __callStatic(string $method, array $arguments)
     {
         return self::$instance->$method(...$arguments);
