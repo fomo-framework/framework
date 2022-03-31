@@ -5,7 +5,7 @@ use Tower\Elastic;
 use Tower\Queue;
 use Tower\Authentication\Auth;
 use Tower\Response;
-use Elasticsearch\Client;
+use Elastic\Elasticsearch\Client;
 use Tower\Redis;
 
 if (! function_exists('basePath')) {
