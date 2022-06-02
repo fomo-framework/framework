@@ -11,10 +11,13 @@ class Elastic
 
     public static function setInstance()
     {
-        self::$instance = (new ClientBuilder())
-            ->setHosts([Loader::get('elastic')['host'] . ':' . Loader::get('elastic')['port']])
-            ->setBasicAuthentication(Loader::get('elastic')['username'] , Loader::get('elastic')['password'])
-            ->build();
+        $istance = (new ClientBuilder())->setHosts([Loader::get('elastic')['host'] . ':' . Loader::get('elastic')['port']]);
+
+        if (Loader::get('elastic')['username'] != null && Loader::get('elastic')['password'] != null){
+            $istance->setBasicAuthentication(Loader::get('elastic')['username'] , Loader::get('elastic')['password']);
+        }
+
+        self::$instance = $istance->build();
     }
 
     public static function getInstance(): Client
