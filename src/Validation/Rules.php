@@ -141,11 +141,11 @@ trait Rules
         if (str_contains($parameters['rule'] , '*') && $data) {
             foreach ($data as $index => $item){
                 if ($item){
-                    if (is_string($item) && $this->strlen($item) >= $parameters['value']){
+                    if (is_string($item) && $this->strlen($item) > $parameters['value']){
                         $this->saveError($parameters , $index);
-                    } elseif (is_int($item) && $item >= $parameters['value']){
+                    } elseif (is_int($item) && $item > $parameters['value']){
                         $this->saveError($parameters , $index);
-                    } elseif (is_array($item) && count($item) >= $parameters['value']){
+                    } elseif (is_array($item) && count($item) > $parameters['value']){
                         $this->saveError($parameters , $index);
                     }
                 }
@@ -154,11 +154,11 @@ trait Rules
         }
 
         if ($data){
-            if (is_string($data) && $this->strlen($data) >= $parameters['value']){
+            if (is_string($data) && $this->strlen($data) > $parameters['value']){
                 $this->saveError($parameters);
-            } elseif (is_int($data) && $data >= $parameters['value']){
+            } elseif (is_int($data) && $data > $parameters['value']){
                 $this->saveError($parameters);
-            } elseif (is_array($data) && count($data) >= $parameters['value']){
+            } elseif (is_array($data) && count($data) > $parameters['value']){
                 $this->saveError($parameters);
             }
         }
@@ -170,11 +170,11 @@ trait Rules
         if (str_contains($parameters['rule'] , '*') && $data) {
             foreach ($data as $index => $item){
                 if ($item){
-                    if (is_string($item) && $this->strlen($item) <= $parameters['value']){
+                    if (is_string($item) && $this->strlen($item) < $parameters['value']){
                         $this->saveError($parameters , $index);
-                    } elseif (is_int($item) && $item <= $parameters['value']){
+                    } elseif (is_int($item) && $item < $parameters['value']){
                         $this->saveError($parameters , $index);
-                    } elseif (is_array($item) && count($item) <= $parameters['value']){
+                    } elseif (is_array($item) && count($item) < $parameters['value']){
                         $this->saveError($parameters , $index);
                     }
                 }
@@ -183,11 +183,11 @@ trait Rules
         }
 
         if ($data){
-            if (is_string($data) && $this->strlen($data) <= $parameters['value']){
+            if (is_string($data) && $this->strlen($data) < $parameters['value']){
                 $this->saveError($parameters);
-            } elseif (is_int($data) && $data <= $parameters['value']){
+            } elseif (is_int($data) && $data < $parameters['value']){
                 $this->saveError($parameters);
-            } elseif (is_array($data) && count($data) <= $parameters['value']){
+            } elseif (is_array($data) && count($data) < $parameters['value']){
                 $this->saveError($parameters);
             }
         }
