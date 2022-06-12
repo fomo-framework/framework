@@ -3,7 +3,7 @@
 namespace Tower;
 
 use Illuminate\Database\Query\Builder;
-use Illuminate\Pagination\Paginator;
+use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
@@ -22,23 +22,23 @@ class Relationships
     protected array $whereNotIn = [];
     protected array $whereRaw = [];
 
-    public function where(string|callable $column ,mixed $operator = null ,mixed $value = null): self
+    public function where(string|callable $column , mixed $operator = '=' , mixed $value = null): self
     {
         $this->where[] = [
-            'column' => $column,
-            'operator' => is_null($operator) ? '=' : $operator,
-            'value' => is_null($value) ? null : $value,
+            'column' => $column ,
+            'operator' => $operator ,
+            'value' => $value ,
         ];
 
         return $this;
     }
 
-    public function orWhere(string|callable $column ,mixed $operator = null ,mixed $value = null): self
+    public function orWhere(string|callable $column , mixed $operator = '=' , mixed $value = null): self
     {
         $this->orWhere[] = [
-            'column' => $column,
-            'operator' => is_null($operator) ? '=' : $operator,
-            'value' => is_null($value) ? null : $value,
+            'column' => $column ,
+            'operator' => $operator ,
+            'value' => $value ,
         ];
 
         return $this;
@@ -65,7 +65,7 @@ class Relationships
     public function whereIn(string $column , array $values): self
     {
         $this->whereIn[] = [
-            'column' => $column,
+            'column' => $column ,
             'values' => $values
         ];
 
@@ -75,7 +75,7 @@ class Relationships
     public function whereNotIn(string $column , array $values): self
     {
         $this->whereNotIn[] = [
-            'column' => $column,
+            'column' => $column ,
             'values' => $values
         ];
 
@@ -93,8 +93,9 @@ class Relationships
 
     public function select(array $columns): self
     {
-        if (in_array('*' , $this->columns))
+        if (in_array('*' , $this->columns)){
             unset($this->columns[0]);
+        }
 
         $this->columns = array_merge($this->columns , $columns);
 
@@ -137,10 +138,11 @@ class Relationships
         return $this;
     }
 
-    public function hasOne(Collection|Paginator $data , string $table , string $foreignKey, string $localKey = null): void
+    public function hasOne(Collection|Paginator $data , string $table , string $foreignKey, string $localKey = 'id'): void
     {
-        if (! in_array('*' , $this->columns) && ! in_array($foreignKey , $this->columns))
+        if (! in_array('*' , $this->columns) && ! in_array($foreignKey , $this->columns)){
             $this->select([$foreignKey]);
+        }
 
         $relationships = $this->setHasRelationships($data , $table , $foreignKey , $localKey);
 
@@ -153,10 +155,11 @@ class Relationships
         });
     }
 
-    public function hasMany(Collection|Paginator $data , string $table , string $foreignKey, string $localKey = null): void
+    public function hasMany(Collection|Paginator $data , string $table , string $foreignKey, string $localKey = 'id'): void
     {
-        if (! in_array('*' , $this->columns) && ! in_array($foreignKey , $this->columns))
+        if (! in_array('*' , $this->columns) && ! in_array($foreignKey , $this->columns)){
             $this->select([$foreignKey]);
+        }
 
         $relationships = $this->setHasRelationships($data , $table , $foreignKey , $localKey);
 
@@ -201,9 +204,9 @@ class Relationships
             });
     }
 
-    public function polymorphicHasOne(Collection|Paginator $data , string $table , string $type , string $typeName = null , string $idName = null , string $localKey = null): void
+    public function polymorphicHasOne(Collection|Paginator $data , string $table , string $type , string $typeKey , string $identityKey , string $localKey = 'id'): void
     {
-        $polymorphic = $this->setPolymorphic($data , $table , $type , $typeName , $idName , $localKey);
+        $polymorphic = $this->setPolymorphic($data , $table , $type , $typeKey , $identityKey , $localKey);
 
         $idName = $polymorphic[1];
         $localKey = $polymorphic[2];
@@ -215,9 +218,9 @@ class Relationships
         });
     }
 
-    public function polymorphicHasMany(Collection|Paginator $data , string $table , string $type , string $typeName = null , string $idName = null , string $localKey = null): void
+    public function polymorphicHasMany(Collection|Paginator $data , string $table , string $type , string $typeKey , string $identityKey , string $localKey = 'id'): void
     {
-        $polymorphic = $this->setPolymorphic($data , $table , $type , $typeName , $idName , $localKey);
+        $polymorphic = $this->setPolymorphic($data , $table , $type , $typeKey , $identityKey , $localKey);
 
         $idName = $polymorphic[1];
         $localKey = $polymorphic[2];
@@ -235,21 +238,17 @@ class Relationships
             });
     }
 
-    protected function setPolymorphic(Collection|Paginator $data , string $table , string $type , string $typeName = null , string $idName = null , string $localKey = null): array
+    protected function setPolymorphic(Collection|Paginator $data , string $table , string $type , string $typeKey , string $identityKey , string $localKey): array
     {
-        $filedName = Str::singular($table) . 'able_';
-        $typeName = $typeName ? $filedName . $typeName : $filedName . 'type';
-        $idName = $idName ? $filedName . $idName : $filedName . 'id';
-        $localKey = $localKey ?: 'id';
-
-        if (! in_array('*' , $this->columns) && ! in_array($idName , $this->columns))
-            $this->select([$idName]);
+        if (! in_array('*' , $this->columns) && ! in_array($identityKey , $this->columns)){
+            $this->select([$identityKey]);
+        }
 
         $relationships = DB::table($table)
-            ->whereIn($idName , $data->pluck($localKey)->toArray())
-            ->where($typeName , $type);
+            ->whereIn($identityKey , $data->pluck($localKey)->toArray())
+            ->where($typeKey , $type);
 
-        return [$this->setConditionsAndGetData($relationships , $this->columns) , $idName , $localKey];
+        return [$this->setConditionsAndGetData($relationships , $this->columns) , $identityKey , $localKey];
     }
 
     protected function setThrough(Collection|Paginator $data , string $interfaceTable , string $table, string $foreignKey, string $localKey): Collection
@@ -273,10 +272,8 @@ class Relationships
         return $this->setConditionsAndGetData($relationships , $columns);
     }
 
-    protected function setHasRelationships(Collection|Paginator $data , string $table , string $foreignKey, string $localKey = null): array
+    protected function setHasRelationships(Collection|Paginator $data , string $table , string $foreignKey, string $localKey): array
     {
-        $localKey = $localKey ?: 'id';
-
         $relationships = DB::table($table)
             ->whereIn($foreignKey , $data->pluck($localKey)->toArray());
 
@@ -285,38 +282,55 @@ class Relationships
 
     protected function setConditionsAndGetData(Builder $query , array $columns): Collection
     {
-        if (!empty($this->where))
-            foreach ($this->where as $value)
-                is_callable($value['column']) ? $query->where($value['column']) : $query
-                    ->where($value['column'] , $value['operator'] , $value['value']);
+        if (!empty($this->where)){
+            foreach ($this->where as $value){
+                is_callable($value['column']) ?
+                    $query->where($value['column']) :
+                    $query->where($value['column'] , $value['operator'] , $value['value']);
+            }
+        }
 
-        if (!empty($this->orWhere))
-            foreach ($this->orWhere as $value)
-                is_callable($value['column']) ? $query->where($value['column']) : $query
-                    ->where($value['column'] , $value['operator'] , $value['value']);
+        if (!empty($this->orWhere)){
+            foreach ($this->orWhere as $value){
+                is_callable($value['column']) ?
+                    $query->where($value['column']) :
+                    $query->where($value['column'] , $value['operator'] , $value['value']);
+            }
+        }
 
-        if (!empty($this->whereNull))
-            foreach ($this->whereNull as $value)
+        if (!empty($this->whereNull)){
+            foreach ($this->whereNull as $value){
                 $query->whereNull($value['column']);
+            }
+        }
 
-        if (!empty($this->whereNotNull))
-            foreach ($this->whereNotNull as $value)
+        if (!empty($this->whereNotNull)){
+            foreach ($this->whereNotNull as $value){
                 $query->whereNotNull($value['column']);
+            }
+        }
 
-        if (!empty($this->whereIn))
-            foreach ($this->whereIn as $value)
+        if (!empty($this->whereIn)){
+            foreach ($this->whereIn as $value){
                 $query->whereIn($value['column'] , $value['values']);
+            }
+        }
 
-        if (!empty($this->whereNotIn))
-            foreach ($this->whereNotIn as $value)
+        if (!empty($this->whereNotIn)){
+            foreach ($this->whereNotIn as $value){
                 $query->whereNotIn($value['column'] , $value['values']);
+            }
+        }
 
-        if (!empty($this->whereRaw))
-            foreach ($this->whereRaw as $value)
+        if (!empty($this->whereRaw)){
+            foreach ($this->whereRaw as $value){
                 $query->whereRaw($value['raw']);
+            }
+        }
 
-        if (!empty($this->orderBy))
+        if (!empty($this->orderBy)){
             $query->orderBy($this->orderBy['column'] , $this->orderBy['direction']);
+        }
 
         return $query->select($columns)->get();
     }
