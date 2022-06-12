@@ -2,7 +2,7 @@
 
 namespace Tower;
 
-use Illuminate\Pagination\Paginator;
+use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Support\Collection;
 use stdClass;
 
