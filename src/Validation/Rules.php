@@ -12,13 +12,25 @@ trait Rules
         $data = $this->getData($this->data , $parameters['rule']);
         if (str_contains($parameters['rule'] , '*') && $data) {
             foreach ($data as $index => $item){
-                if (!$item || !isset($index) || empty($item)){
+                if (is_string($item) && mb_strlen(trim($item), 'UTF-8') === 0) {
+                    $this->saveError($parameters , $index);
+                }
+                if (is_array($item) && count($item) === 0) {
+                    $this->saveError($parameters , $index);
+                }
+                if (is_null($item)) {
                     $this->saveError($parameters , $index);
                 }
             }
             return;
         }
-        if (!$data || !isset($data) || empty($data)){
+        if (is_string($data) && mb_strlen(trim($data), 'UTF-8') === 0) {
+            $this->saveError($parameters);
+        }
+        if (is_array($data) && count($data) === 0) {
+            $this->saveError($parameters);
+        }
+        if (is_null($data)) {
             $this->saveError($parameters);
         }
     }
