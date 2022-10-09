@@ -9,7 +9,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Fomo\Console\Style;
 
-#[AsCommand(name: 'server:reload' , description: 'reload server')]
+#[AsCommand(name: 'server:reload' , description: 'reload http server')]
 class Reload extends Command
 {
     protected function execute(InputInterface $input, OutputInterface $output): int
