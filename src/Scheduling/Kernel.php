@@ -4,7 +4,7 @@ namespace Fomo\Scheduling;
 
 class Kernel
 {
-    protected array $tasks = [];
+    public array $tasks = [];
 
     protected static ?self $instance = null;
 
@@ -15,11 +15,6 @@ class Kernel
         }
 
         return self::$instance;
-    }
-
-    public function setTasks(array $tasks): void
-    {
-        $this->tasks = $tasks;
     }
 
     public function getTasks(): array
