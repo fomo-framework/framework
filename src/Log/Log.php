@@ -33,7 +33,7 @@ class Log
         return self::$instance;
     }
 
-    public static function __callStatic(string $method, ...$arguments)
+    public static function __callStatic(string $method, array $arguments)
     {
         return self::getInstance()->$method(...$arguments);
     }
