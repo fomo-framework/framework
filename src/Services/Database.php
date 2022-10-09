@@ -1,5 +1,7 @@
 <?php
 
+namespace Fomo\Services;
+
 use Illuminate\Database\Capsule\Manager as Capsule;
 use Illuminate\Pagination\Paginator;
 use Swoole\Server;
