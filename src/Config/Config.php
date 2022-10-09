@@ -4,12 +4,12 @@ namespace Fomo\Config;
 
 class Config
 {
-    protected static ?Config $instance = null;
+    protected static ?self $instance = null;
 
     protected array $fileCache = [];
     protected array $keyCache = [];
 
-    public static function getInstance(): Config
+    public static function getInstance(): self
     {
         if (is_null(self::$instance)) {
             return self::$instance = new self();
