@@ -1,6 +1,6 @@
 <?php
 
-namespace Tower\Http;
+namespace Fomo\Http;
 
 use GuzzleHttp\Psr7\Response as GuzzleResponse;
 use Illuminate\Support\Collection;

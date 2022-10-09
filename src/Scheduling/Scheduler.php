@@ -1,6 +1,6 @@
 <?php
 
-namespace Tower\Scheduling;
+namespace Fomo\Scheduling;
 
 use Carbon\Carbon;
 
@@ -138,11 +138,13 @@ class Scheduler
 
     public function everyTwoHoursAt(int $minute): void
     {
-        if ($minute < 0)
+        if ($minute < 0){
             $minute = 0;
+        }
 
-        if ($minute > 59)
+        if ($minute > 59){
             $minute = 59;
+        }
 
         $this->setCron("0 $minute */2 * * *");
         Kernel::getInstance()->tasks[$this->task] = $this->cron;
@@ -157,11 +159,13 @@ class Scheduler
 
     public function everyTreeHoursAt(int $minute): void
     {
-        if ($minute < 0)
+        if ($minute < 0){
             $minute = 0;
+        }
 
-        if ($minute > 59)
+        if ($minute > 59){
             $minute = 59;
+        }
 
         $this->setCron("0 $minute */3 * * *");
 
@@ -177,11 +181,13 @@ class Scheduler
 
     public function everyFourHoursAt(int $minute): void
     {
-        if ($minute < 0)
+        if ($minute < 0){
             $minute = 0;
+        }
 
-        if ($minute > 59)
+        if ($minute > 59){
             $minute = 59;
+        }
 
         $this->setCron("0 $minute */4 * * *");
 
@@ -197,11 +203,13 @@ class Scheduler
 
     public function everySixHoursAt(int $minute): void
     {
-        if ($minute < 0)
+        if ($minute < 0){
             $minute = 0;
+        }
 
-        if ($minute > 59)
+        if ($minute > 59){
             $minute = 59;
+        }
 
         $this->setCron("0 $minute */6 * * *");
 
@@ -215,13 +223,15 @@ class Scheduler
         Kernel::getInstance()->tasks[$this->task] = $this->cron;
     }
 
-    public function everyEightHoursAt(int $minute)
+    public function everyEightHoursAt(int $minute): void
     {
-        if ($minute < 0)
+        if ($minute < 0){
             $minute = 0;
+        }
 
-        if ($minute > 59)
+        if ($minute > 59){
             $minute = 59;
+        }
 
         $this->setCron("0 $minute */8 * * *");
 
@@ -237,11 +247,13 @@ class Scheduler
 
     public function everyTwelveHoursAt(int $minute): void
     {
-        if ($minute < 0)
+        if ($minute < 0){
             $minute = 0;
+        }
 
-        if ($minute > 59)
+        if ($minute > 59){
             $minute = 59;
+        }
 
         $this->setCron("0 $minute */12 * * *");
 
@@ -344,22 +356,27 @@ class Scheduler
 
     public function weeklyOn(int $day , int $hour = null): void
     {
-        if ($day < 0)
+        if ($day < 0){
             $day = 0;
-        if ($day > 6)
+        }
+        if ($day > 6){
             $day = 6;
-
-        if (! is_null($hour)){
-            if ($hour < 0)
-                $hour = 0;
-            if ($hour > 23)
-                $hour = 23;
         }
 
-        if (is_null($hour))
+        if (! is_null($hour)){
+            if ($hour < 0){
+                $hour = 0;
+            }
+            if ($hour > 23){
+                $hour = 23;
+            }
+        }
+
+        if (is_null($hour)){
             $this->setCron("0 0 0 * * $day");
-        else
+        } else{
             $this->setCron("0 0 $hour * * $day");
+        }
 
         Kernel::getInstance()->tasks[$this->task] = $this->cron;
     }
@@ -373,46 +390,44 @@ class Scheduler
 
     public function monthlyOn(int $day , int $hour = null): void
     {
-        if ($day < 1)
-            $day = 1;
-
-        if ($day > 31)
-            $day = 31;
-
-        if (! is_null($hour)){
-            if ($hour < 0)
-                $hour = 0;
-            if ($hour > 23)
-                $hour = 23;
+        if ($day < 0){
+            $day = 0;
+        }
+        if ($day > 6){
+            $day = 6;
         }
 
-        if (is_null($hour))
+        if (! is_null($hour)){
+            if ($hour < 0){
+                $hour = 0;
+            }
+            if ($hour > 23){
+                $hour = 23;
+            }
+        }
+
+        if (is_null($hour)){
             $this->setCron("0 0 0 $day * *");
-        else
+        } else{
             $this->setCron("0 0 $hour $day * *");
+        }
 
         Kernel::getInstance()->tasks[$this->task] = $this->cron;
     }
 
     public function twiceMonthly(int $firstDay , int $secondDay , int $hour = null): void
     {
-        if ($firstDay < 1)
-            $firstDay = 1;
+        if ($firstDay < 1) $firstDay = 1;
 
-        if ($firstDay > 31)
-            $firstDay = 31;
+        if ($firstDay > 31) $firstDay = 31;
 
-        if ($secondDay < 1)
-            $secondDay = 1;
+        if ($secondDay < 1) $secondDay = 1;
 
-        if ($secondDay > 31)
-            $secondDay = 31;
+        if ($secondDay > 31) $secondDay = 31;
 
         if (! is_null($hour)){
-            if ($hour < 0)
-                $hour = 0;
-            if ($hour > 23)
-                $hour = 23;
+            if ($hour < 0) $hour = 0;
+            if ($hour > 23) $hour = 23;
         }
 
         if (is_null($hour))
@@ -423,7 +438,7 @@ class Scheduler
         Kernel::getInstance()->tasks[$this->task] = $this->cron;
     }
 
-    public function lastDayOfMonth()
+    public function lastDayOfMonth(): void
     {
         $lastDay = Carbon::now()->endOfMonth()->day;
         $this->setCron("0 0 0 $lastDay * *");
@@ -431,14 +446,14 @@ class Scheduler
         Kernel::getInstance()->tasks[$this->task] = $this->cron;
     }
 
-    public function quarterly()
+    public function quarterly(): void
     {
         $this->setCron("0 0 0 1 */3 *");
 
         Kernel::getInstance()->tasks[$this->task] = $this->cron;
     }
 
-    public function lastDayOfMonthQuarterly()
+    public function lastDayOfMonthQuarterly(): void
     {
         $lastDay = Carbon::now()->endOfMonth()->day;
 
@@ -447,32 +462,26 @@ class Scheduler
         Kernel::getInstance()->tasks[$this->task] = $this->cron;
     }
 
-    public function yearly()
+    public function yearly(): void
     {
         $this->setCron("0 0 0 1 1 *");
 
         Kernel::getInstance()->tasks[$this->task] = $this->cron;
     }
 
-    public function yearlyOn(int $month, int $dayOfMonth, int $hour)
+    public function yearlyOn(int $month, int $dayOfMonth, int $hour): void
     {
-        if($month < 1)
-            $month = 1;
+        if($month < 1) $month = 1;
 
-        if ($month > 12)
-            $month = 12;
+        if ($month > 12) $month = 12;
 
-        if($dayOfMonth < 1)
-            $dayOfMonth = 1;
+        if($dayOfMonth < 1) $dayOfMonth = 1;
 
-        if ($dayOfMonth > 31)
-            $dayOfMonth = 31;
+        if ($dayOfMonth > 31) $dayOfMonth = 31;
 
-        if($hour < 0)
-            $hour = 0;
+        if($hour < 0) $hour = 0;
 
-        if ($hour > 23)
-            $hour = 23;
+        if ($hour > 23) $hour = 23;
 
         $this->setCron("0 0 $hour $dayOfMonth $month *");
 

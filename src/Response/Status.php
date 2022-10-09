@@ -1,6 +1,6 @@
 <?php
 
-namespace Tower\Response;
+namespace Fomo\Response;
 
 enum Status: int {
     case HTTP_CONTINUE = 100;
