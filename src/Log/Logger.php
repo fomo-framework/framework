@@ -112,9 +112,9 @@ class Logger
         }
 
         if (is_null($content)){
-            fwrite($log , "[$time] $env.$this->type: $this->message" . PHP_EOL);
+            fwrite($log , "[$time] $env.$this->type: $this->message\n");
         } else{
-            fwrite($log , "[$time] $env.$this->type: $this->message [$content]" . PHP_EOL);
+            fwrite($log , "[$time] $env.$this->type: $this->message [$content]\n");
         }
         fclose($log);
     }
