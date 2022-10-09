@@ -15,7 +15,8 @@
     "phpmailer/phpmailer": "^6.6",
     "illuminate/database": "^9.34",
     "illuminate/pagination": "^9.34",
-    "elasticsearch/elasticsearch": "^8.4"
+    "elasticsearch/elasticsearch": "^8.4",
+    "guzzlehttp/guzzle": "^7.5"
   } ,
   "autoload": {
     "psr-4": {
