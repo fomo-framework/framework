@@ -35,7 +35,7 @@ class Request
         protected readonly Server $server ,
         protected readonly Dispatcher $dispatcher
     ){
-        $this->advancedMode = false;
+        $this->advancedMode = config('server.advanceMode.request');
     }
 
     /*
