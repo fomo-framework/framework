@@ -103,7 +103,7 @@ class Start extends Command
                 ->setHeaderTitle('general information')
                 ->setHeaders([
                     '<fg=#FFCB8B;options=bold> PHP VERSION </>' ,
-                    '<fg=#FFCB8B;options=bold> TOWER VERSION </>' ,
+                    '<fg=#FFCB8B;options=bold> FOMO VERSION </>' ,
                     '<fg=#FFCB8B;options=bold> WORKER COUNT </>' ,
                     '<fg=#FFCB8B;options=bold> SOCKET TYPE </>' ,
                     '<fg=#FFCB8B;options=bold> WATCH MODE </>'
@@ -111,7 +111,7 @@ class Start extends Command
                 ->setRows([
                     [
                         '<options=bold> '. PHP_VERSION .'</>' ,
-                        '<options=bold> ' . TOWER_VERSION . ' </>' ,
+                        '<options=bold> ' . FOMO_VERSION . ' </>' ,
                         '<options=bold> ' . config('server.additional.worker_num') . '</>' ,
                         "<options=bold> $serverSocketType</>" ,
                         $input->getOption('watch') ? '<fg=#C3E88D;options=bold> ACTIVE </>' : "<fg=#FF5572;options=bold> DEACTIVE </>"
