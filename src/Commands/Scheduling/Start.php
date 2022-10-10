@@ -27,6 +27,11 @@ class Start extends Command
             return self::FAILURE;
         }
 
+        if (!class_exists('App\Scheduling\Kernel')){
+            $io->error('There are no tasks to perform' , true);
+            return self::FAILURE;
+        }
+
         $io->success('scheduling server running…');
 
         if (! $input->getOption('daemonize')){
