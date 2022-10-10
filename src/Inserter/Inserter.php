@@ -1,13 +1,11 @@
 <?php
 
-namespace Fomo\Factory;
+namespace Fomo\Inserter;
 
-use Exception;
 use Fomo\Database\DB;
 use Fomo\Elasticsearch\Elasticsearch;
-use Fomo\Log\Log;
 
-class Factory
+class Inserter
 {
     protected string $table;
     protected array $data;
