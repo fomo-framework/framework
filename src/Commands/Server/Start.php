@@ -25,7 +25,7 @@ class Start extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         /*
-         * load tower style
+         * load Fomo style
          */
         $io = new Style($input, $output);
 

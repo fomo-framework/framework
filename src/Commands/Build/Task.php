@@ -41,7 +41,7 @@ class Task extends Command
 
             \file_put_contents(
                 appPath('Scheduling/Kernel.php') ,
-                "<?php\n\nnamespace App\Scheduling;\n\nuse Tower\Scheduling\Scheduler;\n\nclass Kernel\n{\n\tpublic function " . 'tasks(): void' . "\n\t{\n//        (new Scheduler())->call(Task::class)->everyMinutes();\n\t}\n}"
+                "<?php\n\nnamespace App\Scheduling;\n\nuse Fomo\Scheduling\Scheduler;\n\nclass Kernel\n{\n\tpublic function " . 'tasks(): void' . "\n\t{\n//        (new Scheduler())->call(Task::class)->everyMinutes();\n\t}\n}"
             );
         }
 

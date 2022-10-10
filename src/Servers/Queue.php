@@ -23,7 +23,7 @@ class Queue
             $this->runServices();
 
             while (true){
-                $queue = Redis::getInstance()->lPop(env('APP_NAME' , 'tower') . 'Queue');
+                $queue = Redis::getInstance()->lPop(env('APP_NAME' , 'Fomo') . 'Queue');
                 if ($queue){
                     $data = json_decode($queue , true);
                     try {
@@ -38,7 +38,7 @@ class Queue
                         }
 
                         if (($this->input->getOption('retry') && !isset($data['retry'])) || (isset($data['retry']) && $data['retry'] > 0)){
-                            Redis::getInstance()->rPush(env('APP_NAME' , 'tower') . 'Queue' , json_encode([
+                            Redis::getInstance()->rPush(env('APP_NAME' , 'Fomo') . 'Queue' , json_encode([
                                 'dispatcher' => $data['dispatcher'] ,
                                 'parameters' => [...$data['parameters']] ,
                                 'retry' => (isset($data['retry'])) ? $data['retry'] - 1 : (int) $this->input->getOption('retry') - 1 ,

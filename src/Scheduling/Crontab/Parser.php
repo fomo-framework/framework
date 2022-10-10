@@ -3,7 +3,7 @@
 namespace Fomo\Scheduling\Crontab;
 
 use Carbon\Carbon;
-use Tower\Log\Log;
+use Fomo\Log\Log;
 
 class Parser
 {

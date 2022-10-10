@@ -47,8 +47,8 @@ class Middleware extends Command
         \file_put_contents(
             appPath("Middlewares/$classPath/$className.php") ,
             $classNamespace == ''
-                ? "<?php\n\nnamespace App\Middlewares;\n\nuse Tower\Request\Request;\nuse Tower\Response\Response;\n\nclass $className\n{\n\tpublic function handle(Request " . '$request' . "): bool|Response\n\t{\n\t\treturn true;\n\t}\n}"
-                : "<?php\n\nnamespace App\Middlewares\\$classNamespace;\n\nuse Tower\Request\Request;\nuse Tower\Response\Response;\n\nclass $className\n{\n\tpublic function handle(Request " . '$request' . "): bool|Response\n\t{\n\t\treturn true;\n\t}\n}"
+                ? "<?php\n\nnamespace App\Middlewares;\n\nuse Fomo\Request\Request;\nuse Fomo\Response\Response;\n\nclass $className\n{\n\tpublic function handle(Request " . '$request' . "): bool|Response\n\t{\n\t\treturn true;\n\t}\n}"
+                : "<?php\n\nnamespace App\Middlewares\\$classNamespace;\n\nuse Fomo\Request\Request;\nuse Fomo\Response\Response;\n\nclass $className\n{\n\tpublic function handle(Request " . '$request' . "): bool|Response\n\t{\n\t\treturn true;\n\t}\n}"
         );
 
         $io->success('middleware created successfully' , true);

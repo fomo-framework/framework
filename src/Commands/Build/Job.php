@@ -47,8 +47,8 @@ class Job extends Command
         \file_put_contents(
             appPath("Jobs/$classPath/$className.php") ,
             $classNamespace == ''
-                ? "<?php\n\nnamespace App\Jobs;\n\nuse Tower\Job\DispatchTrait;\n\nclass $className\n{\n\tuse DispatchTrait;\n\n\tpublic function __construct()\n\t{\n\t\t//\n\t}\n\n\tpublic function handle(): void\n\t{\n\t\t//\n\t}\n}"
-                : "<?php\n\nnamespace App\Jobs\\$classNamespace;\n\nuse Tower\Job\DispatchTrait;\n\nclass $className\n{\n\tuse DispatchTrait;\n\n\tpublic function __construct()\n\t{\n\t\t//\n\t}\n\n\tpublic function handle(): void\n\t{\n\t\t//\n\t}\n}"
+                ? "<?php\n\nnamespace App\Jobs;\n\nuse Fomo\Job\DispatchTrait;\n\nclass $className\n{\n\tuse DispatchTrait;\n\n\tpublic function __construct()\n\t{\n\t\t//\n\t}\n\n\tpublic function handle(): void\n\t{\n\t\t//\n\t}\n}"
+                : "<?php\n\nnamespace App\Jobs\\$classNamespace;\n\nuse Fomo\Job\DispatchTrait;\n\nclass $className\n{\n\tuse DispatchTrait;\n\n\tpublic function __construct()\n\t{\n\t\t//\n\t}\n\n\tpublic function handle(): void\n\t{\n\t\t//\n\t}\n}"
         );
 
         $io->success('job created successfully' , true);

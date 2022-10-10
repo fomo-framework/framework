@@ -47,8 +47,8 @@ class Service extends Command
         \file_put_contents(
             appPath("Services/$classPath/$className.php") ,
             $classNamespace == ''
-                ? "<?php\n\nnamespace App\Services;\n\nuse Swoole\Server;\nuse Tower\Request\Request;\n\nclass $className\n{\n\tpublic function boot(Server " . '$server = null' . ", Request " . '$request = null' . "): void\n\t{\n\t\t//\n\t}\n}"
-                : "<?php\n\nnamespace App\Services\\$classNamespace;\n\nuse Swoole\Server;\nuse Tower\Request\Request;\n\nclass $className\n{\n\tpublic function boot(Server " . '$server = null' . ", Request " . '$request = null' . "): void\n\t{\n\t\t//\n\t}\n}"
+                ? "<?php\n\nnamespace App\Services;\n\nuse Swoole\Server;\nuse Fomo\Request\Request;\n\nclass $className\n{\n\tpublic function boot(Server " . '$server = null' . ", Request " . '$request = null' . "): void\n\t{\n\t\t//\n\t}\n}"
+                : "<?php\n\nnamespace App\Services\\$classNamespace;\n\nuse Swoole\Server;\nuse Fomo\Request\Request;\n\nclass $className\n{\n\tpublic function boot(Server " . '$server = null' . ", Request " . '$request = null' . "): void\n\t{\n\t\t//\n\t}\n}"
         );
 
         $io->success('service created successfully' , true);

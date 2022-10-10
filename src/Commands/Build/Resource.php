@@ -47,8 +47,8 @@ class Resource extends Command
         \file_put_contents(
             appPath("Resources/$classPath/$className.php") ,
             $classNamespace == ''
-                ? "<?php\n\nnamespace App\Resources;\n\nuse Tower\Resource\JsonResource;\n\nclass $className extends JsonResource\n{\n\tprotected function toArray(" . '$request' . ")\n\t{\n\t\treturn " . '$request' . ";\n\t}\n}"
-                : "<?php\n\nnamespace App\Resources\\$classNamespace;\n\nuse Tower\Resource\JsonResource;\n\nclass $className extends JsonResource\n{\n\tprotected function toArray(" . '$request' . ")\n\t{\n\t\treturn " . '$request' . ";\n\t}\n}"
+                ? "<?php\n\nnamespace App\Resources;\n\nuse Fomo\Resource\JsonResource;\n\nclass $className extends JsonResource\n{\n\tprotected function toArray(" . '$request' . ")\n\t{\n\t\treturn " . '$request' . ";\n\t}\n}"
+                : "<?php\n\nnamespace App\Resources\\$classNamespace;\n\nuse Fomo\Resource\JsonResource;\n\nclass $className extends JsonResource\n{\n\tprotected function toArray(" . '$request' . ")\n\t{\n\t\treturn " . '$request' . ";\n\t}\n}"
         );
 
         $io->success('resource created successfully' , true);
