@@ -22,7 +22,7 @@ class Stop extends Command
         }
 
         if (posix_kill(getSchedulingProcessId(), SIG_DFL)){
-            posix_kill(getSchedulingProcessId(), SIGKILL);
+            posix_kill(getSchedulingProcessId(), SIGTERM);
         }
 
         sleep(1);
