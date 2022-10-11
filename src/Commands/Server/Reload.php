@@ -22,8 +22,12 @@ class Reload extends Command
         }
 
         if (httpServerIsRunning()) {
-            Process::kill(getManagerProcessId(), SIGUSR1);
-            Process::kill(getMasterProcessId(), SIGUSR1);
+            posix_kill(getManagerProcessId(), SIGUSR1);
+            posix_kill(getMasterProcessId(), SIGUSR1);
+
+            foreach (getWorkerProcessIds() as $processId) {
+                posix_kill($processId , SIGUSR1);
+            }
         }
 
         $io->success('reloading workers...' , true);
