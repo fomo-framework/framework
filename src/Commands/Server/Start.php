@@ -49,8 +49,35 @@ class Start extends Command
          * check server is running
          */
         if (httpServerIsRunning()){
-            $io->error('failed to listen server port[127.0.0.1:9004], Error: Address already' , true);
-            return self::FAILURE;
+            $io->error('failed to listen server port[' . config('server.host') .':'. config('server.port') . '], Error: Address already' , true);
+
+            $helper = $this->getHelper('question');
+            $question = new ChoiceQuestion(
+                'Do you want the server to terminate? (defaults to no)',
+                ['no', 'yes'],
+                0
+            );
+            $question->setErrorMessage('Your selection is invalid.');
+
+            $answer = $helper->ask($input, $output, $question);
+
+
+            if ($answer != 'yes'){
+                return self::FAILURE;
+            }
+
+            posix_kill(getMasterProcessId() , SIGTERM);
+            posix_kill(getManagerProcessId() , SIGTERM);
+
+            if (posix_kill(getWatcherProcessId(), SIG_DFL)){
+                posix_kill(getWatcherProcessId(), SIGTERM);
+            }
+
+            foreach (getWorkerProcessIds() as $processId) {
+                posix_kill($processId , SIGTERM);
+            }
+
+            sleep(1);
         }
 
         /*
