@@ -25,7 +25,7 @@ class Status extends Command
             ])
             ->setRows([
                 [
-                    'scheduler' , (!is_null(getSchedulingProcessId()) && posix_kill(getSchedulingProcessId(), 0)) ? '<fg=#C3E88D;options=bold> ACTIVE </>' : '<fg=#FF5572;options=bold> DEACTIVE </>' , getSchedulingProcessId()
+                    'scheduler' , (!is_null(getSchedulingProcessId()) && posix_kill(getSchedulingProcessId(), SIG_DFL)) ? '<fg=#C3E88D;options=bold> ACTIVE </>' : '<fg=#FF5572;options=bold> DEACTIVE </>' , getSchedulingProcessId()
                 ]
             ]);
         $table->setVertical();

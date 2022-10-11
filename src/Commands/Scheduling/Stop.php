@@ -21,7 +21,7 @@ class Stop extends Command
             return self::FAILURE;
         }
 
-        if (posix_kill(getSchedulingProcessId(), 0)){
+        if (posix_kill(getSchedulingProcessId(), SIG_DFL)){
             posix_kill(getSchedulingProcessId(), SIGKILL);
         }
 

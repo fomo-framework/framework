@@ -25,7 +25,7 @@ class Status extends Command
             ])
             ->setRows([
                 [
-                    'queue' , (!is_null(getQueueProcessId()) && posix_kill(getQueueProcessId(), 0)) ? '<fg=#C3E88D;options=bold> ACTIVE </>' : '<fg=#FF5572;options=bold> DEACTIVE </>' , getQueueProcessId()
+                    'queue' , (!is_null(getQueueProcessId()) && posix_kill(getQueueProcessId(), SIG_DFL)) ? '<fg=#C3E88D;options=bold> ACTIVE </>' : '<fg=#FF5572;options=bold> DEACTIVE </>' , getQueueProcessId()
                 ]
             ]);
         $table->setVertical();
