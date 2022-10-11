@@ -63,8 +63,8 @@ class Watcher
 
                 $this->io->info("{$file->getFilename()} has been changed. server reloaded");
 
-                Process::kill(getManagerProcessId(), SIGUSR1);
-                Process::kill(getMasterProcessId(), SIGUSR1);
+                posix_kill(getManagerProcessId(), SIGUSR1);
+                posix_kill(getMasterProcessId(), SIGUSR1);
 
                 break;
             }

@@ -167,7 +167,7 @@ if (! function_exists('httpServerIsRunning')) {
     function httpServerIsRunning(): bool
     {
         if (!is_null(getManagerProcessId()) && !is_null(getMasterProcessId())){
-            return Process::kill(getManagerProcessId(), 0) && Process::kill(getMasterProcessId(), 0);
+            return posix_kill(getManagerProcessId(), 0) && posix_kill(getMasterProcessId(), 0);
         }
         return false;
     }
@@ -177,7 +177,7 @@ if (! function_exists('queueServerIsRunning')) {
     function queueServerIsRunning(): bool
     {
         if (!is_null(getQueueProcessId())){
-            return Process::kill(getQueueProcessId(), 0);
+            return posix_kill(getQueueProcessId(), 0);
         }
         return false;
     }
@@ -187,7 +187,7 @@ if (! function_exists('schedulingServerIsRunning')) {
     function schedulingServerIsRunning(): bool
     {
         if (!is_null(getSchedulingProcessId())){
-            return Process::kill(getSchedulingProcessId(), 0);
+            return posix_kill(getSchedulingProcessId(), 0);
         }
         return false;
     }
