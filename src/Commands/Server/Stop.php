@@ -21,21 +21,21 @@ class Stop extends Command
             return self::FAILURE;
         }
 
-        if (Process::kill(getMasterProcessId(), 0)){
-            Process::kill(getMasterProcessId(), SIGKILL);
+        if (posix_kill(getMasterProcessId(), SIG_DFL)){
+            posix_kill(getMasterProcessId(), SIGTERM);
         }
 
-        if (Process::kill(getManagerProcessId(), 0)){
-            Process::kill(getManagerProcessId(), SIGKILL);
+        if (posix_kill(getManagerProcessId(), SIG_DFL)){
+            posix_kill(getManagerProcessId(), SIGTERM);
         }
 
-        if (Process::kill(getWatcherProcessId(), 0)){
-            Process::kill(getWatcherProcessId(), SIGKILL);
+        if (posix_kill(getWatcherProcessId(), SIG_DFL)){
+            posix_kill(getWatcherProcessId(), SIGTERM);
         }
 
         foreach (getWorkerProcessIds() as $processId) {
-            if (Process::kill($processId, 0)){
-                Process::kill($processId, SIGKILL);
+            if (posix_kill($processId, SIG_DFL)){
+                posix_kill($processId, SIGTERM);
             }
         }
 
