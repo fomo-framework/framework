@@ -9,6 +9,7 @@ use Fomo\Mail\Mail;
 use Fomo\Response\Response;
 use Fomo\ServerState\ServerState;
 use Fomo\Redis\Redis;
+use Fomo\Cache\Cache;
 
 if (! function_exists('basePath')) {
     function basePath(string $path = null): string
@@ -16,6 +17,7 @@ if (! function_exists('basePath')) {
         return realpath(PROJECT_PATH) . "/$path";
     }
 }
+
 if (! function_exists('appPath')) {
     function appPath(string $path = null): string
     {
@@ -225,6 +227,13 @@ if (! function_exists('mail')) {
     function mail(): Mail
     {
         return new Mail();
+    }
+}
+
+if (! function_exists('cache')) {
+    function cache(): Cache
+    {
+        return new Cache();
     }
 }
 
