@@ -154,7 +154,7 @@ class Response
 
     public function __toString()
     {
-        $head = "Http/1.1 $this->status {$this->phrases[$this->status]}\r\n";
+        $head = "HTTP/1.1 $this->status {$this->phrases[$this->status]}\r\n";
 
         foreach ($this->headers as $name => $value) {
             if (\is_array($value)) {
