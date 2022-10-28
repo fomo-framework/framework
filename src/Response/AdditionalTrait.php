@@ -4,7 +4,7 @@ namespace Fomo\Response;
 
 trait AdditionalTrait
 {
-    public function asNoContent(): self
+    public function noContent(): self
     {
         $this->status = 204;
         $this->body = '';
@@ -15,7 +15,7 @@ trait AdditionalTrait
         return $this;
     }
 
-    public function asHtml(string $data , int $status = 200): self
+    public function html(string $data , int $status = 200): self
     {
         $this->status = $status;
         $this->body = $data;
@@ -25,8 +25,19 @@ trait AdditionalTrait
 
         return $this;
     }
+    
+    public function plainText(string $data , int $status = 200): self
+    {
+        $this->status = $status;
+        $this->body = $data;
 
-    public function asJson(array $data , int $status = 200): self
+        $this->headers['Content-Type'] = 'text/plain; charset=utf-8';
+        $this->headers['Content-Length'] = \strlen($data);
+
+        return $this;
+    }
+
+    public function json(array $data , int $status = 200): self
     {
         $body = json_encode($data , JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_IGNORE);
 
