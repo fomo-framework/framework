@@ -11,6 +11,7 @@
   ],
   "require": {
     "php" : ">=8.1",
+    "ext-redis": "*",
     "ext-posix": "*",
     "ext-pcntl": "*",
     "symfony/console": "^6.1",
