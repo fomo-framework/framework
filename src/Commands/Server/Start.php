@@ -32,7 +32,7 @@ class Start extends Command
         /*
          * check exist swoole extension
          */
-        if (!extension_loaded('swoole')){
+        if (!extension_loaded('swoole') && !extension_loaded('openswoole')){
             $io->error("the swoole extension is not found" , true);
             return Command::FAILURE;
         }
