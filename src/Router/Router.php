@@ -232,10 +232,6 @@ class Router
 
     protected function genClosureCacheFile(): string
     {
-        if (!is_dir(storagePath('routes'))){
-            mkdir(storagePath('routes'));
-        }
-
         $fileName = $this->strRandom();
 
         if (!file_exists(storagePath("routes/{$fileName}.php"))){
