@@ -3,6 +3,7 @@
 namespace Fomo\Router;
 
 use Closure;
+use ReflectionFunction;
 
 class Router
 {
@@ -12,37 +13,37 @@ class Router
 
     protected array $currentGroupMiddleware = [];
 
-    public function post(string $route , array $callback): void
+    public function post(string $route , array|Closure $callback): void
     {
         $this->addRoute('POST' , $route , $callback);
     }
 
-    public function get(string $route , array $callback): void
+    public function get(string $route , array|Closure $callback): void
     {
         $this->addRoute('GET' , $route , $callback);
     }
 
-    public function patch(string $route , array $callback): void
+    public function patch(string $route , array|Closure $callback): void
     {
         $this->addRoute('PATCH' , $route , $callback);
     }
 
-    public function put(string $route , array $callback): void
+    public function put(string $route , array|Closure $callback): void
     {
         $this->addRoute('PUT' , $route , $callback);
     }
 
-    public function delete(string $route , array $callback): void
+    public function delete(string $route , array|Closure $callback): void
     {
         $this->addRoute('DELETE' , $route , $callback);
     }
 
-    public function head(string $route , array $callback): void
+    public function head(string $route , array|Closure $callback): void
     {
         $this->addRoute('HEAD' , $route , $callback);
     }
 
-    public function any(string $route , array $callback): void
+    public function any(string $route , array|Closure $callback): void
     {
         $this->addRoute('POST' , $route , $callback);
         $this->addRoute('GET' , $route , $callback);
@@ -116,7 +117,7 @@ class Router
         return $this;
     }
 
-    protected function addRoute(string $method , string $route , array $callback): void
+    protected function addRoute(string $method , string $route , array|Closure $callback): void
     {
         $firstChar = substr($route , 0 , 1);
         if (strcmp($firstChar , '/') === 0){
@@ -135,6 +136,35 @@ class Router
             if (strcmp($routeLastChar , '/') === 0){
                 $route = substr($route, 0 ,-1);
             }
+        }
+
+        if ($callback instanceof Closure) {
+            $closureCallback = new ReflectionFunction($callback);
+            $startLine = $closureCallback->getStartLine();
+            $endLine = $closureCallback->getEndLine() - 1;
+            $length = $endLine - $startLine;
+
+            $file = file($closureCallback->getFileName());
+            $source = substr(implode("", array_slice($file, $startLine, $length)), 0, -1);
+
+            $finalParameters = [];
+            foreach ($closureCallback->getParameters() as $index => $value){
+                $parameters = explode(' ' , $value);
+                $finalParameters[0] = "use $parameters[4];\n";
+                $parameterNamespace = explode('\\', $parameters[4]);
+                $finalParameters[1] = end($parameterNamespace) . " $parameters[5]" . isset($closureCallback->getParameters()[$index + 1]) ?? ', ';
+            }
+
+            $class = $this->genClosureCacheFile();
+
+            file_put_contents(
+                storagePath("routes/$class.php") ,
+                empty($finalParameters)
+                    ? "<?php \n\nnamespace Storage\\Routes;\n\nclass $class\n{\n\tpublic function handle()\n\t{\n\t$source\n\t}\n}"
+                    : "<?php \n\nnamespace Storage\\Routes;\n\n$finalParameters[0]\nclass $class\n{\n\tpublic function handle($finalParameters[1])\n\t{\n\t$source\n\t}\n}"
+            );
+
+            $callback = ["Storage\\Routes\\$class" , 'handle'];
         }
 
         $previousGroupMiddleware = $this->currentGroupMiddleware;
@@ -184,6 +214,28 @@ class Router
         if (isset($this->currentGroupMiddleware[$middlewares])){
             unset($this->currentGroupMiddleware[$middlewares]);
         }
+    }
+
+    protected function genClosureCacheFile(): string
+    {
+        if (!is_dir(storagePath('routes'))){
+            mkdir(storagePath('routes'));
+        }
+
+        $fileName = $this->strRandom();
+
+        if (!file_exists(storagePath("routes/{$fileName}.php"))){
+            touch(storagePath("routes/{$fileName}.php"));
+
+            return $fileName;
+        }
+
+        return $this->genClosureCacheFile();
+    }
+
+    protected function strRandom(): string
+    {
+        return substr(str_shuffle(str_repeat('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', 5)), 0, 10);
     }
 
     public function getRoutes(): array
