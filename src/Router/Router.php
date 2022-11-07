@@ -147,21 +147,35 @@ class Router
             $file = file($closureCallback->getFileName());
             $source = substr(implode("", array_slice($file, $startLine, $length)), 0, -1);
 
-            $finalParameters = [];
-            foreach ($closureCallback->getParameters() as $index => $value){
-                $parameters = explode(' ' , $value);
-                $finalParameters[0] = "use $parameters[4];\n";
-                $parameterNamespace = explode('\\', $parameters[4]);
-                $finalParameters[1] = end($parameterNamespace) . " $parameters[5]" . isset($closureCallback->getParameters()[$index + 1]) ?? ', ';
+            $finalParameters = '';
+            $closureCallbackParameters = $closureCallback->getParameters();
+            foreach ($closureCallbackParameters as $index => $item){
+                $closureParameters = explode(' ' , $item);
+                $typesHint = [];
+
+                foreach (explode('|', $closureParameters[4]) as $parameter){
+                    $namespace = explode('\\', $parameter);
+
+                    if (!in_array(end($namespace) , ['int', 'bool', 'string', 'float', 'callable', 'array', 'null', 'object', 'mixed'])){
+                        $typesHint[] = "\\$parameter";
+                    } else {
+                        $typesHint[] = $parameter;
+                    }
+                }
+                $finalTypesHint = implode('|' , $typesHint);
+                $finalParameters .= "$finalTypesHint $closureParameters[5]";
+                if (isset($closureCallbackParameters[$index + 1])){
+                    $finalParameters .= ', ';
+                }
             }
 
             $class = $this->genClosureCacheFile();
 
             file_put_contents(
                 storagePath("routes/$class.php") ,
-                empty($finalParameters)
+                $finalParameters == ''
                     ? "<?php \n\nnamespace Storage\\Routes;\n\nclass $class\n{\n\tpublic function handle()\n\t{\n\t$source\n\t}\n}"
-                    : "<?php \n\nnamespace Storage\\Routes;\n\n$finalParameters[0]\nclass $class\n{\n\tpublic function handle($finalParameters[1])\n\t{\n\t$source\n\t}\n}"
+                    : "<?php \n\nnamespace Storage\\Routes;\n\nclass $class\n{\n\tpublic function handle($finalParameters)\n\t{\n\t$source\n\t}\n}"
             );
 
             $callback = ["Storage\\Routes\\$class" , 'handle'];
