@@ -105,6 +105,8 @@ class Start extends Command
             foreach (array_diff(scandir($dir), ['.', '..']) as $file) {
                 unlink("$dir/$file");
             }
+        }else {
+            mkdir(storagePath('routes'));
         }
 
         /*
