@@ -12,6 +12,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Fomo\Servers\Http;
 use Fomo\Console\Style;
 use Fomo\Servers\Watcher;
+use Symfony\Component\Console\Question\ChoiceQuestion;
 
 #[AsCommand(name: 'server:start' , description: 'start http server')]
 class Start extends Command
@@ -42,7 +43,7 @@ class Start extends Command
          */
         if ($input->getOption('daemonize') && $input->getOption('watch')){
             $io->error('cannot use watcher in daemonize mode' , true);
-            return self::FAILURE;
+            return Command::FAILURE;
         }
 
         /*
@@ -63,13 +64,13 @@ class Start extends Command
 
 
             if ($answer != 'yes'){
-                return self::FAILURE;
+                return Command::FAILURE;
             }
 
             posix_kill(getMasterProcessId() , SIGTERM);
             posix_kill(getManagerProcessId() , SIGTERM);
 
-            if (posix_kill(getWatcherProcessId(), SIG_DFL)){
+            if (!is_null(getWatcherProcessId()) && posix_kill(getWatcherProcessId(), SIG_DFL)){
                 posix_kill(getWatcherProcessId(), SIGTERM);
             }
 
@@ -94,6 +95,16 @@ class Start extends Command
         if (!is_null(config('server.ssl.ssl_cert_file')) && !file_exists(config('server.ssl.ssl_cert_file'))){
             $io->error("ssl key file is not found" , true);
             return Command::FAILURE;
+        }
+
+        /*
+         * delete old routes closure cache files
+         */
+        if (is_dir(storagePath('routes'))){
+            $dir = storagePath('routes');
+            foreach (array_diff(scandir($dir), ['.', '..']) as $file) {
+                unlink("$dir/$file");
+            }
         }
 
         /*
@@ -167,6 +178,6 @@ class Start extends Command
          * create and start server
          */
         (new Http())->createServer()->start($input->getOption('daemonize'));
-        return self::SUCCESS;
+        return Command::SUCCESS;
     }
 }
