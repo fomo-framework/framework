@@ -100,7 +100,7 @@ class Start extends Command
         /*
          * delete old routes closure cache files
          */
-        if (is_dir(storagePath('routes'))){
+        if (file_exists(storagePath('routes'))){
             $dir = storagePath('routes');
             foreach (array_diff(scandir($dir), ['.', '..']) as $file) {
                 unlink("$dir/$file");
