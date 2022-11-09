@@ -62,7 +62,7 @@ class Http
                     $r->addRoute($method, $callback[0] , $callback[1]);
         });
 
-        $this->request = new Request($server , $this->dispatcher);
+        $this->request = Request::getInstance($server , $this->dispatcher);
         $this->runServices($server);
     }
 
