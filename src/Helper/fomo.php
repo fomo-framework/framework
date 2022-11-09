@@ -7,6 +7,7 @@ use Fomo\Config\Config;
 use Fomo\Elasticsearch\Elasticsearch;
 use Fomo\Mail\Mail;
 use Fomo\Response\Response;
+use Fomo\Request\Request;
 use Fomo\ServerState\ServerState;
 use Fomo\Redis\Redis;
 use Fomo\Cache\Cache;
@@ -192,6 +193,13 @@ if (! function_exists('schedulingServerIsRunning')) {
             return posix_kill(getSchedulingProcessId(), SIG_DFL);
         }
         return false;
+    }
+}
+
+if (! function_exists('request')) {
+    function request(): Request
+    {
+        return Request::getInstance();
     }
 }
 
