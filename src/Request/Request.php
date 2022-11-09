@@ -8,6 +8,8 @@ use Swoole\Server;
 class Request
 {
     use AdditionalTrait;
+    
+    protected static ?self $instance = null;
 
     protected string $buffer;
 
@@ -30,6 +32,15 @@ class Request
     protected array $getsCache = [];
 
     protected array $postsCache = [];
+    
+    public static function getInstance(Server $server, Dispatcher $dispatcher): self
+    {
+        if (is_null(self::$instance)) {
+            self::$instance = new self($server, $dispatcher);
+        }
+
+        return self::$instance;
+    }
 
     public function __construct(
         protected readonly Server $server ,
