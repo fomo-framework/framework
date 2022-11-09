@@ -33,7 +33,7 @@ class Request
 
     protected array $postsCache = [];
     
-    public static function getInstance(Server $server, Dispatcher $dispatcher): self
+    public static function getInstance(Server $server = null, Dispatcher $dispatcher = null): self
     {
         if (is_null(self::$instance)) {
             self::$instance = new self($server, $dispatcher);
