@@ -4,7 +4,7 @@ namespace Fomo\ServerState;
 
 class ServerState
 {
-    protected static ?self $instance = null;
+    protected static self $instance;
     protected readonly string $path;
 
     public function __construct(){
@@ -13,10 +13,11 @@ class ServerState
 
     public static function getInstance(): self
     {
-        if (is_null(self::$instance)) {
-            return self::$instance = new self();
+        if (isset(self::$instance)) {
+            return self::$instance;
         }
-        return self::$instance;
+
+        return self::$instance = new self();
     }
 
     public function getInformation(): array
