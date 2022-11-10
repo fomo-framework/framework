@@ -9,7 +9,7 @@ class Request
 {
     use AdditionalTrait;
     
-    protected static ?self $instance = null;
+    protected static self $instance;
 
     protected string $buffer;
 
@@ -35,11 +35,11 @@ class Request
     
     public static function getInstance(Server $server = null, Dispatcher $dispatcher = null): self
     {
-        if (is_null(self::$instance)) {
-            self::$instance = new self($server, $dispatcher);
+        if (isset(self::$instance)) {
+            return self::$instance;
         }
 
-        return self::$instance;
+        return self::$instance = new self($server, $dispatcher);
     }
 
     public function __construct(
