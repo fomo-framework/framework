@@ -4,16 +4,17 @@ namespace Fomo\Language;
 
 class Language
 {
-    protected static ?self $instance = null;
+    protected static self $instance;
 
     protected array $cache = [];
 
     public static function getInstance(): self
     {
-        if (is_null(self::$instance)) {
-            return self::$instance = new self();
+        if (isset(self::$instance)) {
+            return self::$instance;
         }
-        return self::$instance;
+
+        return self::$instance = new self();
     }
 
     public function getErrorMessages(): array
