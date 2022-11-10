@@ -2,8 +2,6 @@
 
 namespace Fomo\Log;
 
-use Fomo\Log\Logger;
-
 /**
  * Class Log
  *
@@ -22,15 +20,15 @@ use Fomo\Log\Logger;
 
 class Log
 {
-    protected static ?Logger $instance = null;
+    protected static Logger $instance;
 
     protected static function getInstance(): Logger
     {
-        if (is_null(self::$instance)) {
-            return self::$instance = new Logger();
+        if (isset(self::$instance)) {
+            return self::$instance;
         }
 
-        return self::$instance;
+        return self::$instance = new Logger();
     }
 
     public static function __callStatic(string $method, array $arguments)
