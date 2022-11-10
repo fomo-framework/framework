@@ -6,7 +6,7 @@ use stdClass;
 
 class Auth
 {
-    protected static ?self $instance = null;
+    protected static self $instance;
 
     public function __construct(
         protected ?stdClass $user = null
@@ -14,11 +14,11 @@ class Auth
 
     public static function getInstance(?stdClass $user = null): Auth
     {
-        if (is_null(self::$instance)){
-            return self::$instance = new self($user);
+        if (isset(self::$instance)){
+            return self::$instance;
         }
 
-        return self::$instance;
+        return self::$instance = new self($user);
     }
 
     public function user(): stdClass
