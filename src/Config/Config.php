@@ -4,18 +4,18 @@ namespace Fomo\Config;
 
 class Config
 {
-    protected static ?self $instance = null;
+    protected static self $instance;
 
     protected array $fileCache = [];
     protected array $keyCache = [];
 
     public static function getInstance(): self
     {
-        if (is_null(self::$instance)) {
-            return self::$instance = new self();
+        if (isset(self::$instance)) {
+            return self::$instance;
         }
 
-        return self::$instance;
+        return self::$instance = new self();
     }
 
     public function get(string $key, string|int|bool|array|float|null $default = null): string|int|bool|array|float|null
