@@ -169,13 +169,22 @@ class Router
                 }
             }
 
+            $uses = '';
+            $usesPattern = sprintf(
+                '/%s(.+?)%s/ims',
+                preg_quote('use ', '/'), preg_quote(';', '/')
+            );
+            if (preg_match_all($usesPattern, file_get_contents(basePath('router/router.php')), $matches)) {
+                $uses = implode("\n", $matches[0])."\n\n";
+            }
+
             $class = $this->genClosureCacheFile();
 
             file_put_contents(
                 storagePath("routes/$class.php") ,
                 $finalParameters == ''
-                    ? "<?php \n\nnamespace Storage\\Routes;\n\nclass $class\n{\n\tpublic function handle()\n\t{\n\t$source\n\t}\n}"
-                    : "<?php \n\nnamespace Storage\\Routes;\n\nclass $class\n{\n\tpublic function handle($finalParameters)\n\t{\n\t$source\n\t}\n}"
+                    ? "<?php \n\nnamespace Storage\\Routes;\n\n{$uses}class $class\n{\n\tpublic function handle()\n\t{\n\t$source\n\t}\n}"
+                    : "<?php \n\nnamespace Storage\\Routes;\n\n{$uses}class $class\n{\n\tpublic function handle($finalParameters)\n\t{\n\t$source\n\t}\n}"
             );
 
             $callback = ["Storage\\Routes\\$class" , 'handle'];
