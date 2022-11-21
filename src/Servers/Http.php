@@ -54,7 +54,7 @@ class Http
         $this->dispatcher = \FastRoute\simpleDispatcher(function (RouteCollector $r) {
             $router = new Router();
             $router->group([], function ($router) {
-                require_once basePath("routes/api.php");
+                require_once basePath("router/router.php");
             });
 
             foreach ($router->getRoutes() as $method => $callbacks)
