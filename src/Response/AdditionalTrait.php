@@ -9,6 +9,7 @@ trait AdditionalTrait
         $this->status = 204;
         $this->body = '';
 
+        $this->headers['Connection'] = 'keep-alive';
         $this->headers['Content-Type'] = 'text/html; charset=utf-8';
         $this->headers['Content-Length'] = 0;
 
@@ -20,6 +21,7 @@ trait AdditionalTrait
         $this->status = $status;
         $this->body = $data;
 
+        $this->headers['Connection'] = 'keep-alive';
         $this->headers['Content-Type'] = 'text/html; charset=utf-8';
         $this->headers['Content-Length'] = \strlen($data);
 
@@ -31,6 +33,7 @@ trait AdditionalTrait
         $this->status = $status;
         $this->body = $data;
 
+        $this->headers['Connection'] = 'keep-alive';
         $this->headers['Content-Type'] = 'text/plain; charset=utf-8';
         $this->headers['Content-Length'] = \strlen($data);
 
@@ -44,6 +47,7 @@ trait AdditionalTrait
         $this->status = $status;
         $this->body = $body;
 
+        $this->headers['Connection'] = 'keep-alive';
         $this->headers['Content-Type'] = 'application/json';
         $this->headers['Content-Length'] = \strlen($body);
 
