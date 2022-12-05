@@ -2,23 +2,19 @@
 
 namespace Fomo\Validation;
 
-use Fomo\Language\Language;
+use Fomo\Facades\Language;
 
 class Validation
 {
     use RulesTrait;
 
-    protected array $rules = [];
     protected array $errorDefaultMessage = [];
     protected array $errors = [];
     protected array $data;
 
-    public function __construct(array $data , array $rules)
+    public function __construct()
     {
-        $this->data = $data;
-        $this->rules = $rules;
-        $this->errorDefaultMessage = Language::getInstance()->getErrorMessages();
-        $this->validate();
+        $this->errorDefaultMessage = Language::getErrorMessages();
     }
 
     protected function existsData(array $array, string|int $key): bool
@@ -76,9 +72,11 @@ class Validation
         return $target;
     }
 
-    protected function validate(): void
+    public function validate(array $data , array $rules): self
     {
-        foreach ($this->rules as $index => $rule){
+        $this->data = $data;
+
+        foreach ($rules as $index => $rule){
             $rule = explode('|' , $rule);
             $indexExplode = explode('.' , $index);
             count($indexExplode) > 1 ? $indexLocal = last($indexExplode) : $indexLocal = $index;
@@ -105,6 +103,8 @@ class Validation
                 ]);
             }
         }
+
+        return $this;
     }
 
     public function hasError(): bool
