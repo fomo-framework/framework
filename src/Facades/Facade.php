@@ -2,7 +2,7 @@
 
 namespace Fomo\Facades;
 
-class Facade
+abstract class Facade
 {
     protected static array $classes = [];
 
