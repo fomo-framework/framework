@@ -5,6 +5,9 @@ namespace Fomo\Servers;
 use App\Exceptions\Handler;
 use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;
+use Fomo\Facades\Route;
+use Fomo\Facades\Setter;
+use Fomo\Facades\Request as RequestFacade;
 use Swoole\Server;
 use Fomo\Request\Request;
 use Fomo\Router\Router;
@@ -50,20 +53,9 @@ class Http
         if ($workerId == config('server.additional.worker_num') - 1){
             $this->saveWorkerIds();
         }
-
-        $this->dispatcher = \FastRoute\simpleDispatcher(function (RouteCollector $r) {
-            $router = new Router();
-            $router->group([], function ($router) {
-                require_once basePath("router/router.php");
-            });
-
-            foreach ($router->getRoutes() as $method => $callbacks)
-                foreach ($callbacks as $callback)
-                    $r->addRoute($method, $callback[0] , $callback[1]);
-        });
-
-        $this->request = Request::getInstance($server , $this->dispatcher);
-        $this->runServices($server);
+        $this->setFacades();
+        $this->setDispatcher();
+        $this->setRequest($server);
     }
 
     public function onReceive(Server $server, $fd, $from_id, $data): void
@@ -145,10 +137,29 @@ class Http
         setWorkerProcessIds($workerIds);
     }
 
-    protected function runServices(Server $server): void
+    protected function setFacades(): void
     {
-        foreach (config('server.services') as $service){
-            (new $service)->boot($server , $this->request);
-        }
+        Setter::addClass('request', new Request);
+        Setter::addClass('route', new Router);
+    }
+
+    protected function setDispatcher(): void
+    {
+        $this->dispatcher = \FastRoute\simpleDispatcher(function (RouteCollector $r) {
+            require_once basePath("router/router.php");
+            foreach (Route::getRoutes() as $method => $callbacks){
+                foreach ($callbacks as $callback){
+                    $r->addRoute($method, $callback[0] , $callback[1]);
+                }
+            }
+        });
+    }
+
+    protected function setRequest(Server $server): void
+    {
+        $this->request = RequestFacade::getInstance();
+
+        RequestFacade::setServer($server);
+        RequestFacade::setDispatcher($this->dispatcher);
     }
 }
