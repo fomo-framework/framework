@@ -2,7 +2,9 @@
 
 namespace Fomo\Response;
 
-class Response
+use Fomo\Facades\Contracts\InstanceInterface;
+
+class Response implements InstanceInterface
 {
     use AdditionalTrait;
 
@@ -150,6 +152,11 @@ class Response
     public function rawBody(): string
     {
         return $this->body;
+    }
+
+    public function getInstance(): self
+    {
+        return $this;
     }
 
     public function __toString()
