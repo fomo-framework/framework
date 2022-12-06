@@ -6,6 +6,7 @@ use App\Exceptions\Handler;
 use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;
 use Fomo\Auth\Auth;
+use Fomo\Cache\Cache;
 use Fomo\Facades\Route;
 use Fomo\Facades\Setter;
 use Fomo\Facades\Request as RequestFacade;
@@ -147,6 +148,7 @@ class Http
         Setter::addClass('response', new Response);
         Setter::addClass('language', new Language);
         Setter::addClass('auth', new Auth);
+        Setter::addClass('cache', new Cache);
     }
 
     protected function setDispatcher(): void
