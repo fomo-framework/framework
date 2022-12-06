@@ -25,7 +25,6 @@ namespace Fomo\Facades;
  * @method static string|null host(bool $withoutPort = false)
  * @method static string bearerToken()
  * @method static string|null ip()
- * @method static \Fomo\Request\Request getInstance()
  */
 class Request extends Facade
 {
