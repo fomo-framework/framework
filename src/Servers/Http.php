@@ -16,6 +16,7 @@ use Fomo\Response\Response;
 use Swoole\Server;
 use Fomo\Request\Request;
 use Fomo\Router\Router;
+use Fomo\Http\Http as HttpClient;
 
 class Http
 {
@@ -151,6 +152,7 @@ class Http
         Setter::addClass('auth', new Auth);
         Setter::addClass('cache', new Cache);
         Setter::addClass('config', new Config);
+        Setter::addClass('http', new HttpClient);
     }
 
     protected function setDispatcher(): void
