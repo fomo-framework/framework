@@ -8,6 +8,7 @@ use FastRoute\RouteCollector;
 use Fomo\Facades\Route;
 use Fomo\Facades\Setter;
 use Fomo\Facades\Request as RequestFacade;
+use Fomo\Language\Language;
 use Fomo\Response\Response;
 use Swoole\Server;
 use Fomo\Request\Request;
@@ -143,6 +144,7 @@ class Http
         Setter::addClass('request', new Request);
         Setter::addClass('route', new Router);
         Setter::addClass('response', new Response);
+        Setter::addClass('language', new Language);
     }
 
     protected function setDispatcher(): void
