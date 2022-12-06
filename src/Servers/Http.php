@@ -7,6 +7,7 @@ use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;
 use Fomo\Auth\Auth;
 use Fomo\Cache\Cache;
+use Fomo\Config\Config;
 use Fomo\Facades\Route;
 use Fomo\Facades\Setter;
 use Fomo\Facades\Request as RequestFacade;
@@ -149,6 +150,7 @@ class Http
         Setter::addClass('language', new Language);
         Setter::addClass('auth', new Auth);
         Setter::addClass('cache', new Cache);
+        Setter::addClass('config', new Config);
     }
 
     protected function setDispatcher(): void
