@@ -1,16 +1,19 @@
 <?php
 
 use Elastic\Elasticsearch\Client;
-use Swoole\Process;
 use Fomo\Auth\Auth;
-use Fomo\Config\Config;
-use Fomo\Elasticsearch\Elasticsearch;
-use Fomo\Mail\Mail;
-use Fomo\Response\Response;
-use Fomo\Request\Request;
-use Fomo\ServerState\ServerState;
-use Fomo\Redis\Redis;
+use Fomo\Facades\Auth as AuthFacade;
 use Fomo\Cache\Cache;
+use Fomo\Facades\Cache as CacheFacade;
+use Fomo\Elasticsearch\Elasticsearch;
+use Fomo\Facades\Config;
+use Fomo\Request\Request;
+use Fomo\Facades\Request as RequestFacade;
+use Fomo\Facades\ServerState;
+use Fomo\Mail\Mail;
+use Fomo\Redis\Redis;
+use Fomo\Response\Response;
+use Fomo\Facades\Response as ResponseFacade;
 
 if (! function_exists('basePath')) {
     function basePath(string $path = null): string
@@ -57,7 +60,7 @@ if (! function_exists('databasePath')) {
 if (! function_exists('config')) {
     function config(string $key, string|int|bool|array|float|null $default = null): string|int|bool|array|float|null
     {
-        return Config::getInstance()->get($key , $default);
+        return Config::get($key , $default);
     }
 }
 
@@ -71,98 +74,98 @@ if (! function_exists('cpuCount')) {
 if (! function_exists('setMasterProcessId')) {
     function setMasterProcessId(int $id): void
     {
-        ServerState::getInstance()->setMasterProcessId($id);
+        ServerState::setMasterProcessId($id);
     }
 }
 
 if (! function_exists('setQueueProcessId')) {
     function setQueueProcessId(int $id): void
     {
-        ServerState::getInstance()->setQueueProcessId($id);
+        ServerState::setQueueProcessId($id);
     }
 }
 
 if (! function_exists('setSchedulingProcessId')) {
     function setSchedulingProcessId(int $id): void
     {
-        ServerState::getInstance()->setSchedulingProcessId($id);
+        ServerState::setSchedulingProcessId($id);
     }
 }
 
 if (! function_exists('setManagerProcessId')) {
     function setManagerProcessId(int $id): void
     {
-        ServerState::getInstance()->setManagerProcessId($id);
+        ServerState::setManagerProcessId($id);
     }
 }
 
 if (! function_exists('setWatcherProcessId')) {
     function setWatcherProcessId(int $id): void
     {
-        ServerState::getInstance()->setWatcherProcessId($id);
+        ServerState::setWatcherProcessId($id);
     }
 }
 
 if (! function_exists('setFactoryProcessId')) {
     function setFactoryProcessId(int $id): void
     {
-        ServerState::getInstance()->setFactoryProcessId($id);
+        ServerState::setFactoryProcessId($id);
     }
 }
 
 if (! function_exists('setWorkerProcessIds')) {
     function setWorkerProcessIds(array $ids): void
     {
-        ServerState::getInstance()->setWorkerProcessIds($ids);
+        ServerState::setWorkerProcessIds($ids);
     }
 }
 
 if (! function_exists('getMasterProcessId')) {
     function getMasterProcessId(): int|null
     {
-        return ServerState::getInstance()->getMasterProcessId();
+        return ServerState::getMasterProcessId();
     }
 }
 
 if (! function_exists('getManagerProcessId')) {
     function getManagerProcessId(): int|null
     {
-        return ServerState::getInstance()->getManagerProcessId();
+        return ServerState::getManagerProcessId();
     }
 }
 
 if (! function_exists('getWatcherProcessId')) {
     function getWatcherProcessId(): int|null
     {
-        return ServerState::getInstance()->getWatcherProcessId();
+        return ServerState::getWatcherProcessId();
     }
 }
 
 if (! function_exists('getFactoryProcessId')) {
     function getFactoryProcessId(): int|null
     {
-        return ServerState::getInstance()->getFactoryProcessId();
+        return ServerState::getFactoryProcessId();
     }
 }
 
 if (! function_exists('getQueueProcessId')) {
     function getQueueProcessId(): int|null
     {
-        return ServerState::getInstance()->getQueueProcessId();
+        return ServerState::getQueueProcessId();
     }
 }
 
 if (! function_exists('getSchedulingProcessId')) {
     function getSchedulingProcessId(): int|null
     {
-        return ServerState::getInstance()->getSchedulingProcessId();
+        return ServerState::getSchedulingProcessId();
     }
 }
 
 if (! function_exists('getWorkerProcessIds')) {
     function getWorkerProcessIds(): array
     {
-        return ServerState::getInstance()->getWorkerProcessIds();
+        return ServerState::getWorkerProcessIds();
     }
 }
 
@@ -199,21 +202,21 @@ if (! function_exists('schedulingServerIsRunning')) {
 if (! function_exists('request')) {
     function request(): Request
     {
-        return Request::getInstance();
+        return RequestFacade::getInstance();
     }
 }
 
 if (! function_exists('response')) {
-    function response(string $data = '', int $status = 200, array $headers = ['Connection' => 'keep-alive']): Response
+    function response(): Response
     {
-        return new Response($status , $headers , $data);
+        return ResponseFacade::getInstance();
     }
 }
 
 if (! function_exists('auth')) {
     function auth(): Auth
     {
-        return Auth::getInstance();
+        return AuthFacade::getInstance();
     }
 }
 
@@ -241,7 +244,7 @@ if (! function_exists('mail')) {
 if (! function_exists('cache')) {
     function cache(): Cache
     {
-        return new Cache();
+        return CacheFacade::getInstance();
     }
 }
 
