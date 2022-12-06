@@ -16,6 +16,7 @@ use Fomo\Log\Logger;
 use Fomo\Relationship\Relationship;
 use Fomo\Response\Response;
 use Fomo\ServerState\ServerState;
+use Fomo\Validation\Validation;
 use Swoole\Server;
 use Fomo\Request\Request;
 use Fomo\Router\Router;
@@ -159,6 +160,7 @@ class Http
         Setter::addClass('log', new Logger);
         Setter::addClass('relationship', new Relationship);
         Setter::addClass('serverState', new ServerState);
+        Setter::addClass('validation', new Validation);
     }
 
     protected function setDispatcher(): void

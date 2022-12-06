@@ -2,9 +2,10 @@
 
 namespace Fomo\Validation;
 
+use Fomo\Facades\Contracts\InstanceInterface;
 use Fomo\Facades\Language;
 
-class Validation
+class Validation implements InstanceInterface
 {
     use RulesTrait;
 
@@ -15,61 +16,6 @@ class Validation
     public function __construct()
     {
         $this->errorDefaultMessage = Language::getErrorMessages();
-    }
-
-    protected function existsData(array $array, string|int $key): bool
-    {
-        return array_key_exists($key, $array);
-    }
-
-    protected function collapseData(array $array): array
-    {
-        $results = [];
-
-        foreach ($array as $values) {
-            $results[] = $values;
-        }
-
-        return array_merge([], ...$results);
-    }
-
-    protected function getData(mixed $target, string|array|int|null $key, mixed $default = null): mixed
-    {
-        if (is_null($key)) {
-            return $target;
-        }
-
-        $key = is_array($key) ? $key : explode('.', $key);
-
-        foreach ($key as $i => $segment) {
-            unset($key[$i]);
-
-            if (is_null($segment)) {
-                return $target;
-            }
-
-            if ($segment === '*') {
-                if (! is_array($target)) {
-                    return value($default);
-                }
-
-                $result = [];
-
-                foreach ($target as $item) {
-                    $result[] = $this->getData($item, $key);
-                }
-
-                return in_array('*', $key) ? $this->collapseData($result) : $result;
-            }
-
-            if (is_array($target) && $this->existsData($target, $segment)) {
-                $target = $target[$segment];
-            } else {
-                return value($default);
-            }
-        }
-
-        return $target;
     }
 
     public function validate(array $data , array $rules): self
@@ -141,5 +87,65 @@ class Validation
     public function firstError(): array
     {
         return $this->errors[0];
+    }
+
+    public function getInstance(): self
+    {
+        return $this;
+    }
+
+    protected function existsData(array $array, string|int $key): bool
+    {
+        return array_key_exists($key, $array);
+    }
+
+    protected function collapseData(array $array): array
+    {
+        $results = [];
+
+        foreach ($array as $values) {
+            $results[] = $values;
+        }
+
+        return array_merge([], ...$results);
+    }
+
+    protected function getData(mixed $target, string|array|int|null $key, mixed $default = null): mixed
+    {
+        if (is_null($key)) {
+            return $target;
+        }
+
+        $key = is_array($key) ? $key : explode('.', $key);
+
+        foreach ($key as $i => $segment) {
+            unset($key[$i]);
+
+            if (is_null($segment)) {
+                return $target;
+            }
+
+            if ($segment === '*') {
+                if (! is_array($target)) {
+                    return value($default);
+                }
+
+                $result = [];
+
+                foreach ($target as $item) {
+                    $result[] = $this->getData($item, $key);
+                }
+
+                return in_array('*', $key) ? $this->collapseData($result) : $result;
+            }
+
+            if (is_array($target) && $this->existsData($target, $segment)) {
+                $target = $target[$segment];
+            } else {
+                return value($default);
+            }
+        }
+
+        return $target;
     }
 }
