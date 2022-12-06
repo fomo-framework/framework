@@ -12,6 +12,7 @@ use Fomo\Facades\Route;
 use Fomo\Facades\Setter;
 use Fomo\Facades\Request as RequestFacade;
 use Fomo\Language\Language;
+use Fomo\Log\Logger;
 use Fomo\Response\Response;
 use Swoole\Server;
 use Fomo\Request\Request;
@@ -153,6 +154,7 @@ class Http
         Setter::addClass('cache', new Cache);
         Setter::addClass('config', new Config);
         Setter::addClass('http', new HttpClient);
+        Setter::addClass('log', new Logger);
     }
 
     protected function setDispatcher(): void
