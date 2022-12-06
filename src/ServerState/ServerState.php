@@ -2,39 +2,14 @@
 
 namespace Fomo\ServerState;
 
-class ServerState
+use Fomo\Facades\Contracts\InstanceInterface;
+
+class ServerState implements InstanceInterface
 {
-    protected static self $instance;
     protected readonly string $path;
 
     public function __construct(){
         $this->path = storagePath('serverState.json');
-    }
-
-    public static function getInstance(): self
-    {
-        if (isset(self::$instance)) {
-            return self::$instance;
-        }
-
-        return self::$instance = new self();
-    }
-
-    public function getInformation(): array
-    {
-        $data = is_readable($this->path)
-            ? json_decode(file_get_contents($this->path), true)
-            : [];
-
-        return [
-            'masterProcessId' => $data['pIds']['masterProcessId'] ?? null ,
-            'managerProcessId' => $data['pIds']['managerProcessId'] ?? null ,
-            'watcherProcessId' => $data['pIds']['watcherProcessId'] ?? null ,
-            'factoryProcessId' => $data['pIds']['factoryProcessId'] ?? null ,
-            'queueProcessId' => $data['pIds']['queueProcessId'] ?? null ,
-            'schedulingProcessId' => $data['pIds']['schedulingProcessId'] ?? null ,
-            'workerProcessIds' => $data['pIds']['workerProcessIds'] ?? [] ,
-        ];
     }
 
     public function setManagerProcessId(int $id): void
@@ -107,6 +82,11 @@ class ServerState
         return $this->getInformation()['workerProcessIds'];
     }
 
+    public function getInstance(): self
+    {
+        return $this;
+    }
+
     protected function setId(string $key, int|array $id): void
     {
         file_put_contents($this->path, json_encode(
@@ -115,5 +95,22 @@ class ServerState
             ],
             JSON_PRETTY_PRINT
         ));
+    }
+
+    protected function getInformation(): array
+    {
+        $data = is_readable($this->path)
+            ? json_decode(file_get_contents($this->path), true)
+            : [];
+
+        return [
+            'masterProcessId' => $data['pIds']['masterProcessId'] ?? null ,
+            'managerProcessId' => $data['pIds']['managerProcessId'] ?? null ,
+            'watcherProcessId' => $data['pIds']['watcherProcessId'] ?? null ,
+            'factoryProcessId' => $data['pIds']['factoryProcessId'] ?? null ,
+            'queueProcessId' => $data['pIds']['queueProcessId'] ?? null ,
+            'schedulingProcessId' => $data['pIds']['schedulingProcessId'] ?? null ,
+            'workerProcessIds' => $data['pIds']['workerProcessIds'] ?? [] ,
+        ];
     }
 }
