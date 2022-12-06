@@ -2,7 +2,9 @@
 
 namespace Fomo\Language;
 
-class Language
+use Fomo\Facades\Contracts\InstanceInterface;
+
+class Language implements InstanceInterface
 {
     protected array $cache = [];
 
@@ -13,5 +15,10 @@ class Language
         }
 
         return $this->cache;
+    }
+
+    public function getInstance(): self
+    {
+        return $this;
     }
 }
