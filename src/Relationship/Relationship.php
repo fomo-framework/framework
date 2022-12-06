@@ -3,12 +3,13 @@
 namespace Fomo\Relationship;
 
 use Fomo\Database\DB;
+use Fomo\Facades\Contracts\InstanceInterface;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
-class Relationship
+class Relationship implements InstanceInterface
 {
     protected array $columns = ['*'];
     protected array $orderBy = [];
@@ -240,6 +241,11 @@ class Relationship
                 $item->$table = $relationships->where($idName , $item->$localKey)->take($this->limit)->values();
             });
         }
+    }
+
+    public function getInstance(): self
+    {
+        return $this;
     }
 
     protected function setPolymorphic(Collection|Paginator $data , string $table , string $type , string $typeKey , string $identityKey , string $localKey): array
