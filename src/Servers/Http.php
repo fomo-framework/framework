@@ -15,6 +15,7 @@ use Fomo\Language\Language;
 use Fomo\Log\Logger;
 use Fomo\Relationship\Relationship;
 use Fomo\Response\Response;
+use Fomo\Servers\Http\Traits\SetFacadesTrait;
 use Fomo\ServerState\ServerState;
 use Fomo\Validation\Validation;
 use Swoole\Server;
@@ -26,6 +27,8 @@ use Faker\Generator;
 
 class Http
 {
+    use SetFacadesTrait;
+
     protected Dispatcher $dispatcher;
     protected Request $request;
     protected Server $server;
@@ -164,6 +167,7 @@ class Http
         Setter::addClass('serverState', new ServerState);
         Setter::addClass('validation', new Validation);
         Setter::addClass('faker', Factory::create(config('app.faker_locale')));
+        $this->setDBFacade();
     }
 
     protected function setDispatcher(): void
