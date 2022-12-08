@@ -2,16 +2,16 @@
 
 namespace Fomo\Servers\Http\Traits;
 
+use Fomo\Database\DB;
 use Fomo\Elasticsearch\Elasticsearch;
 use Fomo\Facades\Setter;
-use Illuminate\Database\Capsule\Manager as Capsule;
 use Illuminate\Pagination\Paginator;
 
 trait SetFacadesTrait
 {
     protected function setDBFacade(): void
     {
-        $connection = new Capsule();
+        $connection = new DB();
 
         $connection->addConnection(config('database.connections.' . config('database.default')));
 
