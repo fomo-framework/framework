@@ -21,6 +21,8 @@ use Swoole\Server;
 use Fomo\Request\Request;
 use Fomo\Router\Router;
 use Fomo\Http\Http as HttpClient;
+use Faker\Factory;
+use Faker\Generator;
 
 class Http
 {
@@ -161,6 +163,7 @@ class Http
         Setter::addClass('relationship', new Relationship);
         Setter::addClass('serverState', new ServerState);
         Setter::addClass('validation', new Validation);
+        Setter::addClass('faker', Factory::create(config('app.faker_locale')));
     }
 
     protected function setDispatcher(): void
