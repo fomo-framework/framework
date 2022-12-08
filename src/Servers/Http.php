@@ -169,6 +169,7 @@ class Http
         Setter::addClass('faker', Factory::create(config('app.faker_locale')));
         $this->setDBFacade();
         $this->setElasticsearchFacade();
+        $this->setRedisFacade();
     }
 
     protected function setDispatcher(): void

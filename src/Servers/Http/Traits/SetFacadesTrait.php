@@ -5,6 +5,7 @@ namespace Fomo\Servers\Http\Traits;
 use Fomo\Database\DB;
 use Fomo\Elasticsearch\Elasticsearch;
 use Fomo\Facades\Setter;
+use Fomo\Redis\Redis;
 use Illuminate\Pagination\Paginator;
 
 trait SetFacadesTrait
@@ -39,5 +40,18 @@ trait SetFacadesTrait
         }
 
         Setter::addClass('elasticsearch', $connection->build());
+    }
+
+    protected function setRedisFacade(): void
+    {
+        $connection = new Redis();
+        $connection->connect(config('redis.host') , config('redis.port'));
+        $connection->select(config('redis.database'));
+
+        if (! is_null(config('redis.username')) && ! is_null(config('redis.password'))){
+            $connection->auth([config('redis.username') , config('redis.password')]);
+        }
+
+        Setter::addClass('redis', $connection);
     }
 }
