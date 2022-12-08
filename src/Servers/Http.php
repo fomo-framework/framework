@@ -170,6 +170,7 @@ class Http
         $this->setDBFacade();
         $this->setElasticsearchFacade();
         $this->setRedisFacade();
+        $this->setMailFacade();
     }
 
     protected function setDispatcher(): void

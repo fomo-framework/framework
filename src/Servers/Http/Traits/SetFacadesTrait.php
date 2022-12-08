@@ -4,9 +4,12 @@ namespace Fomo\Servers\Http\Traits;
 
 use Fomo\Database\DB;
 use Fomo\Elasticsearch\Elasticsearch;
+use Fomo\Facades\Log;
 use Fomo\Facades\Setter;
+use Fomo\Mail\Mail;
 use Fomo\Redis\Redis;
 use Illuminate\Pagination\Paginator;
+use PHPMailer\PHPMailer\PHPMailer;
 
 trait SetFacadesTrait
 {
@@ -53,5 +56,41 @@ trait SetFacadesTrait
         }
 
         Setter::addClass('redis', $connection);
+    }
+
+    protected function setMailFacade(): void
+    {
+        $connection = new Mail();
+        switch (env('MAIL_MAILER' , 'smtp')) {
+            case 'smtp':
+                $connection->isSMTP();
+                if (config('mail.username') != null && config('mail.password') != null){
+                    $connection->SMTPAuth = true;
+                }
+                $connection->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+                break;
+            case 'mail':
+                $connection->isMail();
+                break;
+            case 'sendmail':
+                $connection->isSendmail();
+                break;
+            case 'qmail':
+                $connection->isQmail();
+                break;
+        }
+
+        $connection->Host = config('mail.host');
+        $connection->Username = config('mail.username');
+        $connection->Password = config('mail.password');
+        $connection->Port = config('mail.port');
+
+        try {
+            $connection->setFrom(env('MAIL_FROM_ADDRESS', 'hello@example.com'), env('MAIL_FROM_NAME', 'Example'));
+        } catch (\Exception $e) {
+            Log::channel('mailer')->error($e->getMessage());
+        }
+
+        Setter::addClass('mail', $connection);
     }
 }
