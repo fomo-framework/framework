@@ -2,6 +2,7 @@
 
 namespace Fomo\Servers\Http\Traits;
 
+use Fomo\Elasticsearch\Elasticsearch;
 use Fomo\Facades\Setter;
 use Illuminate\Database\Capsule\Manager as Capsule;
 use Illuminate\Pagination\Paginator;
@@ -10,11 +11,11 @@ trait SetFacadesTrait
 {
     protected function setDBFacade(): void
     {
-        $capsule = new Capsule();
+        $connection = new Capsule();
 
-        $capsule->addConnection(config('database.connections.' . config('database.default')));
+        $connection->addConnection(config('database.connections.' . config('database.default')));
 
-        $capsule->setAsGlobal();
+        $connection->setAsGlobal();
 
         Paginator::currentPageResolver(function () {
             $page = $this->request->get('page');
@@ -26,6 +27,17 @@ trait SetFacadesTrait
             return 1;
         });
 
-        Setter::addClass('db', $capsule);
+        Setter::addClass('db', $connection);
+    }
+
+    protected function setElasticsearchFacade(): void
+    {
+        $connection = (new Elasticsearch())->setHosts([config('elasticsearch.host') . ':' . config('elasticsearch.port')]);
+
+        if (config('elasticsearch.username') != null && config('elasticsearch.password') != null){
+            $connection->setBasicAuthentication(config('elasticsearch.username') , config('elasticsearch.password'));
+        }
+
+        Setter::addClass('elasticsearch', $connection->build());
     }
 }

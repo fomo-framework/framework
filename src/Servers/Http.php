@@ -168,6 +168,7 @@ class Http
         Setter::addClass('validation', new Validation);
         Setter::addClass('faker', Factory::create(config('app.faker_locale')));
         $this->setDBFacade();
+        $this->setElasticsearchFacade();
     }
 
     protected function setDispatcher(): void
