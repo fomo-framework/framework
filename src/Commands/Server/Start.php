@@ -227,9 +227,10 @@ class Start extends Command
 
             $this->writeServerOutput($server);
         } catch (Exception) {
-            return 1;
-        } finally {
-            $this->stopServer();
+            if ($input->getOption('daemonize')){
+                $this->stopServer();
+            }
+            return 0;
         }
 
         return $server->getExitCode();
