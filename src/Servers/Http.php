@@ -5,70 +5,25 @@ namespace Fomo\Servers;
 use App\Exceptions\Handler;
 use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;
-use Fomo\Auth\Auth;
-use Fomo\Cache\Cache;
-use Fomo\Config\Config;
 use Fomo\Facades\Route;
-use Fomo\Facades\Setter;
 use Fomo\Facades\Request as RequestFacade;
-use Fomo\Language\Language;
-use Fomo\Log\Logger;
-use Fomo\Relationship\Relationship;
-use Fomo\Response\Response;
-use Fomo\Servers\Http\Traits\SetFacadesTrait;
-use Fomo\ServerState\ServerState;
-use Fomo\Validation\Validation;
 use Swoole\Server;
 use Fomo\Request\Request;
-use Fomo\Router\Router;
-use Fomo\Http\Http as HttpClient;
-use Faker\Factory;
-use Faker\Generator;
 
 class Http
 {
-    use SetFacadesTrait;
-
     protected Dispatcher $dispatcher;
     protected Request $request;
-    protected Server $server;
     protected array $cache = [];
     protected array $config = [];
     protected array $MPCache = [];
 
-    public function createServer(): self
-    {
-        $this->server = new Server(
-            config('server.host') ,
-            config('server.port') ,
-            !is_null(config('server.ssl.ssl_cert_file')) && !is_null(config('server.ssl.ssl_key_file')) ? config('server.mode') | SWOOLE_SSL : config('server.mode') ,
-            config('server.sockType')
-        );
-
-        $this->server->set(array_merge(config('server.additional') , ['enable_coroutine' => false]));
-
-        $this->server->on('workerStart', [$this, 'onWorkerStart']);
-        $this->server->on('receive', [$this, 'onReceive']);
-
-        return $this;
-    }
-
-    public function start(bool $daemonize = false): void
-    {
-        if ($daemonize === true){
-            $this->server->set([
-                'daemonize' => 1
-            ]);
-        }
-        $this->server->start();
-    }
-
     public function onWorkerStart(Server $server, int $workerId): void
     {
-        if ($workerId == config('server.additional.worker_num') - 1){
-            $this->saveWorkerIds();
+        if ($workerId == resolve('config')->get('server.additional.worker_num') - 1){
+            $this->saveWorkerIds($server);
         }
-        $this->setFacades();
+
         $this->setDispatcher();
         $this->setRequest($server);
     }
@@ -76,18 +31,18 @@ class Http
     public function onReceive(Server $server, $fd, $from_id, $data): void
     {
         $this->request->setBC($data , $fd);
-        $firstLine = \strstr($data, "\r\n", true);
+        $firstLine = strstr($data, "\r\n", true);
 
         if (isset($this->MPCache[$firstLine])) {
             $method = $this->MPCache[$firstLine][0];
             $path = $this->MPCache[$firstLine][1];
         }else{
-            if (\count($this->MPCache) >= 256) {
+            if (count($this->MPCache) >= 256) {
                 unset($this->MPCache[key($this->MPCache)]);
             }
 
-            $MP = \explode(' ', $firstLine, 3);
-            $path = \strstr($MP[1], '?', true);
+            $MP = explode(' ', $firstLine, 3);
+            $path = strstr($MP[1], '?', true);
             $path = $path === false ? $MP[1] : $path;
             $method = $MP[0];
             $this->MPCache[$firstLine] = [$method , $path];
@@ -140,37 +95,16 @@ class Http
         }
     }
 
-    protected function saveWorkerIds(): void
+    protected function saveWorkerIds(Server $server): void
     {
         $workerIds = [];
-        for ($i = 0; $i < config('server.additional.worker_num'); $i++){
-            $workerIds[$i] = $this->server->getWorkerPid($i);
+        for ($i = 0; $i < resolve('config')->get('server.additional.worker_num'); $i++){
+            $workerIds[$i] = $server->getWorkerPid($i);
         }
 
-        setMasterProcessId($this->server->getMasterPid());
-        setManagerProcessId($this->server->getManagerPid());
+        setMasterProcessId($server->getMasterPid());
+        setManagerProcessId($server->getManagerPid());
         setWorkerProcessIds($workerIds);
-    }
-
-    protected function setFacades(): void
-    {
-        Setter::addClass('request', new Request);
-        Setter::addClass('route', new Router);
-        Setter::addClass('response', new Response);
-        Setter::addClass('language', new Language);
-        Setter::addClass('auth', new Auth);
-        Setter::addClass('cache', new Cache);
-        Setter::addClass('config', new Config);
-        Setter::addClass('http', new HttpClient);
-        Setter::addClass('log', new Logger);
-        Setter::addClass('relationship', new Relationship);
-        Setter::addClass('serverState', new ServerState);
-        Setter::addClass('validation', new Validation);
-        Setter::addClass('faker', Factory::create(config('app.faker_locale')));
-        $this->setDBFacade();
-        $this->setElasticsearchFacade();
-        $this->setRedisFacade();
-        $this->setMailFacade();
     }
 
     protected function setDispatcher(): void
