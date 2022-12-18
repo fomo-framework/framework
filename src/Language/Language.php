@@ -11,7 +11,7 @@ class Language implements InstanceInterface
     public function getErrorMessages(): array
     {
         if (empty($this->cache)) {
-            return $this->cache = require_once languagePath('validation/' . config('app.locale') . '/errors.php');
+            return $this->cache = require_once languagePath('validation/' . app()->make('config')->get('app.locale') . '/errors.php');
         }
 
         return $this->cache;
