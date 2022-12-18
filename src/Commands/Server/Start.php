@@ -187,12 +187,13 @@ class Start extends Command
     protected function startWatcherServer(InputInterface $input): Process|bool
     {
         if ($input->getOption('watch')){
-            $server = tap(new Process([
+            $server = new Process([
                 (new PhpExecutableFinder())->find(),
                 'watcher',
                 realpath('./')
-            ], __DIR__.'/../../Servers', []));
+            ], __DIR__.'/../../Servers', []);
             $server->start();
+            setWatcherProcessId($server->getPid());
 
             return $server;
         }
@@ -212,19 +213,13 @@ class Start extends Command
             while ($server->isRunning()) {
                 $this->writeServerOutput($server);
 
-                if ($watcher instanceof Process &&
-                    $watcher->isRunning() &&
-                    $watcher->getIncrementalOutput()) {
-                    $this->output->info('Application change detected. Restarting workers…');
+                if ($watcher instanceof Process){
+                    if ($watcher->isRunning() &&
+                        $watcher->getIncrementalOutput()) {
+                        $this->output->info('Application change detected. Restarting workers…');
 
-                    $this->reloadServer();
-                } elseif ($watcher->isTerminated()) {
-                    $this->output->error(
-                        'Watcher process has terminated. Please ensure Node and chokidar are installed.'.PHP_EOL.
-                        $watcher->getErrorOutput()
-                    );
-
-                    return 1;
+                        $this->reloadServer();
+                    }
                 }
 
                 usleep(500 * 1000);
