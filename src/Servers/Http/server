@@ -1,6 +1,7 @@
 #!/usr/bin/env php
 <?php
 
+use Dotenv\Dotenv;
 use Swoole\Server;
 use Fomo\Application\Application;
 use Fomo\Servers\Http;
@@ -21,9 +22,23 @@ require_once $_SERVER['argv'][1] . '/vendor/autoload.php';
 new Application($_SERVER['argv'][1]);
 
 /*
- * create server
+ * load .env file
+ */
+Dotenv::createImmutable(basePath())->load();
+
+/*
+ * resolve config
  */
 $config = resolve('config');
+
+/*
+ * set timezone
+ */
+date_default_timezone_set($config->get('app.timezone'));
+
+/*
+ * create server
+ */
 $server = new Server(
     $config->get('server.host'),
     $config->get('server.port'),
