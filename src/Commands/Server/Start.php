@@ -2,21 +2,24 @@
 
 namespace Fomo\Commands\Server;
 
-use Swoole\Process;
+use Exception;
+use Illuminate\Support\Str;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Fomo\Servers\Http;
 use Fomo\Console\Style;
-use Fomo\Servers\Watcher;
 use Symfony\Component\Console\Question\ChoiceQuestion;
+use Symfony\Component\Process\PhpExecutableFinder;
+use Symfony\Component\Process\Process;
 
 #[AsCommand(name: 'server:start' , description: 'start http server')]
 class Start extends Command
 {
+    protected Style $output;
+    
     protected function configure(): void
     {
         $this->addOption('daemonize', 'd', InputOption::VALUE_NONE, 'The program works in the background');
@@ -27,14 +30,15 @@ class Start extends Command
     {
         /*
          * load Fomo style
+         * resolve configs
          */
-        $io = new Style($input, $output);
-
+        $this->output = new Style($input, $output);
+        $configs = resolve('config');
         /*
          * check exist swoole extension
          */
         if (!extension_loaded('swoole') && !extension_loaded('openswoole')){
-            $io->error("the swoole extension is not found" , true);
+            $this->output->error("the swoole extension is not found" , true);
             return Command::FAILURE;
         }
 
@@ -42,7 +46,7 @@ class Start extends Command
          * check not used daemonize and watch mode currency
          */
         if ($input->getOption('daemonize') && $input->getOption('watch')){
-            $io->error('cannot use watcher in daemonize mode' , true);
+            $this->output->error('cannot use watcher in daemonize mode' , true);
             return Command::FAILURE;
         }
 
@@ -50,7 +54,7 @@ class Start extends Command
          * check server is running
          */
         if (httpServerIsRunning()){
-            $io->error('failed to listen server port[' . config('server.host') .':'. config('server.port') . '], Error: Address already' , true);
+            $this->output->error("failed to listen server port[{$configs->get('server.host')}:{$configs->get('server.port')}], Error: Address already" , true);
 
             $helper = $this->getHelper('question');
             $question = new ChoiceQuestion(
@@ -84,16 +88,16 @@ class Start extends Command
         /*
          * check ssl certificate file
          */
-        if (!is_null(config('server.ssl.ssl_cert_file')) && !file_exists(config('server.ssl.ssl_cert_file'))){
-            $io->error("ssl certificate file is not found" , true);
+        if (!is_null($configs->get('server.ssl.ssl_cert_file')) && !file_exists($configs->get('server.ssl.ssl_cert_file'))){
+            $this->output->error("ssl certificate file is not found" , true);
             return Command::FAILURE;
         }
 
         /*
          * check ssl certificate key
          */
-        if (!is_null(config('server.ssl.ssl_cert_file')) && !file_exists(config('server.ssl.ssl_cert_file'))){
-            $io->error("ssl key file is not found" , true);
+        if (!is_null($configs->get('server.ssl.ssl_key_file')) && !file_exists($configs->get('server.ssl.ssl_key_file'))){
+            $this->output->error("ssl key file is not found" , true);
             return Command::FAILURE;
         }
 
@@ -112,15 +116,15 @@ class Start extends Command
         /*
          * create listen message
          */
-        $protocol = !is_null(config('server.ssl.ssl_cert_file')) && !is_null(config('server.ssl.ssl_cert_file')) ? 'https' : 'http';
-        $listenMessage = "listen on $protocol://" . config('server.host') . ':' . config('server.port');
+        $protocol = !is_null($configs->get('server.ssl.ssl_cert_file')) && !is_null($configs->get('server.ssl.ssl_cert_file')) ? 'https' : 'http';
+        $listenMessage = "listen on $protocol://{$configs->get('server.host')}:{$configs->get('server.port')}";
 
         /*
          * send running server
          * send listen message
          */
-        $io->success('http server running…');
-        $io->info($listenMessage , true);
+        $this->output->success('http server running…');
+        $this->output->info($listenMessage , true);
 
         /*
          * check if exist daemonize not send general information
@@ -129,7 +133,7 @@ class Start extends Command
             /*
              * create socket type of server
              */
-            $serverSocketType = match (config('server.sockType')){
+            $serverSocketType = match ($configs->get('server.sockType')){
                 SWOOLE_SOCK_TCP => 'TCP' ,
                 SWOOLE_SOCK_UDP => 'UDP' ,
                 default => 'other type'
@@ -150,10 +154,10 @@ class Start extends Command
                 ])
                 ->setRows([
                     [
-                        '<options=bold> '. PHP_VERSION .'</>' ,
-                        '<options=bold> ' . FOMO_VERSION . ' </>' ,
-                        '<options=bold> ' . config('server.additional.worker_num') . '</>' ,
-                        "<options=bold> $serverSocketType</>" ,
+                        '<options=bold> '. PHP_VERSION .' </>' ,
+                        '<options=bold> ' . app()->version() . ' </>' ,
+                        "<options=bold> {$configs->get('server.additional.worker_num')} </>" ,
+                        "<options=bold> $serverSocketType </>" ,
                         $input->getOption('watch') ? '<fg=#C3E88D;options=bold> ACTIVE </>' : "<fg=#FF5572;options=bold> DEACTIVE </>"
                     ] ,
                 ]);
@@ -163,23 +167,146 @@ class Start extends Command
             /*
              * send info message for stop server
              */
-            $io->info('Press Ctrl+C to stop the server');
-
-            /*
-             * create watcher server
-             */
-            if ($input->getOption('watch')){
-                (new Process(function (Process $process) use($io) {
-                    setWatcherProcessId($process->pid);
-                    (new Watcher($io))->start();
-                }))->start();
-            }
+            $this->output->info('Press Ctrl+C to stop the server');
         }
 
         /*
          * create and start server
          */
-        (new Http())->createServer()->start($input->getOption('daemonize'));
-        return Command::SUCCESS;
+        $server = new Process([
+            (new PhpExecutableFinder())->find(),
+            'server',
+            realpath('./'),
+            (bool) $input->getOption('daemonize')
+        ], __DIR__.'/../../Servers/Http', []);
+        $server->start();
+
+        return $this->processOutputs($server, $input);
+    }
+
+    protected function startWatcherServer(InputInterface $input): Process|bool
+    {
+        if ($input->getOption('watch')){
+            $server = tap(new Process([
+                (new PhpExecutableFinder())->find(),
+                'watcher',
+                realpath('./')
+            ], __DIR__.'/../../Servers', []));
+            $server->start();
+
+            return $server;
+        }
+
+        return false;
+    }
+
+    protected function processOutputs(Process $server, InputInterface $input): int
+    {
+        while (! $server->isStarted()) {
+            sleep(1);
+        }
+
+        $watcher = $this->startWatcherServer($input);
+
+        try {
+            while ($server->isRunning()) {
+                $this->writeServerOutput($server);
+
+                if ($watcher instanceof Process &&
+                    $watcher->isRunning() &&
+                    $watcher->getIncrementalOutput()) {
+                    $this->output->info('Application change detected. Restarting workers…');
+
+                    $this->reloadServer();
+                } elseif ($watcher->isTerminated()) {
+                    $this->output->error(
+                        'Watcher process has terminated. Please ensure Node and chokidar are installed.'.PHP_EOL.
+                        $watcher->getErrorOutput()
+                    );
+
+                    return 1;
+                }
+
+                usleep(500 * 1000);
+            }
+
+            $this->writeServerOutput($server);
+        } catch (Exception) {
+            return 1;
+        } finally {
+            $this->stopServer();
+        }
+
+        return $server->getExitCode();
+    }
+
+    protected function writeServerOutput(Process $server)
+    {
+        [$output, $errorOutput] = $this->getServerOutput($server);
+
+        Str::of($output)
+            ->explode("\n")
+            ->filter()
+            ->each(function ($output) {
+                is_array($stream = json_decode($output, true))
+                    ? $this->output->error(json_encode($stream))
+                    : $this->output->error($output);
+            });
+
+        Str::of($errorOutput)
+            ->explode("\n")
+            ->filter()
+            ->groupBy(fn ($output) => $output)
+            ->each(function ($group) {
+                is_array($stream = json_decode($output = $group->first(), true)) && isset($stream['type'])
+                    ? $this->output->error(json_encode($stream))
+                    : $this->raw($output);
+            });
+    }
+
+    protected function getServerOutput(Process $server)
+    {
+        return tap([
+            $server->getIncrementalOutput(),
+            $server->getIncrementalErrorOutput(),
+        ], fn () => $server->clearOutput()->clearErrorOutput());
+    }
+
+    protected function raw($string)
+    {
+        $this->output instanceof Style
+            ? fwrite(STDERR, $string."\n")
+            : $this->output->writeln($string);
+    }
+
+    protected function reloadServer()
+    {
+        posix_kill(getManagerProcessId(), SIGUSR1);
+        posix_kill(getMasterProcessId(), SIGUSR1);
+
+        foreach (getWorkerProcessIds() as $processId) {
+            posix_kill($processId , SIGUSR1);
+        }
+    }
+
+    protected function stopServer()
+    {
+        if (posix_kill(getMasterProcessId(), SIG_DFL)){
+            posix_kill(getMasterProcessId(), SIGTERM);
+        }
+
+        if (posix_kill(getManagerProcessId(), SIG_DFL)){
+            posix_kill(getManagerProcessId(), SIGTERM);
+        }
+
+        if (posix_kill(getWatcherProcessId(), SIG_DFL)){
+            posix_kill(getWatcherProcessId(), SIGTERM);
+        }
+
+        foreach (getWorkerProcessIds() as $processId) {
+            if (posix_kill($processId, SIG_DFL)){
+                posix_kill($processId, SIGTERM);
+            }
+        }
     }
 }
