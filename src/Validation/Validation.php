@@ -15,7 +15,7 @@ class Validation implements InstanceInterface
 
     public function __construct()
     {
-        $this->errorDefaultMessage = Language::getErrorMessages();
+        $this->errorDefaultMessage = app()->make('language')->getErrorMessages();
     }
 
     public function validate(array $data , array $rules): self
