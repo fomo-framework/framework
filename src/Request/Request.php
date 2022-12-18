@@ -37,7 +37,7 @@ class Request implements InstanceInterface
     protected array $postsCache = [];
 
     public function __construct(){
-        $this->advancedMode = config('server.advanceMode.request');
+        $this->advancedMode = app()->make('config')->get('server.advanceMode.request');
     }
 
     public function get(?string $name = null, string|int|bool|array|float|null $default = null): string|int|bool|array|float|null
