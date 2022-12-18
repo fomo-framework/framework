@@ -1,0 +1,57 @@
+#!/usr/bin/env php
+<?php
+
+use Swoole\Server;
+use Fomo\Application\Application;
+use Fomo\Servers\Http;
+
+/*
+ * set display_errors ini
+ */
+ini_set('display_errors', 'stderr');
+
+/*
+ * load autoload
+ */
+require_once $_SERVER['argv'][1] . '/vendor/autoload.php';
+
+/*
+ * create application
+ */
+new Application($_SERVER['argv'][1]);
+
+/*
+ * create server
+ */
+$config = resolve('config');
+$server = new Server(
+    $config->get('server.host'),
+    $config->get('server.port'),
+    !is_null($config->get('server.ssl.ssl_cert_file')) && !is_null($config->get('server.ssl.ssl_key_file')) ? $config->get('server.mode') | SWOOLE_SSL : $config->get('server.mode') ,
+    $config->get('server.sockType')
+);
+
+/*
+ * set options server
+ */
+$server->set(array_merge(
+    $config->get('server.additional') ,
+    [
+        'enable_coroutine' => false,
+        'daemonize' => $_SERVER['argv'][2]
+    ]
+));
+
+/*
+ * set handlers for events(workerStart,receive)
+ */
+$eventHandlers = new Http();
+$server->on('workerStart', [$eventHandlers, 'onWorkerStart']);
+$server->on('receive', [$eventHandlers, 'onReceive']);
+
+
+
+/*
+ * start swoole server
+ */
+$server->start();
