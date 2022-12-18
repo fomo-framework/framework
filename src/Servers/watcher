@@ -1,0 +1,68 @@
+#!/usr/bin/env php
+<?php
+
+/*
+ * load autoload
+ */
+
+use Fomo\Application\Application;
+
+require_once $_SERVER['argv'][1] . '/vendor/autoload.php';
+
+/*
+ * create application
+ */
+new Application($_SERVER['argv'][1]);
+
+while (!httpServerIsRunning()) {
+    sleep(1);
+}
+
+while (httpServerIsRunning()){
+    foreach (resolve('config')->get('server.watcher') as $path) {
+        check(basePath($path));
+    }
+    usleep(700);
+}
+
+function check($dir): void
+{
+        static $last_mtime;
+
+        if (!$last_mtime) {
+            $last_mtime = time();
+        }
+
+        clearstatcache();
+
+        if (!is_dir($dir)) {
+            if (!is_file($dir)) {
+                return;
+            }
+            $iterator = [new SplFileInfo($dir)];
+        } else {
+            $dir_iterator = new RecursiveDirectoryIterator($dir, FilesystemIterator::SKIP_DOTS | FilesystemIterator::FOLLOW_SYMLINKS);
+            $iterator = new RecursiveIteratorIterator($dir_iterator);
+        }
+        foreach ($iterator as $file) {
+            if (is_dir($file)) {
+                continue;
+            }
+
+            if ($last_mtime < $file->getMTime()) {
+                $var = 0;
+                exec('"'.PHP_BINARY . '" -l ' . $file, $out, $var);
+                $last_mtime = $file->getMTime();
+                if ($var) {
+                    continue;
+                }
+
+                echo "{$file->getFilename()} has been changed. server reloaded";
+
+                posix_kill(getManagerProcessId(), SIGUSR1);
+                posix_kill(getMasterProcessId(), SIGUSR1);
+
+                break;
+            }
+        }
+    }
