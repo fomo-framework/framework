@@ -1,6 +1,7 @@
 <?php
 
 use Elastic\Elasticsearch\Client;
+use Fomo\Application\Application;
 use Fomo\Auth\Auth;
 use Fomo\Facades\Auth as AuthFacade;
 use Fomo\Cache\Cache;
@@ -15,10 +16,23 @@ use Fomo\Redis\Redis;
 use Fomo\Response\Response;
 use Fomo\Facades\Response as ResponseFacade;
 
+if (! function_exists('app')) {
+    function app(): Application
+    {
+        return Application::getInstance();
+    }
+}
+
+if (! function_exists('resolve')) {
+    function resolve(string $name, array $constructor = []): mixed
+    {
+        return Application::getInstance()->make($name, $constructor);
+    }
+}
 if (! function_exists('basePath')) {
     function basePath(string $path = null): string
     {
-        return realpath(PROJECT_PATH) . "/$path";
+        return Application::getInstance()->basePath($path);
     }
 }
 
