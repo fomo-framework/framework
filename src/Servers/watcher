@@ -57,7 +57,7 @@ function check($dir): void
                     continue;
                 }
 
-                echo "{$file->getFilename()} has been changed. server reloaded";
+                var_dump("{$file->getFilename()} has been changed. server reloaded");
 
                 posix_kill(getManagerProcessId(), SIGUSR1);
                 posix_kill(getMasterProcessId(), SIGUSR1);
