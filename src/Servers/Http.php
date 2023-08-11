@@ -61,7 +61,12 @@ class Http
                 }
             }
 
-            $server->send($fd, $cache[0]->{$cache[1]}($this->request , ...$cache[3]));
+            try {
+                $server->send($fd, $cache[0]->{$cache[1]}($this->request , ...$cache[3]));
+            } catch (\Throwable | \Exception $e) {
+                $server->send($fd, (new Handler())->render($e, $this->request));
+            }
+            
             return;
         }
 
