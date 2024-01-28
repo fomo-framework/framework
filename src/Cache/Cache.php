@@ -91,15 +91,15 @@ class Cache implements InstanceInterface
 
     protected function getByKey(string $key)
     {
-        return json_decode(Redis::getInstance()->get($key));
+        return unserialize(Redis::getInstance()->get($key));
     }
 
     protected function setByKey(string $key , $value , int $expire = null): void
     {
         if (is_null($expire)){
-            Redis::getInstance()->set($key , json_encode($value));
+            Redis::getInstance()->set($key , serialize($value));
         } else{
-            Redis::getInstance()->setex($key , $expire , json_encode($value));
+            Redis::getInstance()->setex($key , $expire , serialize($value));
         }
     }
 

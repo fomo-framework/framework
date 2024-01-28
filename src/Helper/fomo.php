@@ -81,7 +81,12 @@ if (! function_exists('config')) {
 if (! function_exists('cpuCount')) {
     function cpuCount(): int
     {
-        return swoole_cpu_num();
+        if (class_exists(OpenSwoole\Util::class)) {
+            return OpenSwoole\Util::getCPUNum();
+        } else if (function_exists('swoole_cpu_num')) {
+            return swoole_cpu_num();
+        }
+        return 1;
     }
 }
 
