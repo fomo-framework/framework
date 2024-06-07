@@ -8,6 +8,7 @@ use FastRoute\RouteCollector;
 use Swoole\Server;
 use Fomo\Request\Request;
 use Fomo\Router\Router;
+use Throwable;
 
 class Http
 {
@@ -68,68 +69,84 @@ class Http
 
     public function onReceive(Server $server, $fd, $from_id, $data): void
     {
-        $this->request->setBC($data , $fd);
-        $firstLine = \strstr($data, "\r\n", true);
+        try {
+            $this->request->setBC($data , $fd);
+            $firstLine = \strstr($data, "\r\n", true);
 
-        if (isset($this->MPCache[$firstLine])) {
-            $method = $this->MPCache[$firstLine][0];
-            $path = $this->MPCache[$firstLine][1];
-        }else{
-            if (\count($this->MPCache) >= 256) {
-                unset($this->MPCache[key($this->MPCache)]);
+            if (isset($this->MPCache[$firstLine])) {
+                $method = $this->MPCache[$firstLine][0];
+                $path = $this->MPCache[$firstLine][1];
+            }else{
+                if (\count($this->MPCache) >= 256) {
+                    unset($this->MPCache[key($this->MPCache)]);
+                }
+
+                $MP = \explode(' ', $firstLine, 3);
+                $path = \strstr($MP[1], '?', true);
+                $path = $path === false ? $MP[1] : $path;
+                $method = $MP[0];
+                $this->MPCache[$firstLine] = [$method , $path];
             }
 
-            $MP = \explode(' ', $firstLine, 3);
-            $path = \strstr($MP[1], '?', true);
-            $path = $path === false ? $MP[1] : $path;
-            $method = $MP[0];
-            $this->MPCache[$firstLine] = [$method , $path];
-        }
+            $cache = $this->cache[$method.$path] ?? null;
 
-        $cache = $this->cache[$method.$path] ?? null;
-
-        if (!is_null($cache)){
-            if ($cache[2] !== null) {
-                foreach ($cache[2] as $middleware) {
-                    $callback = $middleware->handle($this->request);
-                    if ($callback !== true) {
-                        $server->send($fd, $callback);
-                        return;
+            if (!is_null($cache)){
+                if ($cache[2] !== null) {
+                    foreach ($cache[2] as $middleware) {
+                        $callback = $middleware->handle($this->request);
+                        if ($callback !== true) {
+                            $server->send($fd, $callback);
+                            return;
+                        }
                     }
                 }
+
+                $server->send($fd, $cache[0]->{$cache[1]}($this->request , ...$cache[3]));
+                return;
             }
 
-            $server->send($fd, $cache[0]->{$cache[1]}($this->request , ...$cache[3]));
-            return;
-        }
+            $routeInfo = $this->dispatcher->dispatch($method , $path);
+            if ($routeInfo[0] === 1) {
+                if (count($this->cache) > 1024){
+                    $this->cache = [];
+                }
+                $this->cache[$method.$path] = [
+                    $routeInfo[1][0] ,
+                    $routeInfo[1][1] ,
+                    $routeInfo[1]['middleware'] ?? null ,
+                    $routeInfo[2]
+                ];
 
-        $routeInfo = $this->dispatcher->dispatch($method , $path);
-        if ($routeInfo[0] === 1) {
-            if (count($this->cache) > 1024){
-                $this->cache = [];
-            }
-            $this->cache[$method.$path] = [
-                $routeInfo[1][0] ,
-                $routeInfo[1][1] ,
-                $routeInfo[1]['middleware'] ?? null ,
-                $routeInfo[2]
-            ];
-
-            if (isset($routeInfo[1]['middleware'])) {
-                foreach ($routeInfo[1]['middleware'] as $middleware) {
-                    $callback = $middleware->handle($this->request);
-                    if ($callback !== true) {
-                        $server->send($fd, $callback);
-                        return;
+                if (isset($routeInfo[1]['middleware'])) {
+                    foreach ($routeInfo[1]['middleware'] as $middleware) {
+                        $callback = $middleware->handle($this->request);
+                        if ($callback !== true) {
+                            $server->send($fd, $callback);
+                            return;
+                        }
                     }
                 }
-            }
 
-            $server->send($fd, $routeInfo[1][0]->{$routeInfo[1][1]}($this->request, ...$routeInfo[2]));
-        } elseif ($routeInfo[0] === 0){
-            $server->send($fd , (new Handler())->notFoundHttpException($this->request));
-        } else {
-            $server->send($fd , (new Handler())->notAllowedHttpException($this->request));
+                $server->send($fd, $routeInfo[1][0]->{$routeInfo[1][1]}($this->request, ...$routeInfo[2]));
+            } elseif ($routeInfo[0] === 0){
+                $server->send($fd , (new Handler())->notFoundHttpException($this->request));
+            } else {
+                $server->send($fd , (new Handler())->notAllowedHttpException($this->request));
+            }
+        } catch (Throwable $error) {
+            if(env('APP_DEBUG', 'false')){
+                $server->send($fd , response()->json([
+                    'Message' => $error->getMessage(),
+                    'Code' => $error->getCode(),
+                    'File' => $error->getFile(),
+                    'Line' => $error->getLine(),
+                    'Trace' => $error->getTrace(),
+                    'Previous' => $error->getPrevious(),
+                    '__String' => $error->__toString()
+                ], 500));
+            } else {
+                $server->send($fd , (new Handler())->InternalErrorException($this->request, $error));
+            }
         }
     }
 
