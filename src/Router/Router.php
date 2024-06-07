@@ -174,7 +174,7 @@ class Router
                 '/%s(.+?)%s/ims',
                 preg_quote('use ', '/'), preg_quote(';', '/')
             );
-            if (preg_match_all($usesPattern, file_get_contents(basePath('router/router.php')), $matches)) {
+            if (preg_match_all($usesPattern, file_get_contents(basePath('routes/api.php')), $matches)) {
                 $uses = implode("\n", $matches[0])."\n\n";
             }
 
