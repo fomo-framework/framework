@@ -7,31 +7,36 @@ use stdClass;
 class Auth
 {
     protected static self $instance;
-
-    public function __construct(
-        protected ?stdClass $user = null
-    ){}
-
-    public static function getInstance(?stdClass $user = null): Auth
+    protected ?stdClass $user = null;
+    
+    public static function setInstance(): void
     {
-        if (isset(self::$instance)){
-            return self::$instance;
+        if (!isset(self::$instance)){
+            self::$instance = new self();
         }
-
-        return self::$instance = new self($user);
     }
 
-    public function user(): stdClass
+    public static function getInstance(): Auth
+    {
+        return self::$instance;
+    }
+    
+    public function setUser(stdClass $user): void
+    {
+        $this->user = $user;
+    }
+
+    public function getUser(): stdClass
     {
         return $this->user;
     }
 
-    public function id(): int|string
+    public function getId(): int|string
     {
         return $this->user->id;
     }
 
-    public function check(): bool
+    public function checkExistUser(): bool
     {
         return !is_null($this->user);
     }
