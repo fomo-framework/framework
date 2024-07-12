@@ -22,13 +22,16 @@ class Log
 {
     protected static Logger $instance;
 
-    protected static function getInstance(): Logger
+    public static function setInstance(): void
     {
-        if (isset(self::$instance)) {
-            return self::$instance;
+        if (!isset(self::$instance)){
+            self::$instance = new Logger();
         }
+    }
 
-        return self::$instance = new Logger();
+    public static function getInstance(): Logger
+    {
+        return self::$instance;
     }
 
     public static function __callStatic(string $method, array $arguments)
