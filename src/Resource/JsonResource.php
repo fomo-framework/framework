@@ -2,7 +2,6 @@
 
 namespace Fomo\Resource;
 
-use Fomo\Response\Response;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Support\Collection;
 use stdClass;
@@ -53,7 +52,7 @@ class JsonResource
         return $collection;
     }
 
-    public function collection(): Response
+    public function collection(): string
     {
         $this->process();
 
@@ -74,7 +73,7 @@ class JsonResource
         ]);
     }
 
-    public function single(): Response
+    public function single(): string
     {
         if (is_null($this->data)){
             return response()->json([
