@@ -80,16 +80,11 @@ class Response
 
     public static function getInstance(): self
     {
+        self::$instance->status = 409;
+        self::$instance->body = '';
+        self::$instance->headers = [];
+
         return self::$instance;
-    }
-
-    public function clearBuffer(): self 
-    {
-        $this->status = 409;
-        $this->body = '';
-        $this->headers = [];
-
-        return $this;
     }
 
     public function withHeader(string $name , string $value): self

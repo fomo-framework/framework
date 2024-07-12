@@ -206,7 +206,7 @@ if (! function_exists('request')) {
 if (! function_exists('response')) {
     function response(): Response
     {
-        return Response::getInstance()->clearBuffer();
+        return Response::getInstance();
     }
 }
 
