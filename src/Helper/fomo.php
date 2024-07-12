@@ -241,7 +241,7 @@ if (! function_exists('mail')) {
 if (! function_exists('cache')) {
     function cache(): Cache
     {
-        return new Cache();
+        return Cache::getInstance();
     }
 }
 

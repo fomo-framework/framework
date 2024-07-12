@@ -6,6 +6,20 @@ use Fomo\Redis\Redis;
 
 class Cache
 {
+    protected static self $instance;
+
+    public static function setInstance(): void
+    {
+        if (!isset(self::$instance)){
+            self::$instance = new self();
+        }
+    }
+
+    public static function getInstance(): Cache
+    {
+        return self::$instance;
+    }
+
     public function get(string $key , $default = null , int $expire = null)
     {
         if (is_null($default)){
