@@ -6,12 +6,10 @@ class Response
 {
     use AdditionalTrait;
 
+    protected static self $instance;
     protected int $status;
-
     protected array $headers = [];
-
     protected string $body;
-
     protected array $phrases = [
         100 => 'Continue',
         101 => 'Switching Protocols',
@@ -72,6 +70,27 @@ class Response
         508 => 'Loop Detected',
         511 => 'Network Authentication Required',
     ];
+    
+    public static function setInstance(): void
+    {
+        if (!isset(self::$instance)){
+            self::$instance = new self();
+        }
+    }
+
+    public static function getInstance(): self
+    {
+        return self::$instance;
+    }
+
+    public function clearBuffer(): self 
+    {
+        $this->status = 409;
+        $this->body = '';
+        $this->headers = [];
+
+        return $this;
+    }
 
     public function withHeader(string $name , string $value): self
     {
@@ -152,7 +171,7 @@ class Response
         return $this->body;
     }
 
-    public function __toString()
+    protected function buildResponse()
     {
         $head = "HTTP/1.1 $this->status {$this->phrases[$this->status]}\r\n";
 

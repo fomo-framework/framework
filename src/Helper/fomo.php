@@ -204,9 +204,9 @@ if (! function_exists('request')) {
 }
 
 if (! function_exists('response')) {
-    function response(string $data = '', int $status = 200, array $headers = ['Connection' => 'keep-alive']): Response
+    function response(): Response
     {
-        return new Response($status , $headers , $data);
+        return Response::getInstance()->clearBuffer();
     }
 }
 
