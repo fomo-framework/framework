@@ -8,17 +8,26 @@ class Validation
 {
     use RulesTrait;
 
+    protected static self $instance;
     protected array $rules = [];
     protected array $errorDefaultMessage = [];
     protected array $errors = [];
     protected array $data;
-
-    public function __construct(array $data , array $rules)
-    {
-        $this->data = $data;
-        $this->rules = $rules;
+    
+    public function __construct() {
         $this->errorDefaultMessage = Language::getInstance()->getErrorMessages();
-        $this->validate();
+    }
+
+    public static function setInstance(): void
+    {
+        if (!isset(self::$instance)){
+            self::$instance = new self();
+        }
+    }
+
+    public static function getInstance(): self
+    {
+        return self::$instance;
     }
 
     protected function existsData(array $array, string|int $key): bool
@@ -76,8 +85,11 @@ class Validation
         return $target;
     }
 
-    protected function validate(): void
+    public function validate(array $data , array $rules): self
     {
+        $this->data = $data;
+        $this->rules = $rules;
+
         foreach ($this->rules as $index => $rule){
             $rule = explode('|' , $rule);
             $indexExplode = explode('.' , $index);
@@ -105,6 +117,8 @@ class Validation
                 ]);
             }
         }
+
+        return $this;
     }
 
     public function hasError(): bool

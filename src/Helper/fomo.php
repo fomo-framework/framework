@@ -1,7 +1,6 @@
 <?php
 
 use Elastic\Elasticsearch\Client;
-use Swoole\Process;
 use Fomo\Auth\Auth;
 use Fomo\Config\Config;
 use Fomo\Elasticsearch\Elasticsearch;
@@ -11,6 +10,7 @@ use Fomo\Request\Request;
 use Fomo\ServerState\ServerState;
 use Fomo\Redis\Redis;
 use Fomo\Cache\Cache;
+use Fomo\Validation\Validation;
 
 if (! function_exists('basePath')) {
     function basePath(string $path = null): string
@@ -242,6 +242,13 @@ if (! function_exists('cache')) {
     function cache(): Cache
     {
         return Cache::getInstance();
+    }
+}
+
+if (! function_exists('validation')) {
+    function validation(): Validation
+    {
+        return Validation::getInstance();
     }
 }
 
