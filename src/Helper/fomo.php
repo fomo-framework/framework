@@ -234,7 +234,7 @@ if (! function_exists('redis')) {
 if (! function_exists('mail')) {
     function mail(): Mail
     {
-        return new Mail();
+        return Mail::getInstance();
     }
 }
 

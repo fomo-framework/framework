@@ -11,5 +11,6 @@ class Mail
     public function boot(Server $server = null, Request $request = null): void
     {
         MailDriver::setInstance();
+        MailDriver::getInstance()->configPHPMailer();
     }
 }

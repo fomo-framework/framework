@@ -8,37 +8,50 @@ use Fomo\Log\Log;
 
 class Mail
 {
-    protected static PHPMailer $instance;
+    protected static self $instance;
+    protected PHPMailer $PHPMailer;
 
     public static function setInstance(): void
     {
-        self::$instance = new PHPMailer(true);
+        if (!isset(self::$instance)){
+            self::$instance = new self();
+        }
+    }
 
+    public static function getInstance(): Mail
+    {
+        return self::$instance;
+    }
+
+    public function configPHPMailer(): void
+    {
+        $this->PHPMailer = new PHPMailer(true);
+        
         switch (env('MAIL_MAILER' , 'smtp')) {
             case 'smtp':
-                self::$instance->isSMTP();
+                $this->PHPMailer->isSMTP();
                 if (config('mail.username') != null && config('mail.password') != null)
-                    self::$instance->SMTPAuth = true;
-                self::$instance->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+                    $this->PHPMailer->SMTPAuth = true;
+                $this->PHPMailer->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
                 break;
             case 'mail':
-                self::$instance->isMail();
+                $this->PHPMailer->isMail();
                 break;
             case 'sendmail':
-                self::$instance->isSendmail();
+                $this->PHPMailer->isSendmail();
                 break;
             case 'qmail':
-                self::$instance->isQmail();
+                $this->PHPMailer->isQmail();
                 break;
         }
 
-        self::$instance->Host = config('mail.host');
-        self::$instance->Username = config('mail.username');
-        self::$instance->Password = config('mail.password');
-        self::$instance->Port = config('mail.port');
+        $this->PHPMailer->Host = config('mail.host');
+        $this->PHPMailer->Username = config('mail.username');
+        $this->PHPMailer->Password = config('mail.password');
+        $this->PHPMailer->Port = config('mail.port');
 
         try {
-            self::$instance->setFrom(env('MAIL_FROM_ADDRESS', 'hello@example.com'), env('MAIL_FROM_NAME', 'Example'));
+            $this->PHPMailer->setFrom(env('MAIL_FROM_ADDRESS', 'hello@example.com'), env('MAIL_FROM_NAME', 'Example'));
         } catch (Exception $e) {
             Log::channel('mailer')->error($e->getMessage());
         }
@@ -48,7 +61,7 @@ class Mail
     {
         if (is_string($address)){
             try {
-                self::$instance->addAddress($address);
+                $this->PHPMailer->addAddress($address);
             } catch (Exception $e) {
                 Log::channel('mailer')->error($e->getMessage());
             }
@@ -56,7 +69,7 @@ class Mail
             foreach ($address as $value){
                 if (is_string($value)){
                     try {
-                        self::$instance->addAddress($value);
+                        $this->PHPMailer->addAddress($value);
                     } catch (Exception $e) {
                         Log::channel('mailer')->error($e->getMessage());
                     }
@@ -64,7 +77,7 @@ class Mail
 
                 if (is_array($value) && isset($value['address']) && isset($value['name'])){
                     try {
-                        self::$instance->addAddress($value['address'], $value['name']);
+                        $this->PHPMailer->addAddress($value['address'], $value['name']);
                     } catch (Exception $e) {
                         Log::channel('mailer')->error($e->getMessage());
                     }
@@ -79,7 +92,7 @@ class Mail
     {
         if (is_string($address)){
             try {
-                self::$instance->addReplyTo($address);
+                $this->PHPMailer->addReplyTo($address);
             } catch (Exception $e) {
                 Log::channel('mailer')->error($e->getMessage());
             }
@@ -87,7 +100,7 @@ class Mail
             foreach ($address as $value){
                 if (is_string($value)){
                     try {
-                        self::$instance->addReplyTo($value);
+                        $this->PHPMailer->addReplyTo($value);
                     } catch (Exception $e) {
                         Log::channel('mailer')->error($e->getMessage());
                     }
@@ -95,7 +108,7 @@ class Mail
 
                 if (is_array($value) && isset($value['address']) && isset($value['name'])){
                     try {
-                        self::$instance->addReplyTo($value['address'], $value['name']);
+                        $this->PHPMailer->addReplyTo($value['address'], $value['name']);
                     } catch (Exception $e) {
                         Log::channel('mailer')->error($e->getMessage());
                     }
@@ -110,7 +123,7 @@ class Mail
     {
         if (is_string($address)){
             try {
-                self::$instance->addCC($address);
+                $this->PHPMailer->addCC($address);
             } catch (Exception $e) {
                 Log::channel('mailer')->error($e->getMessage());
             }
@@ -118,7 +131,7 @@ class Mail
             foreach ($address as $value){
                 if (is_string($value)){
                     try {
-                        self::$instance->addCC($value);
+                        $this->PHPMailer->addCC($value);
                     } catch (Exception $e) {
                         Log::channel('mailer')->error($e->getMessage());
                     }
@@ -126,7 +139,7 @@ class Mail
 
                 if (is_array($value) && isset($value['address']) && isset($value['name'])){
                     try {
-                        self::$instance->addCC($value['address'], $value['name']);
+                        $this->PHPMailer->addCC($value['address'], $value['name']);
                     } catch (Exception $e) {
                         Log::channel('mailer')->error($e->getMessage());
                     }
@@ -141,7 +154,7 @@ class Mail
     {
         if (is_string($address)){
             try {
-                self::$instance->addBCC($address);
+                $this->PHPMailer->addBCC($address);
             } catch (Exception $e) {
                 Log::channel('mailer')->error($e->getMessage());
             }
@@ -149,7 +162,7 @@ class Mail
             foreach ($address as $value){
                 if (is_string($value)){
                     try {
-                        self::$instance->addBCC($value);
+                        $this->PHPMailer->addBCC($value);
                     } catch (Exception $e) {
                         Log::channel('mailer')->error($e->getMessage());
                     }
@@ -157,7 +170,7 @@ class Mail
 
                 if (is_array($value) && isset($value['address']) && isset($value['name'])){
                     try {
-                        self::$instance->addBCC($value['address'], $value['name']);
+                        $this->PHPMailer->addBCC($value['address'], $value['name']);
                     } catch (Exception $e) {
                         Log::channel('mailer')->error($e->getMessage());
                     }
@@ -172,14 +185,14 @@ class Mail
     {
         if (is_string($file)){
             try {
-                self::$instance->addAttachment($file);
+                $this->PHPMailer->addAttachment($file);
             } catch (Exception $e) {
                 Log::channel('mailer')->error($e->getMessage());
             }
         } else{
             foreach ($file as $value){
                 try {
-                    self::$instance->addAttachment($value);
+                    $this->PHPMailer->addAttachment($value);
                 } catch (Exception $e) {
                     Log::channel('mailer')->error($e->getMessage());
                 }
@@ -191,31 +204,31 @@ class Mail
 
     public function subject(string $subject): self
     {
-        self::$instance->Subject = $subject;
+        $this->PHPMailer->Subject = $subject;
 
         return $this;
     }
 
     public function body(string $body): self
     {
-        self::$instance->Body = $body;
+        $this->PHPMailer->Body = $body;
 
         return $this;
     }
 
     public function altBody(string $altBody): self
     {
-        self::$instance->AltBody = $altBody;
+        $this->PHPMailer->AltBody = $altBody;
 
         return $this;
     }
 
     public function send(): void
     {
-        self::$instance->isHTML(true);
+        $this->PHPMailer->isHTML(true);
 
         try {
-            self::$instance->send();
+            $this->PHPMailer->send();
         } catch (Exception $e) {
             Log::channel('mailer')->error($e->getMessage());
         }
