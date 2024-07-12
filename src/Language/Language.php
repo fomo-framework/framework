@@ -8,13 +8,16 @@ class Language
 
     protected array $cache = [];
 
-    public static function getInstance(): self
+    public static function setInstance(): void
     {
-        if (isset(self::$instance)) {
-            return self::$instance;
+        if (!isset(self::$instance)){
+            self::$instance = new self();
         }
+    }
 
-        return self::$instance = new self();
+    public static function getInstance(): Language
+    {
+        return self::$instance;
     }
 
     public function getErrorMessages(): array
