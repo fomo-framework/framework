@@ -1,6 +1,7 @@
 {
   "name": "fomo/framework",
   "description": "The Base Fomo Framework",
+  "homepage": "https://fomo-framework.github.io/docs/",
   "type": "library",
   "license": "MIT",
   "authors": [
@@ -31,11 +32,23 @@
       "src/Helper/fomo.php"
     ]
   },
+  "autoload-dev": {
+	"psr-4": {
+	  "Fomo\\Tests\\" : "tests/"
+	}
+  },
   "minimum-stability": "dev",
   "prefer-stable": true,
   "config": {
     "allow-plugins": {
       "php-http/discovery": true
     }
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^11.4"
+  },
+  "scripts": {
+	"test": "[ -x \"$(command -v php8.3)\" ] && php8.3 vendor/bin/phpunit || php vendor/bin/phpunit",
+	"test-coverage": "[ -x \"$(command -v php8.3)\" ] && XDEBUG_MODE=coverage php8.3 vendor/bin/phpunit --coverage-html=coverage || XDEBUG_MODE=coverage php vendor/bin/phpunit --coverage-html=coverage"
   }
 }
