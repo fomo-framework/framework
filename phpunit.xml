@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/11.4/phpunit.xsd" 
+	bootstrap="vendor/autoload.php" 
+	executionOrder="random" 
+	beStrictAboutOutputDuringTests="true" 
+	stopOnError="true" 
+	stopOnFailure="true" 
+	colors="true" 
+	cacheDirectory=".phpunit.cache"
+  >
+  <testsuites>
+    <testsuite name="default">
+      <directory>tests/</directory>
+    </testsuite>
+  </testsuites>
+  <logging/>
+  <php>
+    <ini name="error_reporting" value="-1"/>
+    <env name="PHPUNIT_TEST" value="true" force="true"/>
+  </php>
+  <source>
+    <include>
+      <directory suffix=".php">src/</directory>
+    </include>
+  </source>
+</phpunit>
